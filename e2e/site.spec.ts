@@ -47,9 +47,10 @@ test.describe("mobile", () => {
 
   test("the menu opens and navigates", async ({ page }) => {
     await page.goto("/");
-    await page.getByText("Menu").click();
+    await page.getByRole("button", { name: "Menu" }).click();
     await page.getByRole("navigation", { name: "Navegação móvel" }).getByRole("link", { name: "Facções" }).click();
     await expect(page).toHaveURL("/faccoes");
+    await expect(page.getByRole("dialog", { name: "Menu" })).toBeHidden();
     await expect(page.getByRole("heading", { level: 1, name: "Facções" })).toBeVisible();
   });
 });

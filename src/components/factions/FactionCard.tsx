@@ -41,14 +41,20 @@ export function FactionCard({ faction }: { faction: Faction }) {
           </div>
           <p className="mt-2 text-plate/85">{faction.profile}</p>
           {faction.image && (
-            <Image
-              src={faction.image.src}
-              alt={faction.image.alt}
-              width={faction.image.width}
-              height={faction.image.height}
-              sizes="(min-width: 1024px) 50vw, 100vw"
-              className={`mt-6 rounded ${faction.image.illustration ? "" : "[image-rendering:pixelated]"}`}
-            />
+            // No celular as skins ficam pequenas: tocar abre a imagem original em tamanho real.
+            <a href={faction.image.src} target="_blank" rel="noopener" className="group/skins relative mt-6 block">
+              <Image
+                src={faction.image.src}
+                alt={faction.image.alt}
+                width={faction.image.width}
+                height={faction.image.height}
+                sizes="(min-width: 1024px) 50vw, 100vw"
+                className={`rounded ${faction.image.illustration ? "" : "[image-rendering:pixelated]"}`}
+              />
+              <span className="absolute right-2 bottom-2 rounded bg-black/70 px-2 py-1 font-mono text-xs text-plate/80 opacity-0 transition group-hover/skins:opacity-100 pointer-coarse:opacity-100">
+                Ampliar ↗
+              </span>
+            </a>
           )}
         </div>
 

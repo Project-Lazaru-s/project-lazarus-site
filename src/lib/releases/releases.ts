@@ -38,16 +38,23 @@ export function parseReleases(payload: unknown): Release[] {
     });
 }
 
+async function getJson(url: string, token?: string): Promise<unknown> {
+  const res = await fetch(url, {
+    headers: {
+      Accept: "application/vnd.github+json",
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
+  });
+  return res.ok ? res.json() : undefined;
+}
+
 export async function fetchReleases({ token = process.env.GITHUB_TOKEN } = {}): Promise<Release[]> {
   try {
-    const res = await fetch(links.releasesApi, {
-      headers: {
-        Accept: "application/vnd.github+json",
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-    });
-    if (!res.ok) return [];
-    return parseReleases(await res.json());
+    const releases = parseReleases(await getJson(links.releasesApi, token));
+    if (releases.length > 0) return releases;
+    // A listagem do GitHub às vezes volta vazia com a release publicada; /latest continua certo.
+    const latest = await getJson(`${links.releasesApi}/latest`, token);
+    return latest ? parseReleases([latest]) : [];
   } catch {
     return [];
   }

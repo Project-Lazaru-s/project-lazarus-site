@@ -57,7 +57,10 @@ export default function HomePage() {
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-asphalt-deep via-asphalt-deep/85 to-asphalt-deep/20" />
         <div className="mx-auto max-w-6xl px-4 py-24 sm:py-36">
           <p className="text-sm tracking-[0.3em] text-sunset uppercase">
-            Minecraft 1.20.1 · Forge · Versão {site.version}
+            {/* No celular a versão desce de linha inteira, sem deixar um "·" pendurado. */}
+            Minecraft 1.20.1 · Forge<span className="max-sm:hidden"> · </span>
+            <br className="sm:hidden" />
+            Versão {site.version}
           </p>
           <h1 className="mt-4 font-stencil text-6xl leading-none text-plate sm:text-8xl">
             Project <span className="block text-lazarus">Lazarus</span>

@@ -51,9 +51,12 @@ export default async function DownloadPage() {
       <div className="mx-auto max-w-6xl space-y-6 px-4 pb-20 *:max-w-[min(100%,56rem)]">
         <a
           href={links.download}
+          aria-label={`Baixar ${zip}${size ? ` (${formatBytes(size)})` : ""}`}
           className="block rounded bg-lazarus px-6 py-4 text-center text-lg font-semibold text-plate hover:bg-lazarus/85"
         >
-          Baixar {zip}
+          {/* O nome do zip quebra em duas linhas num celular; lá basta a versão. */}
+          <span className="sm:hidden">Baixar {site.version}</span>
+          <span className="max-sm:hidden">Baixar {zip}</span>
           {size ? <span className="ml-2 text-sm font-normal text-plate/70">({formatBytes(size)})</span> : null}
         </a>
 

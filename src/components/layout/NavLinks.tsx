@@ -8,7 +8,9 @@ function isActive(pathname: string, href: string) {
   return href === "/" ? pathname === "/" : pathname.startsWith(href);
 }
 
-export function NavLinks({ className, label }: { className: string; label: string }) {
+type Props = { className: string; label: string; linkClassName?: string };
+
+export function NavLinks({ className, label, linkClassName = "text-sm" }: Props) {
   const pathname = usePathname();
   return (
     <nav aria-label={label}>
@@ -20,7 +22,7 @@ export function NavLinks({ className, label }: { className: string; label: strin
               <Link
                 href={item.href}
                 aria-current={active ? "page" : undefined}
-                className={`text-sm transition hover:text-plate ${active ? "text-sunset" : "text-plate/70"}`}
+                className={`${linkClassName} transition hover:text-plate ${active ? "text-sunset" : "text-plate/70"}`}
               >
                 {item.label}
               </Link>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { site } from "@/content/site";
+import { MobileMenu } from "./MobileMenu";
 import { NavLinks } from "./NavLinks";
 
 export function Header() {
@@ -9,15 +10,7 @@ export function Header() {
         <Link href="/" className="font-stencil text-xl tracking-wider whitespace-nowrap text-plate">
           Project <span className="text-lazarus">Lazarus</span>
         </Link>
-        {/* ponytail: <details> as the mobile menu, no JS state; swap for a client toggle if it needs animation */}
-        <details className="group relative ml-auto xl:hidden">
-          <summary className="cursor-pointer list-none rounded border border-plate/30 px-3 py-1 text-sm text-plate pointer-coarse:px-4 pointer-coarse:py-2.5">
-            Menu
-          </summary>
-          <div className="absolute right-0 mt-2 w-56 rounded border border-rust/40 bg-asphalt p-3">
-            <NavLinks className="flex flex-col gap-2" label="Navegação móvel" />
-          </div>
-        </details>
+        <MobileMenu />
         <NavLinks className="hidden items-center gap-5 whitespace-nowrap xl:flex" label="Navegação principal" />
         <Link
           href="/baixar"

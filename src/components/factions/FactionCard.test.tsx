@@ -7,6 +7,13 @@ const haven = factions.find((f) => f.slug === "haven")!;
 const face = (name: string) => document.querySelector<HTMLElement>(`[data-face="${name}"]`)!;
 
 describe("FactionCard", () => {
+  it("opens the skin sheet at full size, for small screens", () => {
+    render(<FactionCard faction={haven} />);
+    const link = within(face("front")).getByRole("link", { name: /ampliar/i });
+    expect(link).toHaveAttribute("href", haven.image!.src);
+    expect(link).toHaveAttribute("target", "_blank");
+  });
+
   it("shows the profile on the front and keeps the back out of reach", () => {
     render(<FactionCard faction={haven} />);
     expect(within(face("front")).getByText(haven.profile)).toBeInTheDocument();

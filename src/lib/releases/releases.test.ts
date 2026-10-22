@@ -87,11 +87,29 @@ describe("fetchReleases (GitHub API)", () => {
     server.use(
       http.get(links.releasesApi, ({ request }) => {
         auth = request.headers.get("authorization");
-        return HttpResponse.json([]);
+        return HttpResponse.json([githubRelease()]);
       }),
     );
     await fetchReleases({ token: "abc" });
     expect(auth).toBe("Bearer abc");
+  });
+
+  it("falls back to the latest release when the list comes back empty", async () => {
+    // O endpoint de listagem do GitHub já devolveu [] por horas com a release publicada.
+    server.use(
+      http.get(links.releasesApi, () => HttpResponse.json([])),
+      http.get(`${links.releasesApi}/latest`, () => HttpResponse.json(githubRelease())),
+    );
+    const releases = await fetchReleases();
+    expect(releases.map((r) => r.tag)).toEqual(["v1.0.0"]);
+  });
+
+  it("stays empty when there is no release at all", async () => {
+    server.use(
+      http.get(links.releasesApi, () => HttpResponse.json([])),
+      http.get(`${links.releasesApi}/latest`, () => HttpResponse.json({ message: "Not Found" }, { status: 404 })),
+    );
+    expect(await fetchReleases()).toEqual([]);
   });
 
   it("returns an empty list when GitHub fails, so the page still renders", async () => {
