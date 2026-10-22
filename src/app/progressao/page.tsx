@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { DaySlider } from "@/components/progression/DaySlider";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { progression } from "@/content/progression";
 
@@ -16,6 +17,7 @@ export default function ProgressionPage() {
           frustração e sem ficar entediante.
         </p>
       </PageHeader>
+      <DaySlider />
       <ol aria-label="Linha do tempo da dificuldade" className="mx-auto max-w-3xl px-4 pb-20">
         {progression.map((stage) => (
           <li key={stage.from} aria-label={stage.label} className="relative border-l-2 border-rust/60 pb-10 pl-8 last:pb-0">

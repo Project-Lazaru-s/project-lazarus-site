@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { PcCheck } from "@/components/download/PcCheck";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { links, requirements, site } from "@/content/site";
 
@@ -49,6 +50,8 @@ export default function DownloadPage() {
             </div>
           ))}
         </dl>
+
+        <PcCheck />
 
         <Step title="Pelo CurseForge (recomendado)">
           <ol className="list-decimal space-y-2 pl-5">

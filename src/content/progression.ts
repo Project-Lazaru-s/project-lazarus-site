@@ -1,3 +1,34 @@
+export type ProgressionEvent = { day: number; text: string };
+
+/**
+ * O que começa em cada dia, tirado da tabela de progressão do 1.0.0.
+ * Quando a tabela só dá um intervalo (ex.: "12–20"), o evento entra no começo dele.
+ */
+export const progressionEvents: ProgressionEvent[] = [
+  { day: 0, text: "Poucos walkers, longe de você." },
+  { day: 3, text: "Os sentidos deles ligam: ouvem, farejam sangue e seguem a luz." },
+  { day: 3, text: "Mais zumbis, e em grupos." },
+  { day: 3, text: "Militares e saqueadores à noite." },
+  { day: 6, text: "Runners saem à noite." },
+  { day: 7, text: "O saque cai: 72% nos locais comuns, 86% nos arriscados." },
+  { day: 10, text: "Primeira horda: pequena, e cada uma vem 15% maior." },
+  { day: 12, text: "Especiais do Undead Revamped na superfície." },
+  { day: 12, text: "Covis do Hollow." },
+  { day: 12, text: "Zonas de gás." },
+  { day: 12, text: "Zumbis militares blindados." },
+  { day: 12, text: "Quedas de helicóptero." },
+  { day: 13, text: "Caçadores e canibais." },
+  { day: 14, text: "Runners em dobro." },
+  { day: 15, text: "O saque cai de novo: 42% nos comuns, 62% nos arriscados." },
+  { day: 20, text: "Até 70 hostis por perto." },
+  { day: 20, text: "Runners nas hordas." },
+  { day: 20, text: "Declínio militar e quarentenas." },
+  { day: 30, text: "Até 80 hostis, mais runners e mais especiais." },
+  { day: 40, text: "Saque no fundo: 25% nos comuns, 45% nos arriscados." },
+  { day: 45, text: "Até 90 hostis." },
+  { day: 60, text: "Até 100 hostis. O último degrau." },
+];
+
 export type Stage = {
   from: number;
   label: string;
