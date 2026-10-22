@@ -18,7 +18,7 @@ export default async function ModPage({ params }: PageProps<"/mods/[slug]">) {
   if (!mod) notFound();
 
   return (
-    <article className="mx-auto max-w-6xl px-4 py-12 *:max-w-4xl">
+    <article className="mx-auto max-w-6xl px-4 py-12 *:max-w-[min(100%,56rem)]">
       <Link href="/mods" className="text-sm text-plate/60 hover:text-plate">
         ← Mods Lazarus
       </Link>

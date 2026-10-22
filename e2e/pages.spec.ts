@@ -11,7 +11,9 @@ test("Progressão: dragging to day 45 shows the world of that day", async ({ pag
   }).toPass();
   await expect(page.getByText("Teto de hostis por perto").locator("xpath=following-sibling::dd")).toHaveText("90");
   await page.getByRole("group", { name: "Dias importantes" }).getByRole("button", { name: "14" }).click();
-  await expect(page.getByRole("list", { name: "Ameaças ativas" }).locator("li", { hasText: "Runners em dobro." })).toContainText("Novo");
+  await expect(
+    page.getByRole("list", { name: "Ameaças ativas" }).locator("li", { hasText: "Runners em dobro." }),
+  ).toContainText("Novo");
 });
 
 test("Baixar: the PC check gives a verdict in a real browser", async ({ page }) => {
@@ -65,4 +67,26 @@ test("Mods: 'Jogue no site' lands on the minigame of that mod", async ({ page })
   await page.getByRole("link", { name: "Jogue no site" }).click();
   await expect(page).toHaveURL(/\/#silencio$/);
   await expect(page.locator("#silencio")).toBeInViewport();
+});
+
+test.describe("mobile", () => {
+  test.use({ viewport: { width: 360, height: 800 } });
+
+  for (const route of [
+    "/modpack",
+    "/faccoes",
+    "/progressao",
+    "/mods",
+    "/mods/events",
+    "/baixar",
+    "/changelog",
+    "/blog",
+    "/blog/1-0-0-chegou",
+    "/creditos",
+  ]) {
+    test(`${route} has no horizontal scroll`, async ({ page }) => {
+      await page.goto(route);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBe(0);
+    });
+  }
 });

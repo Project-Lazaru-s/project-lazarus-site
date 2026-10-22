@@ -22,7 +22,7 @@ export default async function PostPage({ params }: PageProps<"/blog/[slug]">) {
     <>
       {/* Barra de stamina que esvazia conforme a leitura avança (CSS puro, scroll-driven). */}
       <div aria-hidden className="read-progress fixed inset-x-0 top-0 z-40 h-1" />
-      <article className="mx-auto max-w-6xl px-4 py-12 *:max-w-3xl">
+      <article className="mx-auto max-w-6xl px-4 py-12 *:max-w-[min(100%,48rem)]">
         <Link href="/blog" className="text-sm text-plate/60 hover:text-plate">
           ← Blog
         </Link>

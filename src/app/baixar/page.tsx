@@ -48,7 +48,7 @@ export default async function DownloadPage() {
         </p>
       </PageHeader>
 
-      <div className="mx-auto max-w-6xl space-y-6 px-4 pb-20 *:max-w-4xl">
+      <div className="mx-auto max-w-6xl space-y-6 px-4 pb-20 *:max-w-[min(100%,56rem)]">
         <a
           href={links.download}
           className="block rounded bg-lazarus px-6 py-4 text-center text-lg font-semibold text-plate hover:bg-lazarus/85"
