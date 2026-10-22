@@ -13,6 +13,8 @@ export type StealthState = {
   gait: Gait;
   zombies: StealthZombie[];
   glass: number[];
+  /** Algum infectado chegou a "investigando" durante a travessia (o vidro torna "atenção" inevitável). */
+  alerted: boolean;
   status: "playing" | "won" | "spotted" | "timeout";
 };
 
@@ -47,6 +49,7 @@ export function createStealth(): StealthState {
     gait: "still",
     zombies: [30, 55, 78].map((x) => ({ x, awareness: 0 })),
     glass: [50, 81],
+    alerted: false,
     status: "playing",
   };
 }
@@ -74,5 +77,6 @@ export function stepStealth(state: StealthState, gait: Gait, dt: number): Stealt
         ? "timeout"
         : "playing";
 
-  return { ...state, x, time, gait, zombies, status };
+  const alerted = state.alerted || zombies.some((z) => z.awareness >= 60);
+  return { ...state, x, time, gait, zombies, alerted, status };
 }

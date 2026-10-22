@@ -1,13 +1,35 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useReducer, useRef, type Dispatch, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type Dispatch,
+  type ReactNode,
+} from "react";
+import { runReducer, type RunAction } from "@/lib/survival/run";
+import { hasProgress, loadRun, SAVE_KEY, saveRun } from "@/lib/survival/save";
 import { createSfx, type Sfx, type SoundName } from "@/lib/survival/sfx";
-import { currentDay, initialSurvival, survivalReducer, type SurvivalAction, type SurvivalState } from "@/lib/survival/survival";
+import { currentDay, initialSurvival, type SurvivalState } from "@/lib/survival/survival";
 import { Atmosphere } from "./Atmosphere";
 import { SoundToggle } from "./SoundToggle";
 import { SurvivalHud } from "./SurvivalHud";
 
-type Context = { state: SurvivalState; dispatch: Dispatch<SurvivalAction>; sfx: () => Sfx };
+type Context = {
+  state: SurvivalState;
+  dispatch: Dispatch<RunAction>;
+  sfx: () => Sfx;
+  /** Partida salva ainda não decidida (continuar ou começar de novo). */
+  saved: SurvivalState | null;
+  resume: () => void;
+  newRun: () => void;
+};
 const SurvivalContext = createContext<Context | null>(null);
 
 export function useSurvival() {
@@ -16,7 +38,7 @@ export function useSurvival() {
   return ctx;
 }
 
-function useDayTracking(day: number, dispatch: Dispatch<SurvivalAction>) {
+function useDayTracking(day: number, dispatch: Dispatch<RunAction>) {
   useEffect(() => {
     const onScroll = () => {
       const sections = [...document.querySelectorAll<HTMLElement>("[data-day]")].map((el) => ({
@@ -31,16 +53,68 @@ function useDayTracking(day: number, dispatch: Dispatch<SurvivalAction>) {
   }, [day, dispatch]);
 }
 
-export function SurvivalProvider({ children, initial }: { children: ReactNode; initial?: Partial<SurvivalState> }) {
-  const [state, dispatch] = useReducer(survivalReducer, { ...initialSurvival, ...initial });
+const noSubscription = () => () => {};
+
+/**
+ * A partida que estava salva quando a página abriu (congelada: os saves desta visita não contam).
+ * No servidor e na hidratação é sempre "nada salvo".
+ */
+function useSavedRun(enabled: boolean) {
+  const [store] = useState(() => {
+    let raw: string | null | undefined;
+    return { get: () => (raw === undefined ? (raw = enabled ? readStorage() : null) : raw) };
+  });
+  const raw = useSyncExternalStore(noSubscription, store.get, () => null);
+  return useMemo(() => (raw ? loadRun({ getItem: () => raw, setItem() {}, removeItem() {} }) : null), [raw]);
+}
+
+function readStorage() {
+  try {
+    return localStorage.getItem(SAVE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+type Props = { children: ReactNode; initial?: Partial<SurvivalState>; persist?: boolean };
+
+export function SurvivalProvider({ children, initial, persist = false }: Props) {
+  const [state, dispatch] = useReducer(runReducer, { ...initialSurvival, ...initial });
   useDayTracking(state.day, dispatch);
+
+  const saved = useSavedRun(persist);
+  // Com uma partida salva, nada é gravado até o visitante escolher: rolar a página não apaga o progresso.
+  const [decided, setDecided] = useState(false);
+  const pending = !decided && saved !== null && hasProgress(saved);
+
+  useEffect(() => {
+    if (persist && !pending) saveRun(localStorage, state);
+  }, [persist, pending, state]);
+
+  const resume = useCallback(() => {
+    if (saved) dispatch({ type: "load", state: saved });
+    setDecided(true);
+  }, [saved]);
+
+  const newRun = useCallback(() => {
+    // Conquistas são do jogador, não da partida: ficam de uma para a outra.
+    const achievements = [...new Set([...(saved?.achievements ?? []), ...state.achievements])];
+    dispatch({ type: "load", state: { ...initialSurvival, sound: state.sound, achievements } });
+    setDecided(true);
+  }, [saved, state.achievements, state.sound]);
+
   // Criado só no navegador, na primeira vez que um efeito é pedido.
   const sfxRef = useRef<Sfx | null>(null);
   const sfx = useCallback(() => (sfxRef.current ??= createSfx(typeof Audio === "undefined" ? undefined : Audio)), []);
   useEffect(() => {
     if (state.sound) sfx().preload();
   }, [state.sound, sfx]);
-  return <SurvivalContext.Provider value={{ state, dispatch, sfx }}>{children}</SurvivalContext.Provider>;
+
+  return (
+    <SurvivalContext.Provider value={{ state, dispatch, sfx, saved: pending ? saved : null, resume, newRun }}>
+      {children}
+    </SurvivalContext.Provider>
+  );
 }
 
 /** Toca um efeito sonoro, só se o visitante ligou o som. */

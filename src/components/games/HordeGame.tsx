@@ -69,7 +69,7 @@ export function HordeGame() {
       dispatch({ type: "fear", amount: 40 });
     } else if (next.status === "held") {
       dispatch({ type: "fear", amount: -30 });
-      dispatch({ type: "horde-held", wave: next.wave });
+      dispatch({ type: "horde-held", wave: next.wave, clean: next.bodyShots === 0 });
     } else if (Math.min(...next.zombies.map((z) => z.distance)) < PANIC_DISTANCE) {
       panic.current += dt;
       if (panic.current >= 0.5) {

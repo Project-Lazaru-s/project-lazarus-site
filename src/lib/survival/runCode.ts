@@ -57,6 +57,7 @@ export function decodeRun(code: string): SurvivalState | null {
     stomach,
     infected: Boolean(flags & 2),
     record: {
+      ...initialSurvival.record,
       stealthBest: stealthTenths === 0 ? null : stealthTenths / 10,
       hordesHeld,
       takedowns,

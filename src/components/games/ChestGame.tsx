@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useSfx, useSurvival } from "@/components/survival/SurvivalProvider";
 import { highlights } from "@/content/home";
-import { createLock, forceLock, isPinSet, pickPin, PINS } from "@/lib/games/lockpick";
+import { createLock, forceLock, isPinSet, LOCKPICKS, pickPin, PINS } from "@/lib/games/lockpick";
 import { seededRandom } from "@/lib/games/random";
 
 const FORCE_FEAR = 30; // arrombar faz barulho
@@ -28,7 +28,10 @@ export function ChestGame() {
     const next = pickPin(lock, pin);
     if (next === lock) return;
     setLock(next);
-    if (next.status === "open") play("chestOpen");
+    if (next.status === "open") {
+      play("chestOpen");
+      dispatch({ type: "chest", method: "picked", broken: LOCKPICKS - next.picks });
+    }
     else if (next.lastWrong !== null) {
       play("lockpickBreak");
       setShake((s) => s + 1);
@@ -38,6 +41,7 @@ export function ChestGame() {
   const force = () => {
     setLock(forceLock(lock));
     dispatch({ type: "fear", amount: FORCE_FEAR });
+    dispatch({ type: "chest", method: "forced", broken: 0 });
     play("chestOpen");
   };
 

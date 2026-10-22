@@ -7,13 +7,24 @@ export type Item = "antibiotic" | "painkiller" | "bandage" | "water" | "ammo";
 export type DrinkOutcome = "safe" | "sick" | "severe";
 export type Stomach = "ok" | "sick" | "severe";
 
+export type ChestResult = "forced" | "picked" | "picked-clean";
+
 export type SurvivalRecord = {
   stealthBest: number | null;
+  /** Atravessou a rua sem ninguém chegar a "investigando". */
+  stealthClean: boolean;
   hordesHeld: number;
+  /** Conteve uma horda sem tiro no corpo. */
+  cleanHorde: boolean;
   takedowns: number;
   lootOpened: number;
   lootFound: number;
   wanted: boolean;
+  huntersSurvived: boolean;
+  /** Terminou o Fale baixo sem nenhum infectado ouvir. */
+  voiceQuiet: boolean;
+  chest: ChestResult | null;
+  cured: boolean;
 };
 
 export type SurvivalState = {
@@ -29,6 +40,10 @@ export type SurvivalState = {
   /** Som ligado pelo visitante (ambiente e efeitos). */
   sound: boolean;
   record: SurvivalRecord;
+  /** Conquistas desbloqueadas (ids de achievements.ts); sobrevivem a uma nova partida. */
+  achievements: string[];
+  /** Avisos de conquista a mostrar; `n` cresce a cada aviso para animar cada um uma vez. */
+  toasts: { id: string; n: number }[];
 };
 
 export type SurvivalAction =
@@ -42,8 +57,10 @@ export type SurvivalAction =
   | { type: "drink"; outcome: DrinkOutcome }
   | { type: "takedown"; success: boolean }
   | { type: "use"; item: Item }
-  | { type: "stealth"; time: number }
-  | { type: "horde-held"; wave: number }
+  | { type: "stealth"; time: number; clean: boolean }
+  | { type: "horde-held"; wave: number; clean: boolean }
+  | { type: "voice"; heard: number }
+  | { type: "chest"; method: "picked" | "forced"; broken: number }
   | { type: "deal"; deal: Deal }
   | { type: "hunters"; outcome: HunterOutcome; paid: Item[] };
 
@@ -57,8 +74,25 @@ export const initialSurvival: SurvivalState = {
   infected: false,
   reputation: 0,
   sound: false,
-  record: { stealthBest: null, hordesHeld: 0, takedowns: 0, lootOpened: 0, lootFound: 0, wanted: false },
+  record: {
+    stealthBest: null,
+    stealthClean: false,
+    hordesHeld: 0,
+    cleanHorde: false,
+    takedowns: 0,
+    lootOpened: 0,
+    lootFound: 0,
+    wanted: false,
+    huntersSurvived: false,
+    voiceQuiet: false,
+    chest: null,
+    cured: false,
+  },
+  achievements: [],
+  toasts: [],
 };
+
+const CHEST_RANK: Record<ChestResult, number> = { forced: 0, picked: 1, "picked-clean": 2 };
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
@@ -82,8 +116,16 @@ function consume(state: SurvivalState, item: Item): SurvivalState {
   const index = state.inventory.indexOf(item);
   if (index === -1) return state;
   const inventory = state.inventory.toSpliced(index, 1);
-  // Antibiótico cura disenteria e infecção; os outros itens só são gastos.
-  return item === "antibiotic" ? { ...state, inventory, stomach: "ok", infected: false } : { ...state, inventory };
+  if (item !== "antibiotic") return { ...state, inventory };
+  // Antibiótico cura disenteria e infecção.
+  const wasIll = state.stomach !== "ok" || state.infected;
+  return {
+    ...state,
+    inventory,
+    stomach: "ok",
+    infected: false,
+    record: { ...state.record, cured: state.record.cured || wasIll },
+  };
 }
 
 export function survivalReducer(state: SurvivalState, action: SurvivalAction): SurvivalState {
@@ -118,10 +160,28 @@ export function survivalReducer(state: SurvivalState, action: SurvivalAction): S
     case "stealth":
       return {
         ...state,
-        record: { ...record, stealthBest: Math.min(record.stealthBest ?? Infinity, action.time) },
+        record: {
+          ...record,
+          stealthBest: Math.min(record.stealthBest ?? Infinity, action.time),
+          stealthClean: record.stealthClean || action.clean,
+        },
       };
     case "horde-held":
-      return { ...state, record: { ...record, hordesHeld: Math.max(record.hordesHeld, action.wave) } };
+      return {
+        ...state,
+        record: {
+          ...record,
+          hordesHeld: Math.max(record.hordesHeld, action.wave),
+          cleanHorde: record.cleanHorde || action.clean,
+        },
+      };
+    case "voice":
+      return { ...state, record: { ...record, voiceQuiet: record.voiceQuiet || action.heard === 0 } };
+    case "chest": {
+      const result: ChestResult = action.method === "forced" ? "forced" : action.broken === 0 ? "picked-clean" : "picked";
+      const best = record.chest && CHEST_RANK[record.chest] >= CHEST_RANK[result] ? record.chest : result;
+      return { ...state, record: { ...record, chest: best } };
+    }
     case "deal": {
       const { given, received, reputation } = action.deal;
       const inventory = withoutItems(state.inventory, given ? [given] : []);
@@ -130,9 +190,21 @@ export function survivalReducer(state: SurvivalState, action: SurvivalAction): S
     case "hunters":
       switch (action.outcome) {
         case "won": // o esquadrão deixa a munição para trás
-          return { ...state, kills: state.kills + SQUAD_SIZE, inventory: [...state.inventory, "ammo"] };
+          return {
+            ...state,
+            kills: state.kills + SQUAD_SIZE,
+            inventory: [...state.inventory, "ammo"],
+            record: { ...record, huntersSurvived: true },
+          };
+        case "escaped":
+          return { ...state, record: { ...record, huntersSurvived: true } };
         case "pardoned":
-          return { ...state, inventory: withoutItems(state.inventory, action.paid), reputation: PARDONED_REPUTATION };
+          return {
+            ...state,
+            inventory: withoutItems(state.inventory, action.paid),
+            reputation: PARDONED_REPUTATION,
+            record: { ...record, huntersSurvived: true },
+          };
         case "killed":
           return { ...state, deaths: state.deaths + 1 };
         default:

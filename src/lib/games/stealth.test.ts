@@ -84,3 +84,10 @@ describe("stepStealth", () => {
     expect(end.x).toBe(STREET_LENGTH);
   });
 });
+
+describe("alerted", () => {
+  it("stays false crossing crouched and turns true once anyone starts investigating", () => {
+    expect(play("crouch").alerted).toBe(false);
+    expect(play("walk").alerted).toBe(true);
+  });
+});

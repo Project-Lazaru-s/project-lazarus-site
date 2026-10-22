@@ -145,3 +145,14 @@ describe("withExtraAmmo", () => {
     expect(withExtraAmmo(state, 0)).toBe(state);
   });
 });
+
+describe("bodyShots", () => {
+  it("counts hits that landed on the body, not misses or headshots", () => {
+    let state = createHorde(1, fixed);
+    const walker = zombie(state, "walker");
+    state = shoot(state, -1, "miss", fixed);
+    state = shoot(state, walker.id, "body", fixed);
+    state = shoot(state, walker.id, "head", fixed);
+    expect(state.bodyShots).toBe(1);
+  });
+});

@@ -57,6 +57,7 @@ export function VoiceGame() {
     mic.current = null;
     const count = heardBy(ZOMBIES, loudest).filter(Boolean).length;
     if (count > 0) dispatch({ type: "fear", amount: count * 10 });
+    dispatch({ type: "voice", heard: count });
     setHeard(count);
   };
 

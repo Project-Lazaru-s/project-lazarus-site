@@ -164,6 +164,25 @@ test("Dia 7: forcing the chest opens it at once, but scares you", async ({ page 
   await expect(hud(page)).toContainText("Tense");
 });
 
+test("progress: an achievement survives a reload and the run can be continued", async ({ page }) => {
+  await page.goto("/");
+  const scene = await start(page, "Rua com infectados");
+  await scene.focus();
+  await page.keyboard.down("1");
+  await expect(page.getByRole("heading", { name: "Atravessou" })).toBeVisible({ timeout: 15_000 });
+  await page.keyboard.up("1");
+  await expect(page.getByRole("log", { name: "Conquistas desbloqueadas" })).toContainText("Silêncio absoluto");
+
+  await page.reload();
+  const banner = page.getByRole("region", { name: "Partida salva" });
+  await expect(banner).toContainText("1 conquista");
+  await banner.getByRole("button", { name: "Continuar" }).click();
+  await expect(banner).toBeHidden();
+  const unlocked = page.getByRole("list", { name: "Conquistas" }).locator('li[data-unlocked="true"]');
+  await expect(unlocked).toHaveCount(1);
+  await expect(unlocked).toContainText("Silêncio absoluto");
+});
+
 test.describe("mobile", () => {
   test.use({ viewport: { width: 375, height: 812 }, hasTouch: true });
 

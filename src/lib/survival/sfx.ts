@@ -19,6 +19,7 @@ export const SOUNDS = {
   cabinetSearch: "/sounds/cabinet-search.mp3",
   deathSting: "/sounds/death-sting.mp3",
   huntersArrive: "/sounds/hunters-arrive.mp3",
+  achievement: "/sounds/achievement.mp3",
 } as const;
 
 export type SoundName = keyof typeof SOUNDS;

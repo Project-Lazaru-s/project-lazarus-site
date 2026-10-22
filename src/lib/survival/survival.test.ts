@@ -126,11 +126,11 @@ describe("inventory and conditions", () => {
   });
 
   it("records the best stealth time and the hordes held", () => {
-    let state = survivalReducer(initialSurvival, { type: "stealth", time: 9.2 });
-    state = survivalReducer(state, { type: "stealth", time: 7.5 });
-    state = survivalReducer(state, { type: "stealth", time: 8 });
-    state = survivalReducer(state, { type: "horde-held", wave: 2 });
-    state = survivalReducer(state, { type: "horde-held", wave: 1 });
+    let state = survivalReducer(initialSurvival, { type: "stealth", time: 9.2, clean: false });
+    state = survivalReducer(state, { type: "stealth", time: 7.5, clean: false });
+    state = survivalReducer(state, { type: "stealth", time: 8, clean: false });
+    state = survivalReducer(state, { type: "horde-held", wave: 2, clean: false });
+    state = survivalReducer(state, { type: "horde-held", wave: 1, clean: false });
     expect(state.record).toMatchObject({ stealthBest: 7.5, hordesHeld: 2 });
   });
 });

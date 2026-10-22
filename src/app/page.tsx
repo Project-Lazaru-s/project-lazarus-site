@@ -10,8 +10,10 @@ import { TraderGame } from "@/components/games/TraderGame";
 import { VoiceGame } from "@/components/games/VoiceGame";
 import { WaterGame } from "@/components/games/WaterGame";
 import { Radio } from "@/components/radio/Radio";
+import { AchievementToasts } from "@/components/survival/AchievementToasts";
 import { DaySection } from "@/components/survival/DaySection";
 import { Dossier } from "@/components/survival/Dossier";
+import { ResumeBanner } from "@/components/survival/ResumeBanner";
 import { ConnectedAtmosphere, ConnectedHud, SurvivalProvider } from "@/components/survival/SurvivalProvider";
 import { slogans } from "@/content/home";
 import { site } from "@/content/site";
@@ -28,9 +30,11 @@ function Chapter({ day, title, children }: { day: number; title: string; childre
 
 export default function HomePage() {
   return (
-    <SurvivalProvider>
+    <SurvivalProvider persist>
       <ConnectedAtmosphere />
       <ConnectedHud />
+      <ResumeBanner />
+      <AchievementToasts />
 
       <DaySection day={0} aria-label="Apresentação" className="relative isolate overflow-hidden">
         <Image

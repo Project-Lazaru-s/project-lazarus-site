@@ -10,7 +10,7 @@ const run: SurvivalState = {
   reputation: -60,
   stomach: "severe",
   infected: true,
-  record: { stealthBest: 7.4, hordesHeld: 3, takedowns: 2, lootOpened: 6, lootFound: 2, wanted: true },
+  record: { ...initialSurvival.record, stealthBest: 7.4, hordesHeld: 3, takedowns: 2, lootOpened: 6, lootFound: 2, wanted: true },
 };
 
 describe("encodeRun / decodeRun", () => {

@@ -11,6 +11,8 @@ export type HordeState = {
   zombies: HordeZombie[];
   ammo: number;
   shots: number;
+  /** Tiros que acertaram o corpo (não contam erros nem cabeça). */
+  bodyShots: number;
   kills: number;
   nextId: number;
   status: "playing" | "held" | "breached";
@@ -44,6 +46,7 @@ export function createHorde(wave: number, random: Random): HordeState {
     zombies: Array.from({ length: size }, (_, i) => spawn(i, kindFor(i, wave), random, 100 + i * 6)),
     ammo: size * 2 + 4,
     shots: 0,
+    bodyShots: 0,
     kills: 0,
     nextId: size,
     status: "playing",
@@ -92,11 +95,12 @@ export function shoot(state: HordeState, id: number, part: Part, random: Random)
   });
 
   const shots = state.shots + 1;
+  const bodyShots = state.bodyShots + (part === "body" && state.zombies.some((z) => z.id === id) ? 1 : 0);
   let nextId = state.nextId;
   // Tiros fazem barulho: atraem mais infectados de longe.
   if (shots % SHOTS_PER_NOISE_SPAWN === 0) zombies.push(spawn(nextId++, "walker", random, 110));
 
-  return { ...state, zombies, ammo: state.ammo - 1, shots, kills, nextId };
+  return { ...state, zombies, ammo: state.ammo - 1, shots, bodyShots, kills, nextId };
 }
 
 export function stepHorde(state: HordeState, dt: number): HordeState {
