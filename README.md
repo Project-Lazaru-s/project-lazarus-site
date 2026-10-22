@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Project Lazarus: site oficial
 
-## Getting Started
+Site do [Project Lazarus](https://github.com/Project-Lazaru-s/project-lazarus-modpack), modpack de sobrevivência zumbi para Minecraft 1.20.1 (Forge).
 
-First, run the development server:
+Next.js 16 (App Router, Cache Components), Tailwind CSS 4, Vitest + Testing Library + MSW, Playwright.
+
+## Rodando
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev          # http://localhost:3000
+npm test             # unitários e de integração (Vitest)
+npm run test:e2e     # E2E (Playwright: faz build e sobe o servidor)
+npm run typecheck
+npm run lint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+`GITHUB_TOKEN` (opcional) aumenta o limite da API do GitHub usada no changelog.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Estrutura
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+content/blog/       posts em Markdown (frontmatter: title, date, summary, draft?)
+public/images/      banners dos mods e prévias de skins
+src/app/            rotas: só compõem páginas
+src/components/     UI (layout/, ui/, mods/, blog/, releases/)
+src/content/        dados tipados do site: links, mods, facções, progressão, sistemas, créditos
+src/lib/            regras: blog (leitura de posts), releases (API do GitHub), markdown, formatação
+e2e/                testes de ponta a ponta
+```
 
-## Learn More
+## Tarefas comuns
 
-To learn more about Next.js, take a look at the following resources:
+- **Novo post:** crie `content/blog/<slug>.md`. Use `draft: true` para esconder.
+- **Nova release:** nada a fazer. O changelog lê as releases do GitHub e se atualiza a cada hora.
+- **Nova versão de um mod:** altere `version` em `src/content/mods.ts` e o teste de versões em `src/content/content.test.ts`.
+- **Nova facção ou mod:** uma entrada em `src/content/`. As páginas se montam sozinhas.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Regras de conteúdo (cobertas por testes)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- A versão pública é 1.0.0. Nada de "alpha" no site.
+- Sem links inventados de Discord, CurseForge ou Modrinth.
+- O download aponta para `releases/latest` no GitHub; mods de terceiros não são redistribuídos.
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Modpack, mods Lazarus, configs, scripts e este site: todos os direitos reservados.
