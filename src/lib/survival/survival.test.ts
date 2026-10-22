@@ -180,3 +180,42 @@ describe("shareText", () => {
     expect(shareText({ ...initialSurvival, deaths: 0 }, "u")).toContain("0 mortes");
   });
 });
+
+describe("reputation and the wanted system", () => {
+  const withBandage = { ...initialSurvival, inventory: ["bandage" as const] };
+
+  it("a deal swaps items and moves reputation", () => {
+    const state = survivalReducer(withBandage, {
+      type: "deal",
+      deal: { success: true, given: "bandage", received: "ammo", reputation: 10 },
+    });
+    expect(state).toMatchObject({ inventory: ["ammo"], reputation: 10 });
+  });
+
+  it("reputation stays between -100 and +100", () => {
+    let state = initialSurvival;
+    for (let i = 0; i < 5; i++) {
+      state = survivalReducer(state, { type: "deal", deal: { success: false, given: null, received: null, reputation: -30 } });
+    }
+    expect(state.reputation).toBe(-100);
+  });
+
+  it("remembers having been wanted", () => {
+    let state = survivalReducer(initialSurvival, {
+      type: "deal",
+      deal: { success: false, given: null, received: null, reputation: -40 },
+    });
+    expect(state.record.wanted).toBe(true);
+    state = survivalReducer({ ...state, inventory: ["bandage", "water"] }, { type: "hunters", outcome: "pardoned", paid: ["bandage", "water"] });
+    expect(state).toMatchObject({ reputation: -20, inventory: [], record: { wanted: true } });
+  });
+
+  it("beating the squad counts kills and leaves their ammo behind", () => {
+    const state = survivalReducer(initialSurvival, { type: "hunters", outcome: "won", paid: [] });
+    expect(state).toMatchObject({ kills: 3, inventory: ["ammo"] });
+  });
+
+  it("being caught by the hunters is a death", () => {
+    expect(survivalReducer(initialSurvival, { type: "hunters", outcome: "killed", paid: [] }).deaths).toBe(1);
+  });
+});

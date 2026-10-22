@@ -5,6 +5,8 @@ import { HordeGame } from "@/components/games/HordeGame";
 import { LootGame } from "@/components/games/LootGame";
 import { StealthGame } from "@/components/games/StealthGame";
 import { TakedownGame } from "@/components/games/TakedownGame";
+import { TraderGame } from "@/components/games/TraderGame";
+import { VoiceGame } from "@/components/games/VoiceGame";
 import { WaterGame } from "@/components/games/WaterGame";
 import { Radio } from "@/components/radio/Radio";
 import { DaySection } from "@/components/survival/DaySection";
@@ -74,6 +76,16 @@ export default function HomePage() {
           </Link>
         </Chapter>
         <StealthGame />
+      </DaySection>
+
+      <DaySection day={4} className="mx-auto grid max-w-6xl gap-8 px-4 py-24 lg:grid-cols-[1.4fr_1fr] lg:items-center">
+        <VoiceGame />
+        <Chapter day={4} title="Fale baixo.">
+          <p>
+            Com o Simple Voice Chat, a sua voz de verdade vira ruído no jogo. Seu amigo grita no fone, e a rua inteira
+            escuta. Teste com o seu microfone, ou com os botões.
+          </p>
+        </Chapter>
       </DaySection>
 
       <DaySection day={5} className="mx-auto grid max-w-6xl gap-8 px-4 py-24 lg:grid-cols-[1.4fr_1fr] lg:items-center">
@@ -154,6 +166,19 @@ export default function HomePage() {
             Lazarus Scarcity →
           </Link>
         </Chapter>
+      </DaySection>
+
+      <DaySection day={20} className="mx-auto grid max-w-6xl gap-8 px-4 py-24 lg:grid-cols-[1fr_1.4fr] lg:items-center">
+        <Chapter day={20} title="Os vivos também cobram.">
+          <p>
+            Facções guardam a sua reputação, de -100 a +100. Troque com os Rovers, pechinche ou intimide. Desça até -40 e
+            caçadores de recompensa vão até a última posição em que te viram.
+          </p>
+          <Link href="/faccoes" className="mt-3 inline-block text-sm text-sunset hover:underline">
+            Conheça as facções →
+          </Link>
+        </Chapter>
+        <TraderGame />
       </DaySection>
 
       <DaySection day={60} className="border-y border-rust/40 bg-asphalt">

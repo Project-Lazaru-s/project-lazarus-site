@@ -54,7 +54,7 @@ describe("Dossier", () => {
     Object.assign(navigator, { clipboard: { writeText } });
     renderDossier();
     await userEvent.click(screen.getByRole("button", { name: /compartilhar/i }));
-    expect(writeText).toHaveBeenCalledWith(expect.stringContaining("14 abates"));
+    expect(writeText).toHaveBeenCalledWith(expect.stringMatching(/14 abates.*\/dossie\/[a-z0-9-]+$/));
     expect(await screen.findByText(/copiado/i)).toBeInTheDocument();
   });
 });

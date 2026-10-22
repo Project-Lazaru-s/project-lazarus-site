@@ -10,6 +10,7 @@ import {
   shoot,
   stepHorde,
   waveSize,
+  withExtraAmmo,
   type HordeState,
   type HordeZombie,
   type ZombieKind,
@@ -98,7 +99,10 @@ export function HordeGame() {
 
   const start = (wave: "first" | "next") => {
     panic.current = 0;
-    setHorde(wave === "next" ? nextWave(live.current, Math.random) : createHorde(1, Math.random));
+    const boxes = survival.inventory.filter((item) => item === "ammo").length;
+    for (let i = 0; i < boxes; i++) dispatch({ type: "use", item: "ammo" });
+    const horde = wave === "next" ? nextWave(live.current, Math.random) : createHorde(1, Math.random);
+    setHorde(withExtraAmmo(horde, boxes));
     setPhase("playing");
   };
 

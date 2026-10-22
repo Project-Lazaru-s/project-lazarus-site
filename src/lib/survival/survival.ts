@@ -1,7 +1,9 @@
 // Estado do "sobrevivente" que atravessa a landing: o scroll avança os dias,
 // os minigames somam abates, mortes e medo.
 
-export type Item = "antibiotic" | "painkiller" | "bandage" | "water";
+import { isWanted, PARDONED_REPUTATION, type Deal, type HunterOutcome } from "@/lib/games/negotiation";
+
+export type Item = "antibiotic" | "painkiller" | "bandage" | "water" | "ammo";
 export type DrinkOutcome = "safe" | "sick" | "severe";
 export type Stomach = "ok" | "sick" | "severe";
 
@@ -11,6 +13,7 @@ export type SurvivalRecord = {
   takedowns: number;
   lootOpened: number;
   lootFound: number;
+  wanted: boolean;
 };
 
 export type SurvivalState = {
@@ -21,6 +24,8 @@ export type SurvivalState = {
   inventory: Item[];
   stomach: Stomach;
   infected: boolean;
+  /** Reputação com os Rovers, de -100 a +100. */
+  reputation: number;
   record: SurvivalRecord;
 };
 
@@ -35,7 +40,9 @@ export type SurvivalAction =
   | { type: "takedown"; success: boolean }
   | { type: "use"; item: Item }
   | { type: "stealth"; time: number }
-  | { type: "horde-held"; wave: number };
+  | { type: "horde-held"; wave: number }
+  | { type: "deal"; deal: Deal }
+  | { type: "hunters"; outcome: HunterOutcome; paid: Item[] };
 
 export const initialSurvival: SurvivalState = {
   day: 0,
@@ -45,12 +52,27 @@ export const initialSurvival: SurvivalState = {
   inventory: [],
   stomach: "ok",
   infected: false,
-  record: { stealthBest: null, hordesHeld: 0, takedowns: 0, lootOpened: 0, lootFound: 0 },
+  reputation: 0,
+  record: { stealthBest: null, hordesHeld: 0, takedowns: 0, lootOpened: 0, lootFound: 0, wanted: false },
 };
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
 const STOMACH: Record<DrinkOutcome, Stomach> = { safe: "ok", sick: "sick", severe: "severe" };
+
+function withoutItems(inventory: Item[], items: Item[]) {
+  return items.reduce((left, item) => {
+    const index = left.indexOf(item);
+    return index === -1 ? left : left.toSpliced(index, 1);
+  }, inventory);
+}
+
+function withReputation(state: SurvivalState, reputation: number): SurvivalState {
+  const value = clamp(reputation, -100, 100);
+  return { ...state, reputation: value, record: { ...state.record, wanted: state.record.wanted || isWanted(value) } };
+}
+
+const SQUAD_SIZE = 3;
 
 function consume(state: SurvivalState, item: Item): SurvivalState {
   const index = state.inventory.indexOf(item);
@@ -94,6 +116,22 @@ export function survivalReducer(state: SurvivalState, action: SurvivalAction): S
       };
     case "horde-held":
       return { ...state, record: { ...record, hordesHeld: Math.max(record.hordesHeld, action.wave) } };
+    case "deal": {
+      const { given, received, reputation } = action.deal;
+      const inventory = withoutItems(state.inventory, given ? [given] : []);
+      return withReputation({ ...state, inventory: received ? [...inventory, received] : inventory }, state.reputation + reputation);
+    }
+    case "hunters":
+      switch (action.outcome) {
+        case "won": // o esquadrão deixa a munição para trás
+          return { ...state, kills: state.kills + SQUAD_SIZE, inventory: [...state.inventory, "ammo"] };
+        case "pardoned":
+          return { ...state, inventory: withoutItems(state.inventory, action.paid), reputation: PARDONED_REPUTATION };
+        case "killed":
+          return { ...state, deaths: state.deaths + 1 };
+        default:
+          return state;
+      }
   }
 }
 

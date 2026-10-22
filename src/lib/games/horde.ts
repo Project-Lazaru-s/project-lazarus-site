@@ -50,6 +50,13 @@ export function createHorde(wave: number, random: Random): HordeState {
   };
 }
 
+export const AMMO_PER_BOX = 8;
+
+/** Caixas de munição da mochila (compradas dos Rovers ou largadas pelos caçadores) viram balas na horda. */
+export function withExtraAmmo(state: HordeState, boxes: number): HordeState {
+  return boxes > 0 ? { ...state, ammo: state.ammo + boxes * AMMO_PER_BOX } : state;
+}
+
 export function nextWave(state: HordeState, random: Random): HordeState {
   const next = createHorde(state.wave + 1, random);
   return { ...next, kills: state.kills };

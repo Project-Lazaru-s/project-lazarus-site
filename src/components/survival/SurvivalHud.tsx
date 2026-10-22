@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { items } from "@/content/items";
+import { isWanted } from "@/lib/games/negotiation";
 import {
   conditionMoodles,
   fearMoodle,
@@ -41,6 +42,11 @@ export function SurvivalHud({ state, onSedative, onUse, children }: Props) {
       <p className="font-stencil text-xl text-plate">Dia {state.day}</p>
       <p>Saque {lootForDay(state.day)}%</p>
       <p className="text-plate/60">{threatForDay(state.day)}</p>
+      {isWanted(state.reputation) && (
+        <p className="mt-1 rounded bg-lazarus px-1.5 py-0.5 text-center font-semibold tracking-widest text-plate uppercase">
+          Procurado · Rovers
+        </p>
+      )}
       {(state.kills > 0 || state.deaths > 0) && (
         <p className="mt-1 text-plate/60">
           Abates {state.kills} · Mortes {state.deaths}

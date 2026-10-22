@@ -44,6 +44,8 @@ describe("/ (home)", () => {
     expect(screen.getByRole("application", { name: /fontes de água/i })).toBeInTheDocument();
     expect(screen.getByRole("application", { name: /beco/i })).toBeInTheDocument();
     expect(screen.getByRole("application", { name: /farmácia/i })).toBeInTheDocument();
+    expect(screen.getByRole("application", { name: /sua voz/i })).toBeInTheDocument();
+    expect(screen.getByRole("application", { name: /acampamento dos rovers/i })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Carne fresca" })).toBeInTheDocument();
     expect(screen.getByRole("log", { name: /rádio/i })).toBeInTheDocument();
     expect(screen.getByRole("status", { name: /sobrevivente/i })).toHaveTextContent("Dia 0");

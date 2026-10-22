@@ -14,7 +14,15 @@ const sairaStencil = Saira_Stencil({
   fallback: ["Impact", "Arial Narrow", "sans-serif"],
 });
 
+// Base das URLs absolutas (imagens OpenGraph). Na Vercel vem do domínio de produção.
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "http://localhost:3000");
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: { default: `${site.name}: ${site.tagline}`, template: `%s | ${site.name}` },
   description: site.description,
 };

@@ -95,6 +95,46 @@ test("the dossier can be shared", async ({ page, context }) => {
   expect(await page.evaluate(() => navigator.clipboard.readText())).toContain("Project Lazarus");
 });
 
+test("Rovers: intimidating twice makes you wanted and the hunters come", async ({ page }) => {
+  await page.goto("/");
+  const scene = await start(page, "Acampamento dos Rovers");
+  await scene.getByRole("button", { name: "Intimidar" }).click();
+  await scene.getByRole("button", { name: "Intimidar" }).click();
+  await expect(scene.getByRole("heading", { name: "Procurado" })).toBeVisible();
+  await expect(hud(page)).toContainText(/procurado/i);
+  await scene.getByRole("button", { name: "Lutar" }).click();
+  await expect(page.getByRole("heading", { name: /Esquadrão abatido|Pego/ })).toBeVisible();
+});
+
+test("Fale baixo: without a microphone, the buttons still let you shout", async ({ page }) => {
+  await page.goto("/");
+  const scene = await start(page, "Sua voz e os infectados");
+  await expect(scene.getByText(/Sem microfone/)).toBeVisible();
+  await scene.getByRole("button", { name: "Gritar" }).dispatchEvent("pointerdown");
+  await expect(scene.getByText("Grito")).toBeVisible();
+  await expect(scene.getByText("!")).toHaveCount(3);
+  await scene.getByRole("button", { name: "Encerrar" }).click();
+  await expect(page.getByRole("heading", { name: "3 ouviram" })).toBeVisible();
+});
+
+test("the dossier links to a shareable card with a preview image", async ({ page, request }) => {
+  await page.goto("/");
+  const card = page.getByRole("link", { name: "Ver cartão" });
+  await card.scrollIntoViewIfNeeded();
+  await card.click();
+  await expect(page).toHaveURL(/\/dossie\/[a-z0-9-]+$/);
+  await expect(page.getByRole("heading", { name: "Carne fresca" })).toBeVisible();
+  const og = await page.locator('meta[property="og:image"]').getAttribute("content");
+  const image = await request.get(new URL(og!).pathname + new URL(og!).search);
+  expect(image.status()).toBe(200);
+  expect(image.headers()["content-type"]).toBe("image/png");
+});
+
+test("a forged dossier code is a 404", async ({ page }) => {
+  const response = await page.goto("/dossie/3c-n-1-4a-2-2-6-2-28-7");
+  expect(response?.status()).toBe(404);
+});
+
 test.describe("mobile", () => {
   test.use({ viewport: { width: 375, height: 812 }, hasTouch: true });
 

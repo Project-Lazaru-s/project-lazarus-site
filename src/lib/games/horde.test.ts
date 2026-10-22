@@ -1,12 +1,14 @@
 import { describe, expect, it } from "vitest";
 import {
   aimJitter,
+  AMMO_PER_BOX,
   createHorde,
   hitPart,
   nextWave,
   shoot,
   stepHorde,
   waveSize,
+  withExtraAmmo,
   type HordeState,
 } from "./horde";
 
@@ -133,5 +135,13 @@ describe("nextWave", () => {
     const next = nextWave(cleared, fixed);
     expect(next).toMatchObject({ wave: 2, kills: cleared.kills, status: "playing", ammo: createHorde(2, fixed).ammo });
     expect(next.zombies).toHaveLength(waveSize(2));
+  });
+});
+
+describe("withExtraAmmo", () => {
+  it("each ammo box adds bullets to the horde run", () => {
+    const state = createHorde(1, fixed);
+    expect(withExtraAmmo(state, 2).ammo).toBe(state.ammo + 2 * AMMO_PER_BOX);
+    expect(withExtraAmmo(state, 0)).toBe(state);
   });
 });
