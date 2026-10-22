@@ -20,6 +20,17 @@ export const links = {
   releasesApi: "https://api.github.com/repos/Project-Lazaru-s/project-lazarus-modpack/releases",
 } as const;
 
+export const requirements = [
+  { label: "Minecraft", value: "Java 1.20.1" },
+  { label: "Loader", value: "Forge 47.4.10" },
+  { label: "Java", value: "17" },
+  { label: "RAM", value: "8 GB (mínimo 6 GB)" },
+  { label: "Mods", value: "102 do CurseForge + 8 Lazarus" },
+  { label: "Extras", value: "4 resource packs, 3 shaders" },
+  { label: "Modos", value: "Singleplayer e servidor" },
+  { label: "Voz", value: "Simple Voice Chat" },
+] as const;
+
 export type NavItem = { href: string; label: string };
 
 export const navItems: NavItem[] = [
