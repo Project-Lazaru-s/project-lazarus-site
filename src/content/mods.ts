@@ -6,6 +6,8 @@ export type LazarusMod = {
   features: string[];
   repo: string;
   banner: string;
+  /** Âncora da seção da landing onde o mod vira minigame. */
+  play?: string;
 };
 
 const mod = (slug: string, data: Omit<LazarusMod, "slug" | "repo" | "banner">): LazarusMod => ({
@@ -17,6 +19,7 @@ const mod = (slug: string, data: Omit<LazarusMod, "slug" | "repo" | "banner">): 
 
 export const lazarusMods: LazarusMod[] = [
   mod("events", {
+    play: "horda",
     name: "Lazarus Events",
     version: "1.4.1",
     summary:
@@ -32,6 +35,7 @@ export const lazarusMods: LazarusMod[] = [
     ],
   }),
   mod("npcs", {
+    play: "rovers",
     name: "Lazarus NPCs",
     version: "1.20.0",
     summary:
@@ -46,9 +50,11 @@ export const lazarusMods: LazarusMod[] = [
     ],
   }),
   mod("stealth", {
+    play: "silencio",
     name: "Lazarus Stealth",
     version: "0.3.0",
-    summary: "Percepção dos infectados e de humanos, ruído (inclusive a voz), finalização furtiva e árvore Furtividade.",
+    summary:
+      "Percepção dos infectados e de humanos, ruído (inclusive a voz), finalização furtiva e árvore Furtividade.",
     features: [
       "Postura, cobertura, luz, peso e barulho decidem se você é percebido.",
       "Passos em vidro ou metal fazem mais barulho que na grama; correr sobe um nível de ruído.",
@@ -59,10 +65,10 @@ export const lazarusMods: LazarusMod[] = [
     ],
   }),
   mod("moodles", {
+    play: "sede",
     name: "Lazarus Moodles",
     version: "1.17.0",
-    summary:
-      "Moodles de medo, dor, exaustão, alívio, sangramento, infecção e disenteria; sedativos; árvore Coragem.",
+    summary: "Moodles de medo, dor, exaustão, alívio, sangramento, infecção e disenteria; sedativos; árvore Coragem.",
     features: [
       "Medo (Tense, Fearful, Panicked): mira tremendo, respiração pesada, visão escurecendo.",
       "Dor e exaustão com efeitos reais na mira e na stamina.",
@@ -88,6 +94,7 @@ export const lazarusMods: LazarusMod[] = [
     features: ["Mapas de papel com anotações à mão.", "Paleta de 8 cores.", "GPS."],
   }),
   mod("scarcity", {
+    play: "farmacia",
     name: "Lazarus Scarcity",
     version: "0.2.0",
     summary: "Saque cada vez mais escasso com os dias.",
@@ -97,6 +104,7 @@ export const lazarusMods: LazarusMod[] = [
     ],
   }),
   mod("status", {
+    play: "dossie",
     name: "Lazarus Status",
     version: "1.1.2",
     summary: "Painel de status do sobrevivente: dias, abates e mortes.",

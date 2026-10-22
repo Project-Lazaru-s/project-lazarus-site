@@ -47,3 +47,18 @@ test("404: the chase can be won by mashing the space bar", async ({ page }) => {
   }
   await expect(page.getByRole("heading", { name: "Você escapou." })).toBeVisible();
 });
+
+test("Baixar: the install checklist is remembered after a reload", async ({ page }) => {
+  await page.goto("/baixar");
+  await page.getByRole("checkbox").first().check();
+  await expect(page.getByText("1 de 3")).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole("checkbox").first()).toBeChecked();
+});
+
+test("Mods: 'Jogue no site' lands on the minigame of that mod", async ({ page }) => {
+  await page.goto("/mods/stealth");
+  await page.getByRole("link", { name: "Jogue no site" }).click();
+  await expect(page).toHaveURL(/\/#silencio$/);
+  await expect(page.locator("#silencio")).toBeInViewport();
+});

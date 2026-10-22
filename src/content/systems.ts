@@ -3,12 +3,15 @@ export type System = {
   title: string;
   /** Mod Lazarus responsável, quando houver (slug de content/mods). */
   mod?: string;
+  /** Sprite em pixel art de public/images/game. */
+  icon: string;
   points: string[];
 };
 
 export const systems: System[] = [
   {
     id: "infectados",
+    icon: "/images/game/zombie-front.png",
     title: "Infectados e hordas",
     points: [
       "Walkers, runners, crawlers e especiais, além de zumbis vestidos por profissão: civil, policial, bombeiro, operário, hospitalar, militar e SWAT.",
@@ -21,6 +24,7 @@ export const systems: System[] = [
   },
   {
     id: "furtividade",
+    icon: "/images/game/survivor-crouch.png",
     title: "Furtividade",
     mod: "stealth",
     points: [
@@ -33,6 +37,7 @@ export const systems: System[] = [
   },
   {
     id: "sobrevivencia",
+    icon: "/images/game/water-can.png",
     title: "Sobrevivência",
     points: [
       "Sede e temperatura; o calor extremo cobra água, não vida.",
@@ -45,6 +50,7 @@ export const systems: System[] = [
   },
   {
     id: "mente",
+    icon: "/images/game/moodle-fear.png",
     title: "Mente: os moodles",
     mod: "moodles",
     points: [
@@ -57,6 +63,7 @@ export const systems: System[] = [
   },
   {
     id: "humanos",
+    icon: "/images/game/trader-rovers.png",
     title: "Humanos e facções",
     mod: "npcs",
     points: [
@@ -69,6 +76,7 @@ export const systems: System[] = [
   },
   {
     id: "eventos",
+    icon: "/images/game/radio.png",
     title: "Eventos no mapa",
     mod: "events",
     points: [
@@ -81,6 +89,7 @@ export const systems: System[] = [
   },
   {
     id: "mundo",
+    icon: "/images/game/chest-closed.png",
     title: "Mundo",
     points: [
       "Cidades inteiras geradas pelo CityWorld: prédios, metrô, ruas.",
@@ -114,8 +123,17 @@ export const skillTrees: SkillTree[] = [
   },
   { name: "Armas de fogo", idea: "Recuo, recarga, disciplina." },
   { name: "Medicina", idea: "Hemostasia, cirurgião." },
-  { name: "Negociação", idea: "Barganha, pechincha, diplomata, intimidar, comandante." },
-  { name: "Mecânica", idea: "Consertar veículos, funilaria, ligação direta, economia de combustível." },
+  {
+    name: "Negociação",
+    idea: "Barganha, pechincha, diplomata, intimidar, comandante.",
+  },
+  {
+    name: "Mecânica",
+    idea: "Consertar veículos, funilaria, ligação direta, economia de combustível.",
+  },
   { name: "Furtividade", idea: "Do Lazarus Stealth." },
-  { name: "Coragem", idea: "Do Lazarus Moodles: resistir ao medo e ao pânico." },
+  {
+    name: "Coragem",
+    idea: "Do Lazarus Moodles: resistir ao medo e ao pânico.",
+  },
 ];

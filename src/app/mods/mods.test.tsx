@@ -12,7 +12,10 @@ describe("/mods", () => {
     for (const mod of lazarusMods) {
       const card = screen.getByRole("article", { name: mod.name });
       expect(within(card).getByText(`v${mod.version}`)).toBeInTheDocument();
-      expect(within(card).getByRole("link", { name: new RegExp(mod.name) })).toHaveAttribute("href", `/mods/${mod.slug}`);
+      expect(within(card).getByRole("link", { name: new RegExp(mod.name) })).toHaveAttribute(
+        "href",
+        `/mods/${mod.slug}`,
+      );
     }
   });
 });
@@ -31,6 +34,16 @@ describe("/mods/[slug]", () => {
       "href",
       "https://github.com/Project-Lazaru-s/lazarus-stealth",
     );
+  });
+
+  it("links to the landing minigame that shows the mod", async () => {
+    render(await ModPage(params("stealth")));
+    expect(screen.getByRole("link", { name: /jogue no site/i })).toHaveAttribute("href", "/#silencio");
+  });
+
+  it("has no play link for mods without a minigame", async () => {
+    render(await ModPage(params("maps")));
+    expect(screen.queryByRole("link", { name: /jogue no site/i })).not.toBeInTheDocument();
   });
 
   it("returns 404 for an unknown mod", async () => {

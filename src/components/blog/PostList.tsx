@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { Post } from "@/lib/blog/posts";
+import { type Post, readingMinutes } from "@/lib/blog/posts";
 import { formatDate } from "@/lib/format";
 
 export function PostList({ posts }: { posts: Post[] }) {
@@ -8,10 +8,16 @@ export function PostList({ posts }: { posts: Post[] }) {
   return (
     <ul className="grid gap-6">
       {posts.map((post) => (
-        <li key={post.slug} className="rounded border border-rust/40 bg-asphalt p-6 transition hover:border-sunset">
-          <time dateTime={post.date} className="text-sm text-sunset">
-            {formatDate(post.date)}
-          </time>
+        <li
+          key={post.slug}
+          className="reveal rounded border border-rust/40 bg-asphalt p-6 transition hover:border-sunset"
+        >
+          <p className="text-sm text-plate/50">
+            <time dateTime={post.date} className="text-sunset">
+              {formatDate(post.date)}
+            </time>{" "}
+            · {readingMinutes(post.content)} min de leitura
+          </p>
           <h2 className="mt-1 font-stencil text-2xl">
             <Link href={`/blog/${post.slug}`} className="text-plate hover:text-sunset">
               {post.title}

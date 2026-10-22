@@ -22,11 +22,11 @@ export default function CreditsPage() {
           </h2>
           <ul className="mt-4 grid gap-4 sm:grid-cols-2">
             {authors.map((person) => (
-              <li key={person.name} className="rounded border border-rust/40 bg-asphalt p-5">
-                <a href={person.url} className="font-stencil text-xl text-lazarus hover:underline">
+              <li key={person.name} className="reveal dogtag-card plate-tilt">
+                <a href={person.url} className="font-stencil text-2xl text-lazarus hover:underline">
                   {person.name}
                 </a>
-                <p className="mt-1 text-sm text-plate/70">{person.role}</p>
+                <p className="mt-1 font-mono text-xs tracking-wider text-asphalt-deep/75 uppercase">{person.role}</p>
               </li>
             ))}
           </ul>
@@ -45,7 +45,7 @@ export default function CreditsPage() {
           </p>
           <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {thirdPartyMods.map(({ group, mods }) => (
-              <div key={group}>
+              <div key={group} className="reveal">
                 <h3 className="text-sm tracking-widest text-sunset uppercase">{group}</h3>
                 <ul className="mt-2 space-y-1 text-plate/80">
                   {mods.map((mod) => (

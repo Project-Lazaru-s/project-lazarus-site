@@ -2,7 +2,7 @@ import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { getAllPosts, getPost, parsePost } from "./posts";
+import { getAllPosts, getPost, parsePost, readingMinutes } from "./posts";
 
 const post = (frontmatter: string, body = "Corpo do post.") => `---\n${frontmatter}\n---\n${body}\n`;
 
@@ -60,5 +60,16 @@ describe("posts on disk", () => {
 
   it("rejects slugs that try to leave the posts folder", () => {
     expect(getPost("../segredo", dir)).toBeUndefined();
+  });
+});
+
+describe("readingMinutes", () => {
+  it("reads about 200 words a minute, rounding up", () => {
+    expect(readingMinutes("palavra ".repeat(200))).toBe(1);
+    expect(readingMinutes("palavra ".repeat(201))).toBe(2);
+  });
+
+  it("never says zero minutes", () => {
+    expect(readingMinutes("")).toBe(1);
   });
 });

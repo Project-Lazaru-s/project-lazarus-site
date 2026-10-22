@@ -14,7 +14,11 @@ export function FactionCard({ faction }: { faction: Faction }) {
   const titleId = `faccao-${faction.slug}`;
 
   return (
-    <article id={faction.slug} aria-labelledby={titleId} className="faction-card scroll-mt-24 [perspective:1600px]">
+    <article
+      id={faction.slug}
+      aria-labelledby={titleId}
+      className="reveal faction-card scroll-mt-24 [perspective:1600px]"
+    >
       <div className={`faction-card-inner grid ${flipped ? "is-flipped" : ""}`}>
         <div
           data-face="front"
@@ -81,7 +85,10 @@ export function FactionCard({ faction }: { faction: Faction }) {
             </div>
             <div className="relative mt-1 h-4 font-mono text-[10px]">
               <span className="absolute left-0">-100</span>
-              <span className="absolute -translate-x-1/2 font-semibold text-lazarus" style={{ left: onScale(WANTED_AT) }}>
+              <span
+                className="absolute -translate-x-1/2 font-semibold text-lazarus"
+                style={{ left: onScale(WANTED_AT) }}
+              >
                 {WANTED_AT} procurado
               </span>
               <span className="absolute right-0">+100</span>

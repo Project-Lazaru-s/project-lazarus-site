@@ -79,11 +79,15 @@ export default function HomePage() {
         </div>
       </DaySection>
 
-      <DaySection day={3} className="mx-auto grid max-w-6xl gap-8 px-4 py-24 lg:grid-cols-[1fr_1.4fr] lg:items-center">
+      <DaySection
+        day={3}
+        id="silencio"
+        className="mx-auto grid max-w-6xl gap-8 px-4 py-24 lg:grid-cols-[1fr_1.4fr] lg:items-center"
+      >
         <Chapter day={3} title="Faça silêncio. Eles escutam.">
           <p>
-            No dia 3 os sentidos deles ligam. Postura, luz e barulho decidem se você é percebido. Até a sua voz no Simple
-            Voice Chat vira ruído: sussurrar chega a 2,5 blocos, falar a 10, gritar a 18.
+            No dia 3 os sentidos deles ligam. Postura, luz e barulho decidem se você é percebido. Até a sua voz no
+            Simple Voice Chat vira ruído: sussurrar chega a 2,5 blocos, falar a 10, gritar a 18.
           </p>
           <Link href="/mods/stealth" className="mt-3 inline-block text-sm text-sunset hover:underline">
             Lazarus Stealth →
@@ -92,7 +96,11 @@ export default function HomePage() {
         <StealthGame />
       </DaySection>
 
-      <DaySection day={4} className="mx-auto grid max-w-6xl gap-8 px-4 py-24 lg:grid-cols-[1.4fr_1fr] lg:items-center">
+      <DaySection
+        day={4}
+        id="fale-baixo"
+        className="mx-auto grid max-w-6xl gap-8 px-4 py-24 lg:grid-cols-[1.4fr_1fr] lg:items-center"
+      >
         <VoiceGame />
         <Chapter day={4} title="Fale baixo.">
           <p>
@@ -102,7 +110,11 @@ export default function HomePage() {
         </Chapter>
       </DaySection>
 
-      <DaySection day={5} className="mx-auto grid max-w-6xl gap-8 px-4 py-24 lg:grid-cols-[1.4fr_1fr] lg:items-center">
+      <DaySection
+        day={5}
+        id="sede"
+        className="mx-auto grid max-w-6xl gap-8 px-4 py-24 lg:grid-cols-[1.4fr_1fr] lg:items-center"
+      >
         <WaterGame />
         <Chapter day={5} title="Não beba essa água.">
           <p>
@@ -115,7 +127,11 @@ export default function HomePage() {
         </Chapter>
       </DaySection>
 
-      <DaySection day={6} className="mx-auto grid max-w-6xl gap-8 px-4 py-24 lg:grid-cols-[1.4fr_1fr] lg:items-center">
+      <DaySection
+        day={6}
+        id="radio"
+        className="mx-auto grid max-w-6xl gap-8 px-4 py-24 lg:grid-cols-[1.4fr_1fr] lg:items-center"
+      >
         <Radio />
         <Chapter day={6} title="O rádio chia à noite.">
           <p>
@@ -125,14 +141,17 @@ export default function HomePage() {
         </Chapter>
       </DaySection>
 
-      <DaySection day={7} className="mx-auto max-w-6xl space-y-10 px-4 py-24">
+      <DaySection day={7} id="bau" className="mx-auto max-w-6xl space-y-10 px-4 py-24">
         <Chapter day={7} title="O saque começa a sumir.">
-          <p>A partir de agora, cada baú vem mais vazio. Este ainda está trancado. Abra para ver o que te espera lá dentro.</p>
+          <p>
+            A partir de agora, cada baú vem mais vazio. Este ainda está trancado. Abra para ver o que te espera lá
+            dentro.
+          </p>
         </Chapter>
         <ChestGame />
       </DaySection>
 
-      <DaySection day={10} className="mx-auto max-w-6xl space-y-8 px-4 py-24">
+      <DaySection day={10} id="horda" className="mx-auto max-w-6xl space-y-8 px-4 py-24">
         <Chapter day={10} title="A primeira horda.">
           <p>
             Ela vem pequena. A próxima vem 15% maior, e a seguinte também. Cabeça e corpo são alvos diferentes: mire na
@@ -146,7 +165,11 @@ export default function HomePage() {
         </div>
       </DaySection>
 
-      <DaySection day={13} className="mx-auto grid max-w-6xl gap-8 px-4 py-24 lg:grid-cols-[1fr_1.4fr] lg:items-center">
+      <DaySection
+        day={13}
+        id="por-tras"
+        className="mx-auto grid max-w-6xl gap-8 px-4 py-24 lg:grid-cols-[1fr_1.4fr] lg:items-center"
+      >
         <Chapter day={13} title="Sem fazer barulho.">
           <p>
             Tiro chama a rua inteira. Por trás, uma finalização furtiva resolve em silêncio, se você acertar o momento.
@@ -158,7 +181,11 @@ export default function HomePage() {
         </Flashlight>
       </DaySection>
 
-      <DaySection day={15} className="mx-auto grid max-w-6xl gap-8 px-4 py-24 lg:grid-cols-[1.4fr_1fr] lg:items-center">
+      <DaySection
+        day={15}
+        id="farmacia"
+        className="mx-auto grid max-w-6xl gap-8 px-4 py-24 lg:grid-cols-[1.4fr_1fr] lg:items-center"
+      >
         <LootGame />
         <Chapter day={15} title="A farmácia já foi saqueada.">
           <p>
@@ -171,11 +198,15 @@ export default function HomePage() {
         </Chapter>
       </DaySection>
 
-      <DaySection day={20} className="mx-auto grid max-w-6xl gap-8 px-4 py-24 lg:grid-cols-[1fr_1.4fr] lg:items-center">
+      <DaySection
+        day={20}
+        id="rovers"
+        className="mx-auto grid max-w-6xl gap-8 px-4 py-24 lg:grid-cols-[1fr_1.4fr] lg:items-center"
+      >
         <Chapter day={20} title="Os vivos também cobram.">
           <p>
-            Facções guardam a sua reputação, de -100 a +100. Troque com os Rovers, pechinche ou intimide. Desça até -40 e
-            caçadores de recompensa vão até a última posição em que te viram.
+            Facções guardam a sua reputação, de -100 a +100. Troque com os Rovers, pechinche ou intimide. Desça até -40
+            e caçadores de recompensa vão até a última posição em que te viram.
           </p>
           <Link href="/faccoes" className="mt-3 inline-block text-sm text-sunset hover:underline">
             Conheça as facções →
@@ -184,7 +215,7 @@ export default function HomePage() {
         <TraderGame />
       </DaySection>
 
-      <DaySection day={60} className="border-y border-rust/40 bg-asphalt">
+      <DaySection day={60} id="dossie" className="border-y border-rust/40 bg-asphalt">
         <div className="mx-auto grid max-w-6xl gap-10 px-4 py-20 lg:grid-cols-2 lg:items-center">
           <div>
             <Chapter day={60} title="Ainda de pé?">

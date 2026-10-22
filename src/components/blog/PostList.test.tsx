@@ -20,6 +20,11 @@ describe("PostList", () => {
     expect(screen.getByText(post.summary)).toBeInTheDocument();
   });
 
+  it("tells how long the read is", () => {
+    render(<PostList posts={[post]} />);
+    expect(screen.getByText(/1 min de leitura/)).toBeInTheDocument();
+  });
+
   it("says so when there are no posts yet", () => {
     render(<PostList posts={[]} />);
     expect(screen.getByText(/nenhum post/i)).toBeInTheDocument();

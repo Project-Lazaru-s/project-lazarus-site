@@ -28,7 +28,7 @@ export default function FactionsPage() {
         </h2>
         <ul className="mt-4 max-w-3xl space-y-2 text-plate/80">
           {wantedSystem.map((rule) => (
-            <li key={rule} className="border-l-2 border-lazarus pl-4">
+            <li key={rule} className="reveal border-l-2 border-lazarus pl-4">
               {rule}
             </li>
           ))}

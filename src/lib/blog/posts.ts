@@ -19,7 +19,8 @@ const SLUG = /^[a-z0-9-]+$/;
 
 function required(slug: string, data: Record<string, unknown>, field: string) {
   const value = data[field];
-  if (value === undefined || value === "") throw new Error(`Post "${slug}": campo "${field}" obrigatório no frontmatter`);
+  if (value === undefined || value === "")
+    throw new Error(`Post "${slug}": campo "${field}" obrigatório no frontmatter`);
   return value;
 }
 
@@ -51,4 +52,11 @@ export function getPost(slug: string, dir = POSTS_DIR): Post | undefined {
   if (!existsSync(file)) return undefined;
   const post = parsePost(slug, readFileSync(file, "utf8"));
   return post.draft ? undefined : post;
+}
+
+const WORDS_PER_MINUTE = 200;
+
+export function readingMinutes(content: string) {
+  const words = content.split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.ceil(words / WORDS_PER_MINUTE));
 }

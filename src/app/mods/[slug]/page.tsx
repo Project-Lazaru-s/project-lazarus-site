@@ -33,22 +33,32 @@ export default async function ModPage({ params }: PageProps<"/mods/[slug]">) {
       />
       <header className="mt-8 flex flex-wrap items-baseline gap-4">
         <h1 className="font-stencil text-4xl text-plate sm:text-5xl">{mod.name}</h1>
-        <span className="rounded bg-badge px-2 py-0.5 text-sm text-plate">v{mod.version}</span>
+        <span className="dogtag text-sm">v{mod.version}</span>
       </header>
       <p className="mt-4 text-lg text-plate/80">{mod.summary}</p>
       <ul className="mt-8 space-y-3">
         {mod.features.map((feature) => (
-          <li key={feature} className="border-l-2 border-lazarus pl-4 text-plate/85">
+          <li key={feature} className="reveal border-l-2 border-lazarus pl-4 text-plate/85">
             {feature}
           </li>
         ))}
       </ul>
-      <a
-        href={mod.repo}
-        className="mt-10 inline-block rounded border border-plate/40 px-4 py-2 text-sm text-plate hover:border-sunset hover:text-sunset"
-      >
-        Código no GitHub
-      </a>
+      <div className="mt-10 flex flex-wrap gap-3">
+        {mod.play && (
+          <Link
+            href={`/#${mod.play}`}
+            className="rounded bg-lazarus px-4 py-2 text-sm font-semibold text-plate hover:bg-lazarus/85"
+          >
+            Jogue no site
+          </Link>
+        )}
+        <a
+          href={mod.repo}
+          className="rounded border border-plate/40 px-4 py-2 text-sm text-plate hover:border-sunset hover:text-sunset"
+        >
+          Código no GitHub
+        </a>
+      </div>
     </article>
   );
 }

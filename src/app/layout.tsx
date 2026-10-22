@@ -25,7 +25,10 @@ const siteUrl =
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: { default: `${site.name}: ${site.tagline}`, template: `%s | ${site.name}` },
+  title: {
+    default: `${site.name}: ${site.tagline}`,
+    template: `%s | ${site.name}`,
+  },
   description: site.description,
 };
 
@@ -45,6 +48,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
+        {/* Granulação de filme e vinheta leve no site inteiro. */}
+        <div aria-hidden className="pointer-events-none fixed inset-0 z-50">
+          <div className="grain absolute inset-0 opacity-[0.05]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_60%,rgb(0_0_0/0.35)_100%)]" />
+        </div>
       </body>
     </html>
   );

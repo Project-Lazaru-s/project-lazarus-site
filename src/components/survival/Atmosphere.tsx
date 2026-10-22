@@ -1,6 +1,6 @@
 /**
  * Camadas fixas por cima da página: a noite cai com os dias (Hardcore True Darkness)
- * e o medo fecha a visão com vinheta. Granulação de filme por cima de tudo.
+ * e o medo fecha a visão com vinheta. (A granulação de filme é do layout, vale para o site todo.)
  */
 export function Atmosphere({ day, fear }: { day: number; fear: number }) {
   const night = Math.min(day / 60, 1);
@@ -17,7 +17,6 @@ export function Atmosphere({ day, fear }: { day: number; fear: number }) {
           background: "radial-gradient(ellipse at center, transparent 45%, rgb(20 0 0 / 0.85) 100%)",
         }}
       />
-      <div className="grain absolute inset-0" />
     </div>
   );
 }

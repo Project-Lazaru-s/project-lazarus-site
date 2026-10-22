@@ -17,9 +17,22 @@ describe("/modpack", () => {
     expect(within(stealth).getByRole("link", { name: /lazarus stealth/i })).toHaveAttribute("href", "/mods/stealth");
   });
 
+  it("has a side index tuned to each system", () => {
+    render(<ModpackPage />);
+    const index = screen.getByRole("navigation", { name: /sistemas/i });
+    for (const system of systems) {
+      expect(within(index).getByRole("link", { name: new RegExp(system.title) })).toHaveAttribute(
+        "href",
+        `#${system.id}`,
+      );
+    }
+  });
+
   it("lists the skill trees", () => {
     render(<ModpackPage />);
-    const table = screen.getByRole("table", { name: /árvores de habilidades/i });
+    const table = screen.getByRole("table", {
+      name: /árvores de habilidades/i,
+    });
     expect(within(table).getAllByRole("row")).toHaveLength(skillTrees.length + 1);
   });
 

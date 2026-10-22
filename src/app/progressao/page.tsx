@@ -20,8 +20,15 @@ export default function ProgressionPage() {
       <DaySlider />
       <ol aria-label="Linha do tempo da dificuldade" className="mx-auto max-w-3xl px-4 pb-20">
         {progression.map((stage) => (
-          <li key={stage.from} aria-label={stage.label} className="relative border-l-2 border-rust/60 pb-10 pl-8 last:pb-0">
-            <span aria-hidden className="absolute top-1 -left-[9px] size-4 rounded-full border-2 border-asphalt-deep bg-lazarus" />
+          <li
+            key={stage.from}
+            aria-label={stage.label}
+            className="reveal relative border-l-2 border-rust/60 pb-10 pl-8 last:pb-0"
+          >
+            <span
+              aria-hidden
+              className="absolute top-1 -left-[9px] size-4 rounded-full border-2 border-asphalt-deep bg-lazarus"
+            />
             <h2 className="font-stencil text-2xl text-sunset">{stage.label}</h2>
             <ul className="mt-2 space-y-1 text-plate/85">
               {stage.threats.map((threat) => (
