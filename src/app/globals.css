@@ -21,3 +21,77 @@ body {
   background: var(--color-asphalt-deep);
   color: var(--color-plate);
 }
+
+/* Placa de metal: manchas de ferrugem e quatro rebites, só com gradientes. */
+.plate {
+  background:
+    radial-gradient(circle at 10px 10px, #6d6556 2.5px, transparent 3.5px),
+    radial-gradient(circle at calc(100% - 10px) 10px, #6d6556 2.5px, transparent 3.5px),
+    radial-gradient(circle at 10px calc(100% - 10px), #6d6556 2.5px, transparent 3.5px),
+    radial-gradient(circle at calc(100% - 10px) calc(100% - 10px), #6d6556 2.5px, transparent 3.5px),
+    radial-gradient(ellipse at 85% 90%, rgb(138 75 42 / 0.45), transparent 45%),
+    radial-gradient(ellipse at 5% 15%, rgb(181 101 47 / 0.3), transparent 35%),
+    var(--color-plate);
+  box-shadow: 0 6px 24px rgb(0 0 0 / 0.5);
+}
+
+/* Texto renderizado de Markdown (blog e changelog). */
+.prose-lazarus {
+  color: rgb(232 226 208 / 0.85);
+  line-height: 1.75;
+}
+.prose-lazarus > * + * {
+  margin-top: 1em;
+}
+.prose-lazarus h2,
+.prose-lazarus h3 {
+  margin-top: 1.6em;
+  font-family: var(--font-stencil);
+  color: var(--color-plate);
+}
+.prose-lazarus h2 {
+  font-size: 1.6rem;
+}
+.prose-lazarus h3 {
+  font-size: 1.25rem;
+}
+.prose-lazarus a {
+  color: var(--color-sunset);
+  text-decoration: underline;
+}
+.prose-lazarus strong {
+  color: var(--color-plate);
+}
+.prose-lazarus ul {
+  list-style: square;
+  padding-left: 1.5em;
+}
+.prose-lazarus ol {
+  list-style: decimal;
+  padding-left: 1.5em;
+}
+.prose-lazarus li + li {
+  margin-top: 0.4em;
+}
+.prose-lazarus code {
+  background: rgb(0 0 0 / 0.4);
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+.prose-lazarus blockquote {
+  border-left: 3px solid var(--color-rust);
+  padding-left: 1em;
+  color: rgb(232 226 208 / 0.7);
+}
+.prose-lazarus table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95em;
+}
+.prose-lazarus th,
+.prose-lazarus td {
+  border: 1px solid rgb(138 75 42 / 0.5);
+  padding: 0.4em 0.7em;
+  text-align: left;
+}
