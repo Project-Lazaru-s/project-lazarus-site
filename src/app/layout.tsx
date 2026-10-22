@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { Inter, Saira_Stencil } from "next/font/google";
 import { bootScript } from "@/components/layout/boot";
@@ -48,6 +49,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
+        <Analytics />
         {/* Granulação de filme e vinheta leve no site inteiro. */}
         <div aria-hidden className="pointer-events-none fixed inset-0 z-50">
           <div className="grain absolute inset-0 opacity-[0.05]" />
