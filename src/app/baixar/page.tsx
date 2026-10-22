@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 import { CopyButton } from "@/components/download/CopyButton";
 import { InstallChecklist } from "@/components/download/InstallChecklist";
 import { PcCheck } from "@/components/download/PcCheck";
@@ -71,17 +71,17 @@ export default async function DownloadPage() {
         <Step title="Pelo CurseForge (recomendado)">
           <InstallChecklist
             steps={[
-              <>
+              <Fragment key="zip">
                 Baixe <Code>{zip}</Code> da{" "}
                 <a href={links.download} className="text-sunset underline">
                   release mais recente
                 </a>
                 .
-              </>,
-              <>
+              </Fragment>,
+              <Fragment key="import">
                 No CurseForge: <strong>Create Custom Profile → Import</strong> e escolha o zip. Ele baixa os mods,
                 resource packs e shaders de terceiros e copia as configs, os scripts e os mods Lazarus.
-              </>,
+              </Fragment>,
               "Reserve 8 GB de RAM (6 GB no mínimo).",
             ]}
           />
