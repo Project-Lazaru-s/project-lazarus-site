@@ -25,7 +25,7 @@ export const requirements = [
   { label: "Loader", value: "Forge 47.4.10" },
   { label: "Java", value: "17" },
   { label: "RAM", value: "8 GB (mínimo 6 GB)" },
-  { label: "Mods", value: "102 do CurseForge + 8 Lazarus" },
+  { label: "Mods", value: "109 do CurseForge + 8 Lazarus" },
   { label: "Extras", value: "4 resource packs, 3 shaders" },
   { label: "Modos", value: "Singleplayer e servidor" },
   { label: "Voz", value: "Simple Voice Chat" },
