@@ -19,6 +19,7 @@ describe("/faccoes", () => {
     for (const name of ["Haven", "Rovers", "Wardens"]) {
       expect(screen.getByRole("img", { name: new RegExp(`skins dos npcs ${name}`, "i") })).toBeInTheDocument();
     }
+    expect(screen.getByRole("img", { name: /gangues rivais/i })).toBeInTheDocument();
   });
 
   it("explains the wanted system", () => {

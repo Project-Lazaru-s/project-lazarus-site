@@ -47,7 +47,7 @@ export function FactionCard({ faction }: { faction: Faction }) {
               width={faction.image.width}
               height={faction.image.height}
               sizes="(min-width: 1024px) 50vw, 100vw"
-              className="mt-6 rounded [image-rendering:pixelated]"
+              className={`mt-6 rounded ${faction.image.illustration ? "" : "[image-rendering:pixelated]"}`}
             />
           )}
         </div>

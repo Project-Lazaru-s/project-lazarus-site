@@ -3,7 +3,8 @@ export type Faction = {
   name: string;
   profile: string;
   details: string[];
-  image?: { src: string; width: number; height: number; alt: string };
+  /** Folha de skins em pixel art; `illustration` marca arte pintada, que não deve ser pixelada. */
+  image?: { src: string; width: number; height: number; alt: string; illustration?: boolean };
 };
 
 export const factions: Faction[] = [
@@ -64,6 +65,13 @@ export const factions: Faction[] = [
     name: "Gangues",
     profile: "8 gangues com nomes gerados por território, com esconderijos em prédios.",
     details: ["Marcam o território com placas “TURF / KEEP OUT”.", "Esconderijos podem ser revelados interrogando rendidos."],
+    image: {
+      src: "/images/factions/gangues.png",
+      width: 1260,
+      height: 700,
+      alt: "Ilustração de membros de gangues rivais numa rua em ruínas ao pôr do sol, diante de uma placa TURF / KEEP OUT",
+      illustration: true,
+    },
   },
   {
     slug: "the-hollow",
