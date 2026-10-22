@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Saira_Stencil } from "next/font/google";
+import { bootScript } from "@/components/layout/boot";
+import { BootScreen } from "@/components/layout/BootScreen";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { site } from "@/content/site";
@@ -29,8 +31,17 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="pt-BR" className={`${inter.variable} ${sairaStencil.variable} h-full antialiased`}>
+    <html
+      lang="pt-BR"
+      className={`${inter.variable} ${sairaStencil.variable} h-full antialiased`}
+      // O bootScript liga data-boot antes da hidratação.
+      suppressHydrationWarning
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: bootScript }} />
+      </head>
       <body className="flex min-h-full flex-col font-sans">
+        <BootScreen />
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />

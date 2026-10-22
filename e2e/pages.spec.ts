@@ -18,3 +18,32 @@ test("Baixar: the PC check gives a verdict in a real browser", async ({ page }) 
   ).toBeVisible();
   await expect(page.getByRole("list", { name: "O que o navegador revelou" }).getByRole("listitem")).toHaveCount(3);
 });
+
+test("the boot screen shows on the first page of the session only", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByText("Gerando mundo…")).toBeVisible();
+  await expect(page.getByText("Gerando mundo…")).toBeHidden({ timeout: 4_000 });
+  await page.getByRole("navigation", { name: "Navegação principal" }).getByRole("link", { name: "Facções" }).click();
+  await expect(page).toHaveURL("/faccoes");
+  await expect(page.getByText("Gerando mundo…")).toBeHidden();
+});
+
+test("Facções: a card flips to its details and the bounty threshold", async ({ page }) => {
+  await page.goto("/faccoes");
+  await page.getByRole("button", { name: "Ver detalhes de Rovers" }).click();
+  const back = page.locator("#rovers [data-face=back]");
+  await expect(back).toContainText("Rivais dos Wardens.");
+  await expect(back.getByRole("img", { name: /procurado em -40/ })).toBeVisible();
+  await back.getByRole("button", { name: "Voltar" }).click();
+  await expect(page.locator("#rovers [data-face=front]")).not.toHaveAttribute("inert", "");
+});
+
+test("404: the chase can be won by mashing the space bar", async ({ page }) => {
+  await page.goto("/nao-existe");
+  await page.getByRole("button", { name: "Fugir" }).click();
+  for (let i = 0; i < 30 && !(await page.getByRole("heading", { name: "Você escapou." }).isVisible()); i++) {
+    await page.keyboard.press("Space");
+    await page.waitForTimeout(60);
+  }
+  await expect(page.getByRole("heading", { name: "Você escapou." })).toBeVisible();
+});
