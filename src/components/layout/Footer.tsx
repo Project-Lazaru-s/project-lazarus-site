@@ -1,4 +1,4 @@
-import { links, site } from "@/content/site";
+import { authors, links, site } from "@/content/site";
 
 export function Footer() {
   return (
@@ -7,9 +7,14 @@ export function Footer() {
         <div className="space-y-1">
           <p>
             {site.name} {site.version}, por{" "}
-            <a href={site.author.github} className="underline hover:text-plate">
-              {site.author.name}
-            </a>
+            {authors.map((author, i) => (
+              <span key={author.name}>
+                {i > 0 && " e "}
+                <a href={author.url} className="underline hover:text-plate">
+                  {author.name}
+                </a>
+              </span>
+            ))}
             .
           </p>
           <p>Modpack, mods Lazarus, configs e scripts: todos os direitos reservados.</p>

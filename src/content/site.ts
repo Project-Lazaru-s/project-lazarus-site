@@ -7,8 +7,12 @@ export const site = {
   tagline: "A cidade caiu. Você ainda não.",
   description:
     "Modpack de sobrevivência num apocalipse zumbi para Minecraft Java 1.20.1 (Forge). Coma, beba água limpa, se esconda, negocie com facções e evolua habilidades. Cada dia é mais difícil que o anterior.",
-  author: { name: "Kaique Melo", github: "https://github.com/KaiD3v" },
 } as const;
+
+export const authors = [
+  { name: "KaiD3v", role: "Co-autor", url: "https://kaidev.com.br" },
+  { name: "FSantiago75", role: "Co-autor", url: "https://github.com/FSantiago75" },
+] as const;
 
 export const links = {
   organization: "https://github.com/Project-Lazaru-s",

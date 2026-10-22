@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { contributors, thirdPartyMods } from "@/content/credits";
-import { links } from "@/content/site";
+import { thirdPartyMods } from "@/content/credits";
+import { authors, links } from "@/content/site";
 
 export const metadata: Metadata = {
   title: "Créditos",
@@ -16,12 +16,12 @@ export default function CreditsPage() {
       </PageHeader>
 
       <div className="mx-auto max-w-6xl space-y-16 px-4 pb-20">
-        <section aria-labelledby="equipe">
-          <h2 id="equipe" className="font-stencil text-3xl text-plate">
-            Equipe
+        <section aria-labelledby="autores">
+          <h2 id="autores" className="font-stencil text-3xl text-plate">
+            Autores
           </h2>
           <ul className="mt-4 grid gap-4 sm:grid-cols-2">
-            {contributors.map((person) => (
+            {authors.map((person) => (
               <li key={person.name} className="rounded border border-rust/40 bg-asphalt p-5">
                 <a href={person.url} className="font-stencil text-xl text-lazarus hover:underline">
                   {person.name}

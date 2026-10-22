@@ -1,15 +1,19 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { contributors, thirdPartyMods } from "@/content/credits";
+import { thirdPartyMods } from "@/content/credits";
 import { links } from "@/content/site";
 import CreditsPage from "./page";
 
 describe("/creditos", () => {
-  it("credits the author and contributors with their GitHub", () => {
+  it("credits KaiD3v and FSantiago75 as co-authors", () => {
     render(<CreditsPage />);
-    for (const person of contributors) {
-      expect(screen.getByRole("link", { name: person.name })).toHaveAttribute("href", person.url);
-    }
+    const team = screen.getByRole("region", { name: "Autores" });
+    expect(within(team).getByRole("link", { name: "KaiD3v" })).toHaveAttribute("href", "https://kaidev.com.br");
+    expect(within(team).getByRole("link", { name: "FSantiago75" })).toHaveAttribute(
+      "href",
+      "https://github.com/FSantiago75",
+    );
+    expect(within(team).getAllByText("Co-autor")).toHaveLength(2);
   });
 
   it("groups the main third-party mods", () => {

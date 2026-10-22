@@ -10,9 +10,10 @@ describe("Footer", () => {
     expect(screen.getByRole("link", { name: /reportar bug/i })).toHaveAttribute("href", links.issues);
   });
 
-  it("credits the author and states the license", () => {
+  it("credits both authors and states the license", () => {
     render(<Footer />);
-    expect(screen.getByText(/kaique melo/i)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "KaiD3v" })).toHaveAttribute("href", "https://kaidev.com.br");
+    expect(screen.getByRole("link", { name: "FSantiago75" })).toHaveAttribute("href", "https://github.com/FSantiago75");
     expect(screen.getByText(/todos os direitos reservados/i)).toBeInTheDocument();
   });
 });

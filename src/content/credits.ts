@@ -22,8 +22,3 @@ export const thirdPartyMods: { group: string; mods: string[] }[] = [
     mods: ["Embeddium", "Oculus", "ModernFix", "FerriteCore", "ImmediatelyFast", "EntityCulling", "spark"],
   },
 ];
-
-export const contributors = [
-  { name: "Kaique Melo", role: "Autor", url: "https://github.com/KaiD3v" },
-  { name: "FSantiago75", role: "Eventos: zonas de gás no metrô e mineiros perdidos", url: "https://github.com/FSantiago75" },
-];
