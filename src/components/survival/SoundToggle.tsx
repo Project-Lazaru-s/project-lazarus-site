@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { startAmbience, type Ambience } from "@/lib/survival/ambience";
 
-export function SoundToggle({ fear }: { fear: number }) {
-  const [on, setOn] = useState(false);
+type Props = { on: boolean; fear: number; onChange: (on: boolean) => void };
+
+export function SoundToggle({ on, fear, onChange }: Props) {
   const ambience = useRef<Ambience | null>(null);
 
   useEffect(() => {
@@ -13,6 +14,7 @@ export function SoundToggle({ fear }: { fear: number }) {
 
   useEffect(() => () => ambience.current?.stop(), []);
 
+  // O áudio só pode começar dentro do clique (política de autoplay dos navegadores).
   const toggle = () => {
     if (on) {
       ambience.current?.stop();
@@ -20,7 +22,7 @@ export function SoundToggle({ fear }: { fear: number }) {
     } else {
       ambience.current = startAmbience();
     }
-    setOn(!on);
+    onChange(!on);
   };
 
   return (

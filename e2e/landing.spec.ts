@@ -135,6 +135,35 @@ test("a forged dossier code is a 404", async ({ page }) => {
   expect(response?.status()).toBe(404);
 });
 
+test("Dia 7: picking the chest lock reveals what is inside", async ({ page }) => {
+  await page.goto("/");
+  const pick = page.getByRole("button", { name: "Usar gazua" });
+  await pick.scrollIntoViewIfNeeded();
+  await pick.click();
+  const lock = page.getByRole("group", { name: "Cadeado" });
+  const loot = page.getByRole("list", { name: "Conteúdo do baú" });
+  // Joga como uma pessoa: tenta o próximo pino que ainda não subiu, até abrir ou acabar a gazua.
+  for (let i = 0; i < 12 && !(await loot.isVisible()); i++) {
+    if (await page.getByText(/emperrou/).isVisible()) {
+      await page.getByRole("button", { name: /Arrombar/ }).click();
+      break;
+    }
+    const down = lock.locator('button[aria-pressed="false"]');
+    await down.nth(i % (await down.count())).click();
+  }
+  await expect(loot).toBeVisible();
+  await expect(loot.getByRole("link")).toHaveCount(6);
+});
+
+test("Dia 7: forcing the chest opens it at once, but scares you", async ({ page }) => {
+  await page.goto("/");
+  const force = page.getByRole("button", { name: /Arrombar/ });
+  await force.scrollIntoViewIfNeeded();
+  await force.click();
+  await expect(page.getByRole("list", { name: "Conteúdo do baú" }).getByRole("link", { name: /Furtividade/ })).toBeVisible();
+  await expect(hud(page)).toContainText("Tense");
+});
+
 test.describe("mobile", () => {
   test.use({ viewport: { width: 375, height: 812 }, hasTouch: true });
 

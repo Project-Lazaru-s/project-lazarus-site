@@ -1,13 +1,14 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useSurvival } from "@/components/survival/SurvivalProvider";
+import { useSfx, useSurvival } from "@/components/survival/SurvivalProvider";
 import { createTakedown, markerAt, TAKEDOWN_ROUNDS, tryTakedown } from "@/lib/games/takedown";
 import { GameFrame, type Phase } from "./GameFrame";
 import { useGameLoop } from "./useGameLoop";
 
 export function TakedownGame() {
   const { dispatch } = useSurvival();
+  const play = useSfx();
   const [phase, setPhase] = useState<Exclude<Phase, "over">>("intro");
   const [state, setState] = useState(createTakedown);
   const [marker, setMarker] = useState(0);
@@ -33,6 +34,7 @@ export function TakedownGame() {
     if (!running) return;
     const next = tryTakedown(state, markerAt(clock.current, round.speed));
     const hit = next.results.at(-1)!;
+    play(hit ? "knifeStab" : "zombieBite");
     dispatch({ type: "takedown", success: hit });
     if (!hit) setBitten((b) => b + 1);
     clock.current = 0;

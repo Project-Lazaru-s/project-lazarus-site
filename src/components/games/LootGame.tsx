@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useSurvival } from "@/components/survival/SurvivalProvider";
+import { useSfx, useSurvival } from "@/components/survival/SurvivalProvider";
 import { items } from "@/content/items";
 import { openCabinet } from "@/lib/games/loot";
 import { lootForDay, type Item } from "@/lib/survival/survival";
@@ -12,6 +12,7 @@ type Opened = { item: Item | null } | null;
 
 export function LootGame() {
   const { state: survival, dispatch } = useSurvival();
+  const play = useSfx();
   const [phase, setPhase] = useState<Exclude<Phase, "over">>("intro");
   const [cabinets, setCabinets] = useState<Opened[]>(() => Array(CABINETS).fill(null));
   const loot = lootForDay(survival.day);
@@ -25,6 +26,7 @@ export function LootGame() {
   const open = (index: number) => {
     if (phase !== "playing" || cabinets[index]) return;
     const item = openCabinet(loot, Math.random);
+    play("cabinetSearch");
     dispatch({ type: "loot", item });
     setCabinets((all) => all.map((c, i) => (i === index ? { item } : c)));
   };

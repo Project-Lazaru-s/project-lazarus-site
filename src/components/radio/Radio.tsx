@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useSfx } from "@/components/survival/SurvivalProvider";
 import { radioChannels, typed } from "@/content/radio";
 
 const CHARS_PER_SECOND = 40;
 const TICK_MS = 50;
 
 export function Radio() {
+  const play = useSfx();
   const [tuned, setTuned] = useState(0);
   const [elapsed, setElapsed] = useState(0);
   const channel = radioChannels[tuned];
@@ -22,6 +24,7 @@ export function Radio() {
   }, [done]);
 
   const tune = (i: number) => {
+    play("radioStatic", 0.5);
     setTuned(i);
     setElapsed(0);
   };

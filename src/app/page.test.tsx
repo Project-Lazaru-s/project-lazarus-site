@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { highlights } from "@/content/home";
 import { site } from "@/content/site";
@@ -18,8 +18,9 @@ describe("/ (home)", () => {
     expect(within(hero).getByRole("link", { name: `Baixar ${site.version}` })).toHaveAttribute("href", "/baixar");
   });
 
-  it("shows 3 to 6 highlights, each pointing to a real section", () => {
+  it("keeps 3 to 6 highlights in the day 7 chest, each pointing to a real section", () => {
     render(<HomePage />);
+    fireEvent.click(screen.getByRole("button", { name: /arrombar/i }));
     expect(highlights.length).toBeGreaterThanOrEqual(3);
     expect(highlights.length).toBeLessThanOrEqual(6);
     const anchors = systems.map((s) => `/modpack#${s.id}`);

@@ -26,6 +26,8 @@ export type SurvivalState = {
   infected: boolean;
   /** Reputação com os Rovers, de -100 a +100. */
   reputation: number;
+  /** Som ligado pelo visitante (ambiente e efeitos). */
+  sound: boolean;
   record: SurvivalRecord;
 };
 
@@ -35,6 +37,7 @@ export type SurvivalAction =
   | { type: "death" }
   | { type: "fear"; amount: number }
   | { type: "sedative" }
+  | { type: "sound"; on: boolean }
   | { type: "loot"; item: Item | null }
   | { type: "drink"; outcome: DrinkOutcome }
   | { type: "takedown"; success: boolean }
@@ -53,6 +56,7 @@ export const initialSurvival: SurvivalState = {
   stomach: "ok",
   infected: false,
   reputation: 0,
+  sound: false,
   record: { stealthBest: null, hordesHeld: 0, takedowns: 0, lootOpened: 0, lootFound: 0, wanted: false },
 };
 
@@ -95,6 +99,8 @@ export function survivalReducer(state: SurvivalState, action: SurvivalAction): S
       return { ...state, fear: clamp(state.fear + action.amount, 0, 100) };
     case "sedative":
       return { ...state, fear: 0 };
+    case "sound":
+      return { ...state, sound: action.on };
     case "loot":
       return {
         ...state,

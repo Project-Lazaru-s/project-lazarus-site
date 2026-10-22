@@ -219,3 +219,10 @@ describe("reputation and the wanted system", () => {
     expect(survivalReducer(initialSurvival, { type: "hunters", outcome: "killed", paid: [] }).deaths).toBe(1);
   });
 });
+
+describe("sound", () => {
+  it("starts muted and follows the visitor's choice", () => {
+    expect(initialSurvival.sound).toBe(false);
+    expect(survivalReducer(initialSurvival, { type: "sound", on: true }).sound).toBe(true);
+  });
+});

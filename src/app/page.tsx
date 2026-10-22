@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { ChestGame } from "@/components/games/ChestGame";
 import { HordeGame } from "@/components/games/HordeGame";
 import { LootGame } from "@/components/games/LootGame";
 import { StealthGame } from "@/components/games/StealthGame";
@@ -12,7 +13,7 @@ import { Radio } from "@/components/radio/Radio";
 import { DaySection } from "@/components/survival/DaySection";
 import { Dossier } from "@/components/survival/Dossier";
 import { ConnectedAtmosphere, ConnectedHud, SurvivalProvider } from "@/components/survival/SurvivalProvider";
-import { highlights, slogans } from "@/content/home";
+import { slogans } from "@/content/home";
 import { site } from "@/content/site";
 
 function Chapter({ day, title, children }: { day: number; title: string; children: ReactNode }) {
@@ -111,26 +112,11 @@ export default function HomePage() {
         </Chapter>
       </DaySection>
 
-      <DaySection day={7} aria-labelledby="destaques" className="mx-auto max-w-6xl px-4 py-24">
+      <DaySection day={7} className="mx-auto max-w-6xl space-y-10 px-4 py-24">
         <Chapter day={7} title="O saque começa a sumir.">
-          <p>A partir de agora, cada baú vem mais vazio. Isto é o que te espera lá dentro:</p>
+          <p>A partir de agora, cada baú vem mais vazio. Este ainda está trancado. Abra para ver o que te espera lá dentro.</p>
         </Chapter>
-        <h2 id="destaques" className="sr-only">
-          Como é sobreviver
-        </h2>
-        <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {highlights.map((highlight) => (
-            <li key={highlight.title}>
-              <Link
-                href={highlight.href}
-                className="block h-full rounded border border-rust/40 bg-asphalt p-6 transition hover:-translate-y-1 hover:border-sunset"
-              >
-                <h3 className="font-stencil text-2xl text-lazarus">{highlight.title}</h3>
-                <p className="mt-2 text-plate/75">{highlight.text}</p>
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <ChestGame />
       </DaySection>
 
       <DaySection day={10} className="mx-auto max-w-6xl space-y-8 px-4 py-24">

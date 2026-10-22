@@ -69,6 +69,37 @@ body {
   animation: muzzle-flash 0.12s ease-out forwards;
 }
 
+/* Interior do baú: tábuas de madeira, cantoneiras de ferro e um brilho quente de cima. */
+.chest-interior {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgb(217 130 43 / 0.22), transparent 60%),
+    radial-gradient(circle at 12px 12px, #6d6556 3px, transparent 4px),
+    radial-gradient(circle at calc(100% - 12px) 12px, #6d6556 3px, transparent 4px),
+    radial-gradient(circle at 12px calc(100% - 12px), #6d6556 3px, transparent 4px),
+    radial-gradient(circle at calc(100% - 12px) calc(100% - 12px), #6d6556 3px, transparent 4px),
+    repeating-linear-gradient(180deg, #2a1a10 0 46px, #23150c 46px 48px, #321f13 48px 94px, #23150c 94px 96px);
+  border: 6px solid #3a3a3a;
+  box-shadow:
+    inset 0 12px 30px rgb(0 0 0 / 0.75),
+    inset 0 0 0 2px #1a1a1a,
+    0 10px 30px rgb(0 0 0 / 0.5);
+}
+
+/* Itens saindo do baú, um de cada vez. */
+@keyframes loot-rise {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.loot-rise {
+  animation: loot-rise 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
 /* Sprites em pixel art: nunca suavizar. */
 .pixelated {
   image-rendering: pixelated;
@@ -81,6 +112,9 @@ body {
   }
   .muzzle-flash {
     display: none;
+  }
+  .loot-rise {
+    animation: none;
   }
 }
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useSurvival } from "@/components/survival/SurvivalProvider";
+import { useSfx, useSurvival } from "@/components/survival/SurvivalProvider";
 import { seededRandom } from "@/lib/games/random";
 import { drink, DEHYDRATED_AT, pickSources, THIRST_LIMIT, type WaterSource } from "@/lib/games/water";
 import type { DrinkOutcome } from "@/lib/survival/survival";
@@ -25,6 +25,7 @@ const results: Record<Outcome, { title: string; text: string; tone: "good" | "ba
 
 export function WaterGame() {
   const { dispatch } = useSurvival();
+  const play = useSfx();
   const [phase, setPhase] = useState<Exclude<Phase, "over">>("intro");
   // Ordem fixa no prerender; embaralha de verdade ao começar.
   const [sources, setSources] = useState(() => pickSources(seededRandom(3)));
@@ -39,6 +40,7 @@ export function WaterGame() {
     setElapsed(live.current);
     if (live.current >= THIRST_LIMIT) {
       setOutcome("fainted");
+      play("deathSting", 0.6);
       dispatch({ type: "death" });
     }
   }, running);
@@ -55,6 +57,7 @@ export function WaterGame() {
     if (!running) return;
     const result = drink(source.id, live.current, Math.random);
     setOutcome(result);
+    play("drink");
     dispatch({ type: "drink", outcome: result });
   };
 

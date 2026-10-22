@@ -29,6 +29,7 @@ src/lib/            regras: blog (leitura de posts), releases (API do GitHub), m
 src/lib/games/      motores puros dos minigames (furtividade, horda), testados sem navegador
 src/lib/survival/   estado do sobrevivente na landing (dias, medo, abates) e som ambiente sintetizado
 public/images/game/ sprites em pixel art (gerados com o Codex)
+public/sounds/      efeitos sonoros (gerados com o ElevenLabs, normalizados em -16 LUFS); tocam só com o som ligado
 assets/og/          fonte (Saira Stencil One, licença OFL) e sprites do cartão compartilhável /dossie/[code]
 e2e/                testes de ponta a ponta
 ```

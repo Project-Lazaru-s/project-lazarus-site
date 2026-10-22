@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, type KeyboardEvent } from "react";
-import { useSurvival } from "@/components/survival/SurvivalProvider";
+import { useSfx, useSurvival } from "@/components/survival/SurvivalProvider";
 import {
   createStealth,
   detection,
@@ -46,6 +46,7 @@ const results = {
 
 export function StealthGame() {
   const { dispatch } = useSurvival();
+  const play = useSfx();
   const [phase, setPhase] = useState<Exclude<Phase, "over">>("intro");
   const [state, setRendered] = useState(createStealth);
   // Fonte da verdade do loop: vários frames podem rodar antes de um render.
@@ -59,8 +60,14 @@ export function StealthGame() {
   const running = phase === "playing" && state.status === "playing";
   useGameLoop((dt) => {
     if (live.current.status !== "playing") return;
-    const next = stepStealth(live.current, gait.current, dt);
+    const prev = live.current;
+    const next = stepStealth(prev, gait.current, dt);
     setState(next);
+    if (next.gait !== "still" && isOnGlass(next.glass, next.x) && !isOnGlass(prev.glass, prev.x)) {
+      play("glassCrunch", next.gait === "crouch" ? 0.35 : 1);
+    }
+    if (next.status === "spotted") play("zombieAlert");
+    if (next.status === "spotted" || next.status === "timeout") play("deathSting", 0.6);
     if (next.status === "won") dispatch({ type: "stealth", time: next.time });
     if (next.status === "spotted" || next.status === "timeout") {
       dispatch({ type: "death" });

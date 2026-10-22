@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useSurvival } from "@/components/survival/SurvivalProvider";
+import { useSfx, useSurvival } from "@/components/survival/SurvivalProvider";
 import { items } from "@/content/items";
 import { signed } from "@/lib/format";
 import {
@@ -37,6 +37,7 @@ const hunterResults: Record<Exclude<HunterOutcome, "refused">, { title: string; 
 
 export function TraderGame() {
   const { state: survival, dispatch } = useSurvival();
+  const play = useSfx();
   const [phase, setPhase] = useState<Exclude<Phase, "over">>("intro");
   const [want, setWant] = useState<Item>("antibiotic");
   const [offer, setOffer] = useState<Item | null>(null);
@@ -55,6 +56,7 @@ export function TraderGame() {
 
   const deal = (stance: Stance) => {
     const result = negotiate(stance, survival.reputation, currentOffer, want, Math.random);
+    if (!isWanted(survival.reputation) && isWanted(survival.reputation + result.reputation)) play("huntersArrive");
     dispatch({ type: "deal", deal: result });
     setOffer(null);
     setLine(
@@ -71,6 +73,8 @@ export function TraderGame() {
   const confront = (choice: HunterChoice) => {
     const result = confrontHunters(choice, { inventory: survival.inventory, stealthBest: survival.record.stealthBest }, Math.random);
     if (result.outcome === "refused") return;
+    if (result.outcome === "won") play("gunshot");
+    if (result.outcome === "killed") play("deathSting", 0.6);
     dispatch({ type: "hunters", outcome: result.outcome, paid: result.paid });
     setEnding(hunterResults[result.outcome]);
   };

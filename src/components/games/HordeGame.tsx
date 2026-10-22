@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, type MouseEvent } from "react";
-import { useSurvival } from "@/components/survival/SurvivalProvider";
+import { useSfx, useSurvival } from "@/components/survival/SurvivalProvider";
 import {
   aimJitter,
   createHorde,
@@ -43,6 +43,7 @@ function placement(z: HordeZombie) {
 
 export function HordeGame() {
   const { state: survival, dispatch } = useSurvival();
+  const play = useSfx();
   const [phase, setPhase] = useState<Exclude<Phase, "over">>("intro");
   // Cena inicial com semente fixa: o prerender não aceita Math.random.
   const [horde, setRendered] = useState(() => createHorde(1, seededRandom(10)));
@@ -62,6 +63,8 @@ export function HordeGame() {
     const next = stepHorde(live.current, dt);
     setHorde(next);
     if (next.status === "breached") {
+      play("barricadeBreach");
+      play("deathSting", 0.6);
       dispatch({ type: "death" });
       dispatch({ type: "fear", amount: 40 });
     } else if (next.status === "held") {
@@ -79,7 +82,14 @@ export function HordeGame() {
   const fire = (id: number, part: Parameters<typeof shoot>[2]) => {
     const current = live.current;
     if (phase !== "playing" || current.status !== "playing") return;
+    if (current.ammo <= 0) {
+      play("dryFire");
+      return;
+    }
     const next = shoot(current, id, part, Math.random);
+    const target = current.zombies.find((z) => z.id === id);
+    play("gunshot", 0.8);
+    if (target && part === "head") play(target.helmet ? "bulletHit" : "headshot");
     setFlash((f) => f + 1);
     setHorde(next);
     if (next.kills > current.kills) dispatch({ type: "kill", count: next.kills - current.kills });
@@ -103,6 +113,7 @@ export function HordeGame() {
     for (let i = 0; i < boxes; i++) dispatch({ type: "use", item: "ammo" });
     const horde = wave === "next" ? nextWave(live.current, Math.random) : createHorde(1, Math.random);
     setHorde(withExtraAmmo(horde, boxes));
+    play("hordeGroans", 0.7);
     setPhase("playing");
   };
 

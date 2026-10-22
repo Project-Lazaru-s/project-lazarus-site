@@ -1,12 +1,14 @@
 "use client";
 
-import { createContext, useContext, useEffect, useReducer, type Dispatch, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useReducer, useRef, type Dispatch, type ReactNode } from "react";
+import { createSfx, type Sfx, type SoundName } from "@/lib/survival/sfx";
 import { currentDay, initialSurvival, survivalReducer, type SurvivalAction, type SurvivalState } from "@/lib/survival/survival";
 import { Atmosphere } from "./Atmosphere";
 import { SoundToggle } from "./SoundToggle";
 import { SurvivalHud } from "./SurvivalHud";
 
-const SurvivalContext = createContext<{ state: SurvivalState; dispatch: Dispatch<SurvivalAction> } | null>(null);
+type Context = { state: SurvivalState; dispatch: Dispatch<SurvivalAction>; sfx: () => Sfx };
+const SurvivalContext = createContext<Context | null>(null);
 
 export function useSurvival() {
   const ctx = useContext(SurvivalContext);
@@ -32,7 +34,21 @@ function useDayTracking(day: number, dispatch: Dispatch<SurvivalAction>) {
 export function SurvivalProvider({ children, initial }: { children: ReactNode; initial?: Partial<SurvivalState> }) {
   const [state, dispatch] = useReducer(survivalReducer, { ...initialSurvival, ...initial });
   useDayTracking(state.day, dispatch);
-  return <SurvivalContext.Provider value={{ state, dispatch }}>{children}</SurvivalContext.Provider>;
+  // Criado só no navegador, na primeira vez que um efeito é pedido.
+  const sfxRef = useRef<Sfx | null>(null);
+  const sfx = useCallback(() => (sfxRef.current ??= createSfx(typeof Audio === "undefined" ? undefined : Audio)), []);
+  useEffect(() => {
+    if (state.sound) sfx().preload();
+  }, [state.sound, sfx]);
+  return <SurvivalContext.Provider value={{ state, dispatch, sfx }}>{children}</SurvivalContext.Provider>;
+}
+
+/** Toca um efeito sonoro, só se o visitante ligou o som. */
+export function useSfx() {
+  const ctx = useContext(SurvivalContext);
+  const on = ctx?.state.sound ?? false;
+  const sfx = ctx?.sfx;
+  return useCallback((name: SoundName, volume?: number) => on && sfx?.().play(name, volume), [on, sfx]);
 }
 
 export function ConnectedHud() {
@@ -43,7 +59,7 @@ export function ConnectedHud() {
       onSedative={() => dispatch({ type: "sedative" })}
       onUse={(item) => dispatch({ type: "use", item })}
     >
-      <SoundToggle fear={state.fear} />
+      <SoundToggle on={state.sound} fear={state.fear} onChange={(on) => dispatch({ type: "sound", on })} />
     </SurvivalHud>
   );
 }

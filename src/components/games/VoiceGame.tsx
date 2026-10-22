@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useSurvival } from "@/components/survival/SurvivalProvider";
+import { useSfx, useSurvival } from "@/components/survival/SurvivalProvider";
 import { heardBy, smoothRadius, VOICE_LEVELS, voiceLevel } from "@/lib/games/voice";
 import { startMicrophone, type Microphone } from "@/lib/survival/microphone";
 import { GameFrame, type Phase } from "./GameFrame";
@@ -14,6 +14,7 @@ const ringWidth = (radius: number) => `${(radius / SPAN) * 84 * 2}%`;
 
 export function VoiceGame() {
   const { dispatch } = useSurvival();
+  const play = useSfx();
   const [phase, setPhase] = useState<Exclude<Phase, "over">>("intro");
   const [noMic, setNoMic] = useState(false);
   const [sensitivity, setSensitivity] = useState(1);
@@ -28,6 +29,8 @@ export function VoiceGame() {
   useEffect(() => () => mic.current?.stop(), []);
 
   const hear = (newRadius: number) => {
+    const before = heardBy(ZOMBIES, target.current).filter(Boolean).length;
+    if (heardBy(ZOMBIES, newRadius).filter(Boolean).length > before) play("zombieAlert", 0.7);
     target.current = newRadius;
     setRadius((r) => smoothRadius(r, newRadius, 0));
     setLoudest((l) => Math.max(l, newRadius));
