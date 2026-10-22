@@ -4,7 +4,6 @@ import {
   createHorde,
   hitPart,
   nextWave,
-  seededRandom,
   shoot,
   stepHorde,
   waveSize,
@@ -44,17 +43,6 @@ describe("createHorde", () => {
   it("brings armored soldiers from the second horde on", () => {
     expect(createHorde(1, fixed).zombies.some((z) => z.kind === "soldier")).toBe(false);
     expect(createHorde(2, fixed).zombies.some((z) => z.kind === "soldier")).toBe(true);
-  });
-});
-
-describe("seededRandom", () => {
-  it("is deterministic per seed and stays in [0, 1)", () => {
-    const a = seededRandom(1);
-    const b = seededRandom(1);
-    const values = Array.from({ length: 50 }, () => a());
-    expect(values).toEqual(Array.from({ length: 50 }, () => b()));
-    expect(values.every((v) => v >= 0 && v < 1)).toBe(true);
-    expect(new Set(values).size).toBeGreaterThan(40);
   });
 });
 

@@ -2,7 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { HordeGame } from "@/components/games/HordeGame";
+import { LootGame } from "@/components/games/LootGame";
 import { StealthGame } from "@/components/games/StealthGame";
+import { TakedownGame } from "@/components/games/TakedownGame";
+import { WaterGame } from "@/components/games/WaterGame";
 import { Radio } from "@/components/radio/Radio";
 import { DaySection } from "@/components/survival/DaySection";
 import { Dossier } from "@/components/survival/Dossier";
@@ -73,6 +76,19 @@ export default function HomePage() {
         <StealthGame />
       </DaySection>
 
+      <DaySection day={5} className="mx-auto grid max-w-6xl gap-8 px-4 py-24 lg:grid-cols-[1.4fr_1fr] lg:items-center">
+        <WaterGame />
+        <Chapter day={5} title="Não beba essa água.">
+          <p>
+            Rio, poça ou caldeirão podem trazer disenteria: enjoo, vômito que leva comida e água e, desidratado, um
+            quadro grave. Água engarrafada ou enlatada é segura.
+          </p>
+          <Link href="/mods/moodles" className="mt-3 inline-block text-sm text-sunset hover:underline">
+            Lazarus Moodles →
+          </Link>
+        </Chapter>
+      </DaySection>
+
       <DaySection day={6} className="mx-auto grid max-w-6xl gap-8 px-4 py-24 lg:grid-cols-[1.4fr_1fr] lg:items-center">
         <Radio />
         <Chapter day={6} title="O rádio chia à noite.">
@@ -115,6 +131,29 @@ export default function HomePage() {
         <div className="mx-auto max-w-4xl">
           <HordeGame />
         </div>
+      </DaySection>
+
+      <DaySection day={13} className="mx-auto grid max-w-6xl gap-8 px-4 py-24 lg:grid-cols-[1fr_1.4fr] lg:items-center">
+        <Chapter day={13} title="Sem fazer barulho.">
+          <p>
+            Tiro chama a rua inteira. Por trás, uma finalização furtiva resolve em silêncio, se você acertar o momento.
+            Errar é levar uma mordida.
+          </p>
+        </Chapter>
+        <TakedownGame />
+      </DaySection>
+
+      <DaySection day={15} className="mx-auto grid max-w-6xl gap-8 px-4 py-24 lg:grid-cols-[1.4fr_1fr] lg:items-center">
+        <LootGame />
+        <Chapter day={15} title="A farmácia já foi saqueada.">
+          <p>
+            No dia 15, os locais comuns guardam 42% do saque do começo. Se você está doente ou mordido, reze por um
+            antibiótico.
+          </p>
+          <Link href="/mods/scarcity" className="mt-3 inline-block text-sm text-sunset hover:underline">
+            Lazarus Scarcity →
+          </Link>
+        </Chapter>
       </DaySection>
 
       <DaySection day={60} className="border-y border-rust/40 bg-asphalt">

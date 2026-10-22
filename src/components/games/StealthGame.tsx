@@ -61,6 +61,7 @@ export function StealthGame() {
     if (live.current.status !== "playing") return;
     const next = stepStealth(live.current, gait.current, dt);
     setState(next);
+    if (next.status === "won") dispatch({ type: "stealth", time: next.time });
     if (next.status === "spotted" || next.status === "timeout") {
       dispatch({ type: "death" });
       dispatch({ type: "fear", amount: 30 });

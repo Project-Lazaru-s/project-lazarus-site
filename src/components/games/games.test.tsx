@@ -1,5 +1,6 @@
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { Dossier } from "@/components/survival/Dossier";
 import { ConnectedHud, SurvivalProvider } from "@/components/survival/SurvivalProvider";
 import { HordeGame } from "./HordeGame";
 import { StealthGame } from "./StealthGame";
@@ -20,6 +21,7 @@ function renderGame(game: React.ReactNode) {
     <SurvivalProvider>
       {game}
       <ConnectedHud />
+      <Dossier />
     </SurvivalProvider>,
   );
   fireEvent.click(screen.getByRole("button", { name: /começar/i }));
@@ -33,6 +35,7 @@ describe("StealthGame", () => {
     fireEvent.pointerDown(screen.getByRole("button", { name: /agachar/i }));
     advance(11);
     expect(screen.getByRole("heading", { name: /atravessou/i })).toBeInTheDocument();
+    expect(screen.getByText("Melhor travessia").nextElementSibling).toHaveTextContent(/\d,\d s/);
   });
 
   it("running gets you spotted, and the death counts", () => {

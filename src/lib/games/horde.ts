@@ -1,6 +1,8 @@
 // Contenção de horda: segurar a barricada contra uma onda (The Hordes + Dual Hitbox Zombies).
 // `distance` vai de ~100 (horizonte) até 0 (barricada); o tempo é em segundos.
 
+import type { Random } from "./random";
+
 export type ZombieKind = "walker" | "runner" | "soldier";
 export type Part = "head" | "body" | "miss";
 export type HordeZombie = { id: number; kind: ZombieKind; lane: number; distance: number; hp: number; helmet: boolean };
@@ -13,7 +15,6 @@ export type HordeState = {
   nextId: number;
   status: "playing" | "held" | "breached";
 };
-export type Random = () => number;
 
 const SPEED: Record<ZombieKind, number> = { walker: 9, runner: 18, soldier: 7 };
 const BODY_HP: Record<ZombieKind, number> = { walker: 3, runner: 2, soldier: 4 };
@@ -21,15 +22,6 @@ const HEAD_ROWS = 8 / 32;
 const HEAD_HALF_WIDTH = 4 / 16;
 const SHOTS_PER_NOISE_SPAWN = 5;
 const MAX_JITTER = 0.25;
-
-/** Gerador determinístico (LCG) para a cena estática do prerender, onde Math.random não pode entrar. */
-export function seededRandom(seed: number): Random {
-  let s = seed >>> 0;
-  return () => {
-    s = (s * 1664525 + 1013904223) >>> 0;
-    return s / 2 ** 32;
-  };
-}
 
 export function waveSize(wave: number) {
   return Math.ceil(6 * 1.15 ** (wave - 1));

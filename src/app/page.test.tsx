@@ -25,7 +25,7 @@ describe("/ (home)", () => {
     const anchors = systems.map((s) => `/modpack#${s.id}`);
     for (const highlight of highlights) {
       expect(["/faccoes", "/progressao", ...anchors]).toContain(highlight.href);
-      expect(screen.getByRole("link", { name: new RegExp(highlight.title) })).toHaveAttribute("href", highlight.href);
+      expect(screen.getByRole("link", { name: new RegExp(`^${highlight.title}`) })).toHaveAttribute("href", highlight.href);
     }
   });
 
@@ -41,6 +41,10 @@ describe("/ (home)", () => {
     render(<HomePage />);
     expect(screen.getByRole("application", { name: /rua com infectados/i })).toBeInTheDocument();
     expect(screen.getByRole("application", { name: /contenção de horda/i })).toBeInTheDocument();
+    expect(screen.getByRole("application", { name: /fontes de água/i })).toBeInTheDocument();
+    expect(screen.getByRole("application", { name: /beco/i })).toBeInTheDocument();
+    expect(screen.getByRole("application", { name: /farmácia/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Carne fresca" })).toBeInTheDocument();
     expect(screen.getByRole("log", { name: /rádio/i })).toBeInTheDocument();
     expect(screen.getByRole("status", { name: /sobrevivente/i })).toHaveTextContent("Dia 0");
   });

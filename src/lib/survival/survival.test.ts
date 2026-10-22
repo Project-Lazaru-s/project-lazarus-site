@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
+  conditionMoodles,
   currentDay,
   fearMoodle,
   initialSurvival,
   lootForDay,
+  rank,
+  shareText,
   survivalReducer,
   threatForDay,
 } from "./survival";
@@ -85,5 +88,95 @@ describe("survivalReducer", () => {
   it("lets fear calm down but not below zero", () => {
     const state = survivalReducer({ ...initialSurvival, fear: 10 }, { type: "fear", amount: -25 });
     expect(state.fear).toBe(0);
+  });
+});
+
+describe("inventory and conditions", () => {
+  it("keeps what the survivor loots and tracks how many cabinets were opened", () => {
+    let state = survivalReducer(initialSurvival, { type: "loot", item: "antibiotic" });
+    state = survivalReducer(state, { type: "loot", item: null });
+    expect(state.inventory).toEqual(["antibiotic"]);
+    expect(state.record).toMatchObject({ lootOpened: 2, lootFound: 1 });
+  });
+
+  it("dirty water makes you sick, and dehydrated it gets severe", () => {
+    expect(survivalReducer(initialSurvival, { type: "drink", outcome: "safe" }).stomach).toBe("ok");
+    expect(survivalReducer(initialSurvival, { type: "drink", outcome: "sick" }).stomach).toBe("sick");
+    expect(survivalReducer(initialSurvival, { type: "drink", outcome: "severe" }).stomach).toBe("severe");
+  });
+
+  it("a clean takedown is a kill; a botched one is a bite", () => {
+    const clean = survivalReducer(initialSurvival, { type: "takedown", success: true });
+    expect(clean).toMatchObject({ kills: 1, infected: false, record: { takedowns: 1 } });
+    const botched = survivalReducer(initialSurvival, { type: "takedown", success: false });
+    expect(botched).toMatchObject({ kills: 0, infected: true });
+  });
+
+  it("an antibiotic cures dysentery and infection, and is used up", () => {
+    let state = survivalReducer(initialSurvival, { type: "loot", item: "antibiotic" });
+    state = survivalReducer(state, { type: "drink", outcome: "severe" });
+    state = survivalReducer(state, { type: "takedown", success: false });
+    state = survivalReducer(state, { type: "use", item: "antibiotic" });
+    expect(state).toMatchObject({ stomach: "ok", infected: false, inventory: [] });
+  });
+
+  it("cannot use what you do not have", () => {
+    const sick = survivalReducer(initialSurvival, { type: "drink", outcome: "sick" });
+    expect(survivalReducer(sick, { type: "use", item: "antibiotic" })).toBe(sick);
+  });
+
+  it("records the best stealth time and the hordes held", () => {
+    let state = survivalReducer(initialSurvival, { type: "stealth", time: 9.2 });
+    state = survivalReducer(state, { type: "stealth", time: 7.5 });
+    state = survivalReducer(state, { type: "stealth", time: 8 });
+    state = survivalReducer(state, { type: "horde-held", wave: 2 });
+    state = survivalReducer(state, { type: "horde-held", wave: 1 });
+    expect(state.record).toMatchObject({ stealthBest: 7.5, hordesHeld: 2 });
+  });
+});
+
+describe("conditionMoodles", () => {
+  it("lists dysentery and infection as moodles", () => {
+    expect(conditionMoodles(initialSurvival)).toEqual([]);
+    expect(conditionMoodles({ ...initialSurvival, stomach: "sick", infected: true })).toEqual(["Sick", "Infection"]);
+    expect(conditionMoodles({ ...initialSurvival, stomach: "severe" })).toEqual(["Severely Sick"]);
+  });
+});
+
+describe("rank", () => {
+  it("goes from fresh meat to legend", () => {
+    expect(rank(initialSurvival)).toBe("Carne fresca");
+    const veteran = {
+      ...initialSurvival,
+      kills: 12,
+      record: { ...initialSurvival.record, hordesHeld: 2, takedowns: 2, stealthBest: 8 },
+    };
+    expect(rank(veteran)).toBe("Veterano");
+    expect(rank({ ...veteran, kills: 40 })).toBe("Lenda de Lazarus");
+  });
+
+  it("looting the same pharmacy over and over does not make a legend", () => {
+    const hoarder = { ...initialSurvival, record: { ...initialSurvival.record, lootFound: 50 } };
+    expect(rank(hoarder)).toBe("Sobrevivente");
+  });
+
+  it("deaths cost points", () => {
+    const survivor = { ...initialSurvival, kills: 10 };
+    expect(rank(survivor)).toBe("Sobrevivente");
+    expect(rank({ ...survivor, deaths: 3 })).toBe("Carne fresca");
+  });
+});
+
+describe("shareText", () => {
+  it("sums up the run for sharing", () => {
+    const state = { ...initialSurvival, day: 60, kills: 12, deaths: 1 };
+    expect(shareText(state, "https://lazarus.example")).toBe(
+      "Cheguei ao dia 60 no site do Project Lazarus: 12 abates, 1 morte. Título: Sobrevivente. Você dura mais? https://lazarus.example",
+    );
+  });
+
+  it("pluralizes deaths", () => {
+    expect(shareText({ ...initialSurvival, deaths: 2 }, "u")).toContain("2 mortes");
+    expect(shareText({ ...initialSurvival, deaths: 0 }, "u")).toContain("0 mortes");
   });
 });

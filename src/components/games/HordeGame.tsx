@@ -7,7 +7,6 @@ import {
   createHorde,
   hitPart,
   nextWave,
-  seededRandom,
   shoot,
   stepHorde,
   waveSize,
@@ -15,6 +14,7 @@ import {
   type HordeZombie,
   type ZombieKind,
 } from "@/lib/games/horde";
+import { seededRandom } from "@/lib/games/random";
 import { GameFrame, type Phase } from "./GameFrame";
 import { useGameLoop } from "./useGameLoop";
 
@@ -65,6 +65,7 @@ export function HordeGame() {
       dispatch({ type: "fear", amount: 40 });
     } else if (next.status === "held") {
       dispatch({ type: "fear", amount: -30 });
+      dispatch({ type: "horde-held", wave: next.wave });
     } else if (Math.min(...next.zombies.map((z) => z.distance)) < PANIC_DISTANCE) {
       panic.current += dt;
       if (panic.current >= 0.5) {

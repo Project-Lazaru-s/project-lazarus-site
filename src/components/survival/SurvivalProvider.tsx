@@ -29,8 +29,8 @@ function useDayTracking(day: number, dispatch: Dispatch<SurvivalAction>) {
   }, [day, dispatch]);
 }
 
-export function SurvivalProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(survivalReducer, initialSurvival);
+export function SurvivalProvider({ children, initial }: { children: ReactNode; initial?: Partial<SurvivalState> }) {
+  const [state, dispatch] = useReducer(survivalReducer, { ...initialSurvival, ...initial });
   useDayTracking(state.day, dispatch);
   return <SurvivalContext.Provider value={{ state, dispatch }}>{children}</SurvivalContext.Provider>;
 }
@@ -38,7 +38,11 @@ export function SurvivalProvider({ children }: { children: ReactNode }) {
 export function ConnectedHud() {
   const { state, dispatch } = useSurvival();
   return (
-    <SurvivalHud state={state} onSedative={() => dispatch({ type: "sedative" })}>
+    <SurvivalHud
+      state={state}
+      onSedative={() => dispatch({ type: "sedative" })}
+      onUse={(item) => dispatch({ type: "use", item })}
+    >
       <SoundToggle fear={state.fear} />
     </SurvivalHud>
   );

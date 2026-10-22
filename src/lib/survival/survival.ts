@@ -1,20 +1,67 @@
 // Estado do "sobrevivente" que atravessa a landing: o scroll avança os dias,
 // os minigames somam abates, mortes e medo.
 
-export type SurvivalState = { day: number; fear: number; kills: number; deaths: number };
+export type Item = "antibiotic" | "painkiller" | "bandage" | "water";
+export type DrinkOutcome = "safe" | "sick" | "severe";
+export type Stomach = "ok" | "sick" | "severe";
+
+export type SurvivalRecord = {
+  stealthBest: number | null;
+  hordesHeld: number;
+  takedowns: number;
+  lootOpened: number;
+  lootFound: number;
+};
+
+export type SurvivalState = {
+  day: number;
+  fear: number;
+  kills: number;
+  deaths: number;
+  inventory: Item[];
+  stomach: Stomach;
+  infected: boolean;
+  record: SurvivalRecord;
+};
 
 export type SurvivalAction =
   | { type: "day"; day: number }
   | { type: "kill"; count: number }
   | { type: "death" }
   | { type: "fear"; amount: number }
-  | { type: "sedative" };
+  | { type: "sedative" }
+  | { type: "loot"; item: Item | null }
+  | { type: "drink"; outcome: DrinkOutcome }
+  | { type: "takedown"; success: boolean }
+  | { type: "use"; item: Item }
+  | { type: "stealth"; time: number }
+  | { type: "horde-held"; wave: number };
 
-export const initialSurvival: SurvivalState = { day: 0, fear: 0, kills: 0, deaths: 0 };
+export const initialSurvival: SurvivalState = {
+  day: 0,
+  fear: 0,
+  kills: 0,
+  deaths: 0,
+  inventory: [],
+  stomach: "ok",
+  infected: false,
+  record: { stealthBest: null, hordesHeld: 0, takedowns: 0, lootOpened: 0, lootFound: 0 },
+};
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
+const STOMACH: Record<DrinkOutcome, Stomach> = { safe: "ok", sick: "sick", severe: "severe" };
+
+function consume(state: SurvivalState, item: Item): SurvivalState {
+  const index = state.inventory.indexOf(item);
+  if (index === -1) return state;
+  const inventory = state.inventory.toSpliced(index, 1);
+  // Antibiótico cura disenteria e infecção; os outros itens só são gastos.
+  return item === "antibiotic" ? { ...state, inventory, stomach: "ok", infected: false } : { ...state, inventory };
+}
+
 export function survivalReducer(state: SurvivalState, action: SurvivalAction): SurvivalState {
+  const record = state.record;
   switch (action.type) {
     case "day":
       return { ...state, day: Math.max(state.day, action.day) };
@@ -26,7 +73,60 @@ export function survivalReducer(state: SurvivalState, action: SurvivalAction): S
       return { ...state, fear: clamp(state.fear + action.amount, 0, 100) };
     case "sedative":
       return { ...state, fear: 0 };
+    case "loot":
+      return {
+        ...state,
+        inventory: action.item ? [...state.inventory, action.item] : state.inventory,
+        record: { ...record, lootOpened: record.lootOpened + 1, lootFound: record.lootFound + (action.item ? 1 : 0) },
+      };
+    case "drink":
+      return { ...state, stomach: STOMACH[action.outcome] };
+    case "takedown":
+      return action.success
+        ? { ...state, kills: state.kills + 1, record: { ...record, takedowns: record.takedowns + 1 } }
+        : { ...state, infected: true };
+    case "use":
+      return consume(state, action.item);
+    case "stealth":
+      return {
+        ...state,
+        record: { ...record, stealthBest: Math.min(record.stealthBest ?? Infinity, action.time) },
+      };
+    case "horde-held":
+      return { ...state, record: { ...record, hordesHeld: Math.max(record.hordesHeld, action.wave) } };
   }
+}
+
+export function conditionMoodles(state: SurvivalState) {
+  const moodles: string[] = [];
+  if (state.stomach === "sick") moodles.push("Sick");
+  if (state.stomach === "severe") moodles.push("Severely Sick");
+  if (state.infected) moodles.push("Infection");
+  return moodles;
+}
+
+const MAX_RANKED_LOOT = 3; // saquear a mesma farmácia de novo não vale título
+
+export type Rank ="Carne fresca" | "Sobrevivente" | "Veterano" | "Lenda de Lazarus";
+
+export function rank(state: SurvivalState): Rank {
+  const { record } = state;
+  const score =
+    state.kills +
+    record.hordesHeld * 5 +
+    record.takedowns * 3 +
+    Math.min(record.lootFound, MAX_RANKED_LOOT) * 2 +
+    (record.stealthBest !== null ? 5 : 0) -
+    state.deaths * 4;
+  if (score >= 40) return "Lenda de Lazarus";
+  if (score >= 15) return "Veterano";
+  if (score >= 5) return "Sobrevivente";
+  return "Carne fresca";
+}
+
+export function shareText(state: SurvivalState, url: string) {
+  const deaths = `${state.deaths} ${state.deaths === 1 ? "morte" : "mortes"}`;
+  return `Cheguei ao dia ${state.day} no site do Project Lazarus: ${state.kills} abates, ${deaths}. Título: ${rank(state)}. Você dura mais? ${url}`;
 }
 
 /** Dia da última seção cujo topo já passou da linha de leitura. */
