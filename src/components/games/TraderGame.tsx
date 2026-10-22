@@ -20,7 +20,10 @@ const WANTS: Item[] = ["antibiotic", "ammo", "food"];
 
 const stanceLabel: Record<Stance, string> = { trade: "Trocar", haggle: "Pechinchar", intimidate: "Intimidar" };
 
-const hunterResults: Record<Exclude<HunterOutcome, "refused">, { title: string; text: string; tone: "good" | "bad" }> = {
+const hunterResults: Record<
+  Exclude<HunterOutcome, "refused">,
+  { title: string; text: string; tone: "good" | "bad" }
+> = {
   won: {
     title: "Esquadrão abatido",
     text: "Três caçadores a menos. Eles deixaram munição. Os Rovers vão mandar outros.",
@@ -71,7 +74,11 @@ export function TraderGame() {
   };
 
   const confront = (choice: HunterChoice) => {
-    const result = confrontHunters(choice, { inventory: survival.inventory, stealthBest: survival.record.stealthBest }, Math.random);
+    const result = confrontHunters(
+      choice,
+      { inventory: survival.inventory, stealthBest: survival.record.stealthBest },
+      Math.random,
+    );
     if (result.outcome === "refused") return;
     if (result.outcome === "won") play("gunshot");
     if (result.outcome === "killed") play("deathSting", 0.6);
@@ -103,16 +110,28 @@ export function TraderGame() {
       retryLabel="Voltar ao acampamento"
     >
       <div role="application" aria-label="Acampamento dos Rovers" className="bg-asphalt-deep">
-        <div className="relative aspect-[10/3] w-full bg-[url('/images/game/camp-bg.png')] bg-cover pixelated">
+        <div className="relative aspect-[16/9] sm:aspect-[10/3] w-full bg-[url('/images/game/camp-bg.png')] bg-cover pixelated">
           {wanted ? (
             /* eslint-disable-next-line @next/next/no-img-element */
-            <img src="/images/game/hunter.png" alt="Caçador de recompensa" className="absolute bottom-[6%] left-[60%] w-[5%] pixelated" />
+            <img
+              src="/images/game/hunter.png"
+              alt="Caçador de recompensa"
+              className="absolute bottom-[6%] left-[60%] w-[8%] sm:w-[5%] pixelated"
+            />
           ) : (
             /* eslint-disable-next-line @next/next/no-img-element */
-            <img src="/images/game/trader-rovers.png" alt="Comerciante dos Rovers" className="absolute bottom-[6%] left-[60%] w-[5%] pixelated" />
+            <img
+              src="/images/game/trader-rovers.png"
+              alt="Comerciante dos Rovers"
+              className="absolute bottom-[6%] left-[60%] w-[8%] sm:w-[5%] pixelated"
+            />
           )}
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/images/game/survivor-side.png" alt="Você" className="absolute bottom-[6%] left-[38%] w-[5%] pixelated" />
+          <img
+            src="/images/game/survivor-side.png"
+            alt="Você"
+            className="absolute bottom-[6%] left-[38%] w-[8%] sm:w-[5%] pixelated"
+          />
           <span className="absolute top-2 left-3 rounded bg-black/60 px-2 py-0.5 font-mono text-xs text-plate">
             Rovers {signed(survival.reputation)}
           </span>
@@ -125,10 +144,18 @@ export function TraderGame() {
               <p className="text-xs">Pelos Rovers. Caçadores a caminho da sua última posição.</p>
             </div>
             <div className="flex flex-wrap gap-2">
-              <button type="button" onClick={() => confront("fight")} className="rounded bg-lazarus px-3 py-2 font-semibold text-plate">
+              <button
+                type="button"
+                onClick={() => confront("fight")}
+                className="rounded bg-lazarus px-3 py-2 font-semibold text-plate"
+              >
                 Lutar
               </button>
-              <button type="button" onClick={() => confront("flee")} className="rounded border border-plate/40 px-3 py-2 text-plate">
+              <button
+                type="button"
+                onClick={() => confront("flee")}
+                className="rounded border border-plate/40 px-3 py-2 text-plate"
+              >
                 Fugir
               </button>
               <button

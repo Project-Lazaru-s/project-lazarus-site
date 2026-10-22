@@ -18,20 +18,43 @@ type Props = {
 };
 
 /** Moldura comum dos encontros: apresentação, partida, resultado e "pular" sempre à mão. */
-export function GameFrame({ title, intro, phase, result, onStart, onSkip, retryLabel, onRetry, shake, children }: Props) {
+export function GameFrame({
+  title,
+  intro,
+  phase,
+  result,
+  onStart,
+  onSkip,
+  retryLabel,
+  onRetry,
+  shake,
+  children,
+}: Props) {
   return (
-    <div className={`relative overflow-hidden rounded border border-rust/50 bg-black ${shake ? "shake" : ""}`}>
+    <div
+      data-playing={phase === "playing" || undefined}
+      className={`relative overflow-hidden rounded border border-rust/50 bg-black ${shake ? "shake" : ""}`}
+    >
       {children}
 
       {phase === "intro" && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black/75 p-6 text-center">
-          <p className="font-stencil text-3xl text-plate">{title}</p>
+        // No celular a cena é baixa demais para o texto: o painel vai para baixo dela em vez de cobri-la.
+        <div className="flex flex-col items-center justify-center gap-3 border-t border-rust/40 bg-black/85 p-4 text-center sm:absolute sm:inset-0 sm:gap-4 sm:border-0 sm:bg-black/75 sm:p-6">
+          <p className="font-stencil text-2xl text-plate sm:text-3xl">{title}</p>
           <div className="max-w-md text-sm text-plate/80">{intro}</div>
           <div className="flex gap-3">
-            <button type="button" onClick={onStart} className="rounded bg-lazarus px-5 py-2 font-semibold text-plate hover:bg-lazarus/85">
+            <button
+              type="button"
+              onClick={onStart}
+              className="rounded bg-lazarus px-5 py-2 font-semibold text-plate hover:bg-lazarus/85"
+            >
               Começar
             </button>
-            <button type="button" onClick={onSkip} className="rounded border border-plate/30 px-4 py-2 text-sm text-plate/70 hover:text-plate">
+            <button
+              type="button"
+              onClick={onSkip}
+              className="rounded border border-plate/30 px-4 py-2 text-sm text-plate/70 hover:text-plate"
+            >
               Pular
             </button>
           </div>
@@ -39,17 +62,25 @@ export function GameFrame({ title, intro, phase, result, onStart, onSkip, retryL
       )}
 
       {phase === "over" && result && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/80 p-6 text-center">
-          <h3 className={`font-stencil text-4xl ${result.tone === "good" ? "text-radio" : "text-lazarus"}`}>{result.title}</h3>
+        <div className="flex flex-col items-center justify-center gap-3 border-t border-rust/40 bg-black/85 p-4 text-center sm:absolute sm:inset-0 sm:border-0 sm:bg-black/80 sm:p-6">
+          <h3 className={`font-stencil text-3xl sm:text-4xl ${result.tone === "good" ? "text-radio" : "text-lazarus"}`}>
+            {result.title}
+          </h3>
           <p className="max-w-md text-sm text-plate/80">{result.text}</p>
-          <button type="button" onClick={onRetry} className="rounded border border-plate/40 px-4 py-2 text-sm text-plate hover:border-sunset hover:text-sunset">
+          <button
+            type="button"
+            onClick={onRetry}
+            className="rounded border border-plate/40 px-4 py-2 text-sm text-plate hover:border-sunset hover:text-sunset"
+          >
             {retryLabel ?? "Tentar de novo"}
           </button>
         </div>
       )}
 
       {phase === "skipped" && (
-        <p className="absolute right-3 bottom-3 rounded bg-black/70 px-2 py-1 text-xs text-plate/60">Você pulou este encontro.</p>
+        <p className="absolute right-3 bottom-3 rounded bg-black/70 px-2 py-1 text-xs text-plate/60">
+          Você pulou este encontro.
+        </p>
       )}
     </div>
   );

@@ -15,6 +15,15 @@ describe("SurvivalHud", () => {
     expect(hud).toHaveTextContent("Especiais, Hollow e gás");
   });
 
+  it("folds the details away on phones until asked", async () => {
+    render(<SurvivalHud state={{ ...initialSurvival, day: 15 }} onSedative={() => {}} />);
+    const toggle = screen.getByRole("button", { name: "Mais" });
+    expect(screen.getByText("Saque 42%").parentElement).toHaveClass("max-sm:hidden");
+    await userEvent.click(toggle);
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByText("Saque 42%").parentElement).not.toHaveClass("max-sm:hidden");
+  });
+
   it("hides the fear moodle while calm", () => {
     render(<SurvivalHud state={initialSurvival} onSedative={() => {}} />);
     expect(screen.queryByRole("button", { name: /sedativo/i })).not.toBeInTheDocument();

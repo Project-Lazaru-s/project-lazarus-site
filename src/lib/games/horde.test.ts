@@ -7,6 +7,7 @@ import {
   nextWave,
   shoot,
   stepHorde,
+  touchAim,
   waveSize,
   withExtraAmmo,
   type HordeState,
@@ -154,5 +155,22 @@ describe("bodyShots", () => {
     state = shoot(state, walker.id, "body", fixed);
     state = shoot(state, walker.id, "head", fixed);
     expect(state.bodyShots).toBe(1);
+  });
+});
+
+describe("touchAim", () => {
+  it("snaps a tap close to the head onto the head", () => {
+    const aim = touchAim(0.85, 0.3);
+    expect(hitPart(aim.x, aim.y, 0)).toBe("head");
+  });
+
+  it("pulls a tap on the enlarged touch area back onto the body", () => {
+    const aim = touchAim(1.3, 0.7);
+    expect(hitPart(aim.x, aim.y, 0)).toBe("body");
+  });
+
+  it("keeps a clear body tap on the body", () => {
+    const aim = touchAim(0.5, 0.8);
+    expect(hitPart(aim.x, aim.y, 0)).toBe("body");
   });
 });

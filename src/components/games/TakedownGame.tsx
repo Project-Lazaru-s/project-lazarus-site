@@ -52,7 +52,11 @@ export function TakedownGame() {
       intro={
         <>
           <p>Três infectados de costas no beco. Chegue por trás e golpeie no momento certo: um erro e ele se vira.</p>
-          <p className="mt-2 text-plate/50">Espaço ou o botão “Golpear” quando o marcador cruzar a faixa verde.</p>
+          <p className="mt-2 text-plate/50">
+            <span className="pointer-coarse:hidden">Espaço ou o botão “Golpear”</span>
+            <span className="hidden pointer-coarse:inline">Toque em “Golpear”</span> quando o marcador cruzar a faixa
+            verde.
+          </p>
         </>
       }
       phase={phase === "playing" && state.done ? "over" : phase}
@@ -79,19 +83,27 @@ export function TakedownGame() {
             strike();
           }
         }}
-        className="relative aspect-[10/3] w-full bg-[url('/images/game/alley-bg.png')] bg-cover outline-none pixelated"
+        className="relative aspect-[16/9] sm:aspect-[10/3] w-full bg-[url('/images/game/alley-bg.png')] bg-cover outline-none pixelated"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/images/game/zombie-back.png" alt="" className="absolute bottom-[6%] left-[55%] w-[5%] pixelated" />
+        <img
+          src="/images/game/zombie-back.png"
+          alt=""
+          className="absolute bottom-[6%] left-[55%] w-[8%] sm:w-[5%] pixelated"
+        />
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/images/game/survivor-knife.png"
           alt="Você"
-          className="absolute bottom-[6%] w-[5%] pixelated transition-[left] duration-300"
+          className="absolute bottom-[6%] w-[8%] sm:w-[5%] pixelated transition-[left] duration-300"
           style={{ left: `${20 + (state.results.length / TAKEDOWN_ROUNDS) * 25}%` }}
         />
         {bitten > 0 && lastMissed && (
-          <div key={bitten} aria-hidden className="pointer-events-none absolute inset-0 bg-lazarus/30 motion-safe:animate-pulse" />
+          <div
+            key={bitten}
+            aria-hidden
+            className="pointer-events-none absolute inset-0 bg-lazarus/30 motion-safe:animate-pulse"
+          />
         )}
         <span className="absolute top-2 left-3 font-mono text-xs text-plate/80">
           Infectado {Math.min(state.results.length + 1, TAKEDOWN_ROUNDS)} de {TAKEDOWN_ROUNDS}

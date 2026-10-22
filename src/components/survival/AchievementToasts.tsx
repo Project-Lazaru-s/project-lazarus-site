@@ -18,18 +18,25 @@ export function AchievementToasts() {
   }, [state.toasts.length, play]);
 
   return (
-    <ol aria-label="Conquistas desbloqueadas" role="log" className="pointer-events-none fixed top-20 right-4 z-50 w-72 space-y-2">
+    <ol
+      aria-label="Conquistas desbloqueadas"
+      role="log"
+      className="pointer-events-none fixed inset-x-2 bottom-16 z-50 space-y-2 sm:top-20 sm:right-4 sm:bottom-auto sm:left-auto sm:w-72"
+    >
       {state.toasts.slice(-VISIBLE).map(({ id, n }) => {
         const a = achievement(id);
         if (!a) return null;
         return (
-          <li key={n} className="achievement-toast plate flex items-center gap-3 rounded-sm p-3 text-asphalt-deep">
+          <li
+            key={n}
+            className="achievement-toast plate flex items-center gap-2 rounded-sm p-2 text-asphalt-deep sm:gap-3 sm:p-3"
+          >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={a.icon} alt="" className="h-10 w-10 object-contain pixelated" />
+            <img src={a.icon} alt="" className="h-8 w-8 shrink-0 object-contain pixelated sm:h-10 sm:w-10" />
             <div>
               <p className="font-stencil text-[10px] tracking-[0.25em]">CONQUISTA</p>
-              <p className="font-stencil text-lg leading-tight text-lazarus">{a.title}</p>
-              <p className="text-xs text-asphalt-deep/70">{a.description}</p>
+              <p className="font-stencil text-base leading-tight text-lazarus sm:text-lg">{a.title}</p>
+              <p className="text-xs text-asphalt-deep/70 max-sm:hidden">{a.description}</p>
             </div>
           </li>
         );

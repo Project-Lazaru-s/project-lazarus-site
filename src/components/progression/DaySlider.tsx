@@ -24,15 +24,21 @@ export function DaySlider() {
           <h3 className="font-stencil text-5xl text-plate">Dia {day}</h3>
           <dl className="grid grid-cols-3 gap-4 font-mono text-sm">
             <div>
-              <dt className="text-[10px] tracking-widest text-plate/50 uppercase">Saque nos locais comuns</dt>
+              <dt className="text-xs tracking-widest sm:text-[10px] text-plate/50 uppercase">
+                Saque nos locais comuns
+              </dt>
               <dd className="text-2xl text-sunset">{world.commonLoot}%</dd>
             </div>
             <div>
-              <dt className="text-[10px] tracking-widest text-plate/50 uppercase">Saque nos locais arriscados</dt>
+              <dt className="text-xs tracking-widest sm:text-[10px] text-plate/50 uppercase">
+                Saque nos locais arriscados
+              </dt>
               <dd className="text-2xl text-sunset">{world.riskyLoot}%</dd>
             </div>
             <div>
-              <dt className="text-[10px] tracking-widest text-plate/50 uppercase">Teto de hostis por perto</dt>
+              <dt className="text-xs tracking-widest sm:text-[10px] text-plate/50 uppercase">
+                Teto de hostis por perto
+              </dt>
               <dd className={world.hostileCap ? "text-2xl text-lazarus" : "pt-2 text-xs text-plate/50"}>
                 {world.hostileCap ?? "sem número na tabela"}
               </dd>
@@ -48,7 +54,7 @@ export function DaySlider() {
             max={60}
             value={day}
             onChange={(e) => setDay(Number(e.target.value))}
-            className="w-full accent-lazarus"
+            className="w-full accent-lazarus pointer-coarse:h-8"
           />
         </label>
         <div role="group" aria-label="Dias importantes" className="mt-2 flex flex-wrap gap-1.5">
@@ -58,7 +64,7 @@ export function DaySlider() {
               type="button"
               aria-pressed={d === day}
               onClick={() => setDay(d)}
-              className={`rounded border px-2 py-0.5 font-mono text-xs ${
+              className={`rounded border px-2 py-0.5 font-mono text-xs pointer-coarse:min-h-11 pointer-coarse:min-w-11 pointer-coarse:text-sm ${
                 d === day ? "border-sunset text-sunset" : "border-plate/20 text-plate/50 hover:text-plate"
               }`}
             >

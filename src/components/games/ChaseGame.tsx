@@ -88,7 +88,7 @@ export function ChaseGame() {
             onClick={stride}
             className="w-full touch-manipulation rounded bg-lazarus px-4 py-3 font-semibold text-plate select-none active:scale-[0.98]"
           >
-            Correr <kbd className="ml-1 text-xs text-plate/60">espaço</kbd>
+            Correr <kbd className="ml-1 text-xs text-plate/60 pointer-coarse:hidden">espaço</kbd>
           </button>
         )}
         {state?.status === "escaped" && (

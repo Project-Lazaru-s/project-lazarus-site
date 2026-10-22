@@ -58,7 +58,7 @@ export function LootGame() {
       <div
         role="application"
         aria-label="Farmácia saqueada"
-        className="relative grid aspect-[10/3] w-full grid-cols-3 items-end gap-[8%] bg-[url('/images/game/pharmacy-bg.png')] bg-cover px-[14%] pb-[6%] pixelated"
+        className="relative grid aspect-[16/9] sm:aspect-[10/3] w-full grid-cols-3 items-end gap-[8%] bg-[url('/images/game/pharmacy-bg.png')] bg-cover px-[14%] pb-[6%] pixelated"
       >
         {cabinets.map((cabinet, i) => (
           <button

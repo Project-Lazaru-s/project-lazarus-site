@@ -19,7 +19,7 @@ export function CopyButton({ text }: { text: string }) {
       type="button"
       onClick={copy}
       aria-label={copied ? `${text} copiado` : `Copiar ${text}`}
-      className={`ml-1 rounded border px-1.5 py-0.5 font-mono text-[10px] align-middle transition ${
+      className={`ml-1 rounded border px-1.5 py-0.5 font-mono text-xs align-middle pointer-coarse:px-2.5 pointer-coarse:py-1.5 transition ${
         copied ? "border-radio/60 text-radio" : "border-plate/20 text-plate/50 hover:border-sunset hover:text-sunset"
       }`}
     >

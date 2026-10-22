@@ -11,7 +11,7 @@ export function Header() {
         </Link>
         {/* ponytail: <details> as the mobile menu, no JS state; swap for a client toggle if it needs animation */}
         <details className="group relative ml-auto xl:hidden">
-          <summary className="cursor-pointer list-none rounded border border-plate/30 px-3 py-1 text-sm text-plate">
+          <summary className="cursor-pointer list-none rounded border border-plate/30 px-3 py-1 text-sm text-plate pointer-coarse:px-4 pointer-coarse:py-2.5">
             Menu
           </summary>
           <div className="absolute right-0 mt-2 w-56 rounded border border-rust/40 bg-asphalt p-3">

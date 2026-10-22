@@ -8,6 +8,7 @@ import {
   hitPart,
   nextWave,
   shoot,
+  touchAim,
   stepHorde,
   waveSize,
   withExtraAmmo,
@@ -102,7 +103,9 @@ export function HordeGame() {
         ? KEYBOARD_AIM
         : (() => {
             const r = e.currentTarget.getBoundingClientRect();
-            return { x: (e.clientX - r.left) / r.width, y: (e.clientY - r.top) / r.height };
+            const x = (e.clientX - r.left) / r.width;
+            const y = (e.clientY - r.top) / r.height;
+            return (e.nativeEvent as PointerEvent).pointerType === "touch" ? touchAim(x, y) : { x, y };
           })();
     fire(z.id, hitPart(aim.x, aim.y, aimJitter(survival.fear, Math.random)));
   };
@@ -125,7 +128,11 @@ export function HordeGame() {
           tone: "good" as const,
         }
       : horde.status === "breached"
-        ? { title: "A barricada caiu", text: `Eles entraram na horda ${horde.wave}. Você morreu.`, tone: "bad" as const }
+        ? {
+            title: "A barricada caiu",
+            text: `Eles entraram na horda ${horde.wave}. Você morreu.`,
+            tone: "bad" as const,
+          }
         : undefined;
 
   return (
@@ -133,7 +140,10 @@ export function HordeGame() {
       title="Contenção"
       intro={
         <>
-          <p>A horda vem pela rua. Tiro na cabeça mata; no corpo, precisa de vários. O capacete do militar segura o primeiro.</p>
+          <p>
+            A horda vem pela rua. Tiro na cabeça mata; no corpo, precisa de vários. O capacete do militar segura o
+            primeiro.
+          </p>
           <p className="mt-2 text-plate/50">Cada tiro faz barulho e atrai mais deles. O medo treme a sua mira.</p>
         </>
       }
@@ -162,7 +172,7 @@ export function HordeGame() {
               type="button"
               aria-label={`${LABEL[z.kind]} a ${Math.max(0, Math.round(z.distance))} metros`}
               onClick={onZombie(z)}
-              className="absolute aspect-[1/2] -translate-x-1/2 cursor-crosshair focus-visible:outline-2 focus-visible:outline-radio"
+              className="absolute aspect-[1/2] -translate-x-1/2 cursor-crosshair focus-visible:outline-2 focus-visible:outline-radio pointer-coarse:before:absolute pointer-coarse:before:-inset-x-4 pointer-coarse:before:-inset-y-3 pointer-coarse:before:content-['']"
               style={place}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -171,7 +181,9 @@ export function HordeGame() {
           );
         })}
 
-        {flash > 0 && running && <div key={flash} aria-hidden className="muzzle-flash pointer-events-none absolute inset-0" />}
+        {flash > 0 && running && (
+          <div key={flash} aria-hidden className="muzzle-flash pointer-events-none absolute inset-0" />
+        )}
 
         <div className="pointer-events-none absolute top-2 left-3 flex gap-4 font-mono text-xs text-plate/80">
           <span>Horda {horde.wave}</span>

@@ -509,3 +509,13 @@ html[data-boot] .boot-screen {
   background: var(--color-asphalt-deep);
   box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.7);
 }
+
+/* Com um encontro em andamento, o carimbo do dia não cobre a cena; no celular, o rádio também espera. */
+body:has([data-playing]) .day-stamp {
+  display: none;
+}
+@media (width < 40rem) {
+  body:has([data-playing]) .radio-interrupt {
+    display: none;
+  }
+}

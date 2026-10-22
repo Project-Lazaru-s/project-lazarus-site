@@ -69,7 +69,9 @@ export function VoiceGame() {
       title="Fale baixo"
       intro={
         <>
-          <p>No Project Lazarus, a sua voz no Simple Voice Chat vira ruído no jogo. Teste aqui: fale, sussurre, grite.</p>
+          <p>
+            No Project Lazarus, a sua voz no Simple Voice Chat vira ruído no jogo. Teste aqui: fale, sussurre, grite.
+          </p>
           <p className="mt-2 text-plate/50">
             Usa o microfone só enquanto este encontro estiver aberto. O áudio é analisado no seu navegador; nada é
             gravado nem enviado.
@@ -93,7 +95,7 @@ export function VoiceGame() {
       onRetry={start}
     >
       <div role="application" aria-label="Sua voz e os infectados" className="bg-asphalt-deep">
-        <div className="relative aspect-[10/3] w-full overflow-hidden bg-[url('/images/game/street-bg.png')] bg-cover pixelated">
+        <div className="relative aspect-[16/9] sm:aspect-[10/3] w-full overflow-hidden bg-[url('/images/game/street-bg.png')] bg-cover pixelated">
           {[2.5, 10, 18].map((r) => (
             <span
               key={r}
@@ -112,12 +114,23 @@ export function VoiceGame() {
             />
           )}
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/images/game/survivor-side.png" alt="Você" className="absolute bottom-[6%] w-[5%] -translate-x-1/2 pixelated" style={{ left: toLeft(0) }} />
+          <img
+            src="/images/game/survivor-side.png"
+            alt="Você"
+            className="absolute bottom-[6%] w-[8%] sm:w-[5%] -translate-x-1/2 pixelated"
+            style={{ left: toLeft(0) }}
+          />
           {ZOMBIES.map((d, i) => (
-            <div key={d} className="absolute bottom-[6%] w-[5%] -translate-x-1/2" style={{ left: toLeft(d) }}>
-              {alerted[i] && <span className="absolute -top-6 left-1/2 -translate-x-1/2 font-stencil text-xl text-lazarus">!</span>}
+            <div key={d} className="absolute bottom-[6%] w-[8%] sm:w-[5%] -translate-x-1/2" style={{ left: toLeft(d) }}>
+              {alerted[i] && (
+                <span className="absolute -top-6 left-1/2 -translate-x-1/2 font-stencil text-xl text-lazarus">!</span>
+              )}
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/images/game/zombie-side.png" alt="" className={`w-full pixelated ${alerted[i] ? "" : "-scale-x-100"}`} />
+              <img
+                src="/images/game/zombie-side.png"
+                alt=""
+                className={`w-full pixelated ${alerted[i] ? "" : "-scale-x-100"}`}
+              />
             </div>
           ))}
           <span className="absolute top-2 left-3 flex items-center gap-2 rounded bg-black/60 px-2 py-0.5 font-mono text-xs text-radio">
@@ -162,7 +175,12 @@ export function VoiceGame() {
               />
             </label>
           )}
-          <button type="button" onClick={finish} disabled={!running} className="ml-auto rounded bg-lazarus px-3 py-1.5 font-semibold disabled:opacity-40">
+          <button
+            type="button"
+            onClick={finish}
+            disabled={!running}
+            className="ml-auto rounded bg-lazarus px-3 py-1.5 font-semibold disabled:opacity-40"
+          >
             Encerrar
           </button>
         </div>

@@ -1,4 +1,6 @@
-import type { ReactNode } from "react";
+"use client";
+
+import { type ReactNode, useState } from "react";
 import { items } from "@/content/items";
 import { isWanted } from "@/lib/games/negotiation";
 import {
@@ -62,19 +64,39 @@ export function SurvivalHud({ state, onSedative, onUse, children }: Props) {
     {},
   );
   const canCure = conditionMoodles(state).length > 0 && state.inventory.includes("antibiotic");
+  // No celular o painel fica recolhido (dia, sede, fome e medo); o resto abre com um toque.
+  const [open, setOpen] = useState(false);
+  const extra = open ? "" : "max-sm:hidden";
 
   return (
     <aside
       role="status"
       aria-label="Status do sobrevivente"
-      className="pointer-events-auto fixed bottom-4 left-4 z-30 w-48 rounded border border-rust/50 bg-asphalt-deep/90 p-2.5 font-mono text-[11px] text-plate/80 shadow-lg backdrop-blur"
+      className="pointer-events-auto fixed bottom-2 left-2 z-30 w-60 rounded border border-rust/50 bg-asphalt-deep/90 p-2 sm:bottom-4 sm:left-4 sm:w-48 sm:p-2.5 font-mono text-xs text-plate/80 sm:text-[11px] shadow-lg backdrop-blur"
     >
-      <p className="font-stencil text-xl text-plate">Dia {state.day}</p>
-      <p>Saque {lootForDay(state.day)}%</p>
-      <p className="text-plate/60">{threatForDay(state.day)}</p>
-      <div className="mt-2 space-y-1">
-        <NeedBar label="Sede" value={state.thirst} />
-        <NeedBar label="Fome" value={state.hunger} />
+      {/* Recolhido no celular, dia, sede/fome e "Mais" ficam numa linha só. */}
+      <div
+        className={`grid grid-cols-[1fr_auto] items-center gap-x-2 ${open ? "" : "max-sm:grid-cols-[auto_1fr_auto] max-sm:gap-x-3"}`}
+      >
+        <p className="font-stencil text-xl text-plate">Dia {state.day}</p>
+        <button
+          type="button"
+          aria-expanded={open}
+          onClick={() => setOpen(!open)}
+          className={`col-start-2 row-start-1 -my-1 -mr-1 min-h-9 rounded px-2 text-plate/70 hover:text-sunset sm:hidden ${open ? "" : "max-sm:col-start-3"}`}
+        >
+          {open ? "Menos" : "Mais"}
+        </button>
+        <div className={`col-span-2 ${extra}`}>
+          <p>Saque {lootForDay(state.day)}%</p>
+          <p className="text-plate/60">{threatForDay(state.day)}</p>
+        </div>
+        <div
+          className={`col-span-2 mt-2 space-y-1 ${open ? "" : "max-sm:col-span-1 max-sm:col-start-2 max-sm:row-start-1 max-sm:mt-0"}`}
+        >
+          <NeedBar label="Sede" value={state.thirst} />
+          <NeedBar label="Fome" value={state.hunger} />
+        </div>
       </div>
       {(canDrink || canEat) && (
         <div className="mt-1.5 flex gap-1">
@@ -104,7 +126,7 @@ export function SurvivalHud({ state, onSedative, onUse, children }: Props) {
         </p>
       )}
       {(state.kills > 0 || state.deaths > 0) && (
-        <p className="mt-1 text-plate/60">
+        <p className={`mt-1 text-plate/60 ${extra}`}>
           Abates {state.kills} · Mortes {state.deaths}
         </p>
       )}
@@ -113,7 +135,9 @@ export function SurvivalHud({ state, onSedative, onUse, children }: Props) {
         <ul className="mt-2 space-y-1 border-t border-rust/40 pt-2">
           {moodle && (
             <li className="flex items-center justify-between gap-2">
-              <span className={`flex items-center gap-1 font-semibold ${moodleColor[moodle]} motion-safe:animate-pulse`}>
+              <span
+                className={`flex items-center gap-1 font-semibold ${moodleColor[moodle]} motion-safe:animate-pulse`}
+              >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/images/game/moodle-fear.png" alt="" className="h-4 w-4 pixelated" />
                 {moodle}
@@ -128,7 +152,7 @@ export function SurvivalHud({ state, onSedative, onUse, children }: Props) {
             </li>
           )}
           {conditions.map((condition) => (
-            <li key={condition} className="flex items-center gap-1 font-semibold text-grass">
+            <li key={condition} className={`flex items-center gap-1 font-semibold text-grass ${extra}`}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={conditionIcon[condition]} alt="" className="h-4 w-4 pixelated" />
               {condition}
@@ -149,7 +173,7 @@ export function SurvivalHud({ state, onSedative, onUse, children }: Props) {
       )}
 
       {state.inventory.length > 0 && (
-        <ul aria-label="Inventário" className="mt-2 flex flex-wrap gap-1 border-t border-rust/40 pt-2">
+        <ul aria-label="Inventário" className={`mt-2 flex flex-wrap gap-1 border-t border-rust/40 pt-2 ${extra}`}>
           {(Object.keys(counts) as Item[]).map((item) => (
             <li key={item} title={items[item].label} className="flex items-center gap-0.5 rounded bg-black/40 px-1">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -161,7 +185,7 @@ export function SurvivalHud({ state, onSedative, onUse, children }: Props) {
         </ul>
       )}
 
-      {children && <div className="mt-2 border-t border-rust/40 pt-2">{children}</div>}
+      {children && <div className={`mt-2 border-t border-rust/40 pt-2 ${extra}`}>{children}</div>}
     </aside>
   );
 }

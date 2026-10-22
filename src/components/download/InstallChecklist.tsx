@@ -53,12 +53,12 @@ export function InstallChecklist({ steps }: { steps: ReactNode[] }) {
       <ol className="space-y-2">
         {steps.map((step, i) => (
           <li key={i}>
-            <label className="flex cursor-pointer items-start gap-3">
+            <label className="flex cursor-pointer items-start gap-3 pointer-coarse:py-1.5">
               <input
                 type="checkbox"
                 checked={done.includes(i)}
                 onChange={() => toggle(i)}
-                className="mt-1 size-4 shrink-0 accent-lazarus"
+                className="mt-1 size-4 shrink-0 accent-lazarus pointer-coarse:mt-0 pointer-coarse:size-6"
               />
               <span className={done.includes(i) ? "text-plate/50 line-through" : ""}>{step}</span>
             </label>

@@ -26,17 +26,17 @@ export function RadioInterrupt() {
       key={radio.day}
       role="log"
       aria-label="Transmissão de rádio"
-      className="radio-interrupt fixed right-4 bottom-4 z-40 w-80 max-w-[calc(100vw-2rem)] rounded border border-radio/50 bg-black/90 p-3 font-mono text-sm text-radio shadow-[0_0_24px_rgb(85_255_85/0.15)]"
+      className="radio-interrupt fixed inset-x-2 top-16 z-40 rounded text-xs sm:inset-x-auto sm:top-auto sm:right-4 sm:bottom-4 sm:w-80 sm:text-sm border border-radio/50 bg-black/90 p-2 font-mono text-radio sm:p-3 shadow-[0_0_24px_rgb(85_255_85/0.15)]"
     >
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-2 sm:gap-3">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/images/game/radio.png" alt="" className="h-8 w-8 shrink-0 pixelated" />
-        <p className="flex-1">{radio.message}</p>
+        <img src="/images/game/radio.png" alt="" className="h-6 w-6 shrink-0 pixelated sm:h-8 sm:w-8" />
+        <p className="flex-1 max-sm:line-clamp-2">{radio.message}</p>
       </div>
       <button
         type="button"
         onClick={tune}
-        className="mt-2 w-full rounded border border-radio/40 px-2 py-1 text-xs hover:bg-radio/10"
+        className="mt-2 w-full rounded border border-radio/40 px-2 py-1 text-xs hover:bg-radio/10 max-sm:mt-1.5"
       >
         Sintonizar
       </button>

@@ -34,7 +34,7 @@ export function FactionCard({ faction }: { faction: Faction }) {
               aria-pressed={flipped}
               aria-label={`Ver detalhes de ${faction.name}`}
               onClick={() => setFlipped(true)}
-              className="shrink-0 rounded border border-plate/20 px-2 py-1 font-mono text-xs text-plate/60 hover:border-sunset hover:text-sunset"
+              className="shrink-0 rounded border border-plate/20 px-2 py-1 font-mono text-xs pointer-coarse:min-h-11 pointer-coarse:px-3 text-plate/60 hover:border-sunset hover:text-sunset"
             >
               Virar ↻
             </button>
@@ -62,7 +62,7 @@ export function FactionCard({ faction }: { faction: Faction }) {
             <button
               type="button"
               onClick={() => setFlipped(false)}
-              className="shrink-0 rounded border border-asphalt-deep/30 px-2 py-1 font-mono text-xs hover:bg-asphalt-deep/10"
+              className="shrink-0 rounded border border-asphalt-deep/30 px-2 py-1 font-mono text-xs pointer-coarse:min-h-11 pointer-coarse:px-3 hover:bg-asphalt-deep/10"
             >
               Voltar
             </button>
@@ -83,7 +83,7 @@ export function FactionCard({ faction }: { faction: Faction }) {
               <span className="absolute -top-1 h-5 w-0.5 bg-asphalt-deep" style={{ left: onScale(WANTED_AT) }} />
               <span className="absolute -top-1 h-5 w-px bg-asphalt-deep/40" style={{ left: onScale(0) }} />
             </div>
-            <div className="relative mt-1 h-4 font-mono text-[10px]">
+            <div className="relative mt-1 h-4 font-mono text-xs sm:text-[10px]">
               <span className="absolute left-0">-100</span>
               <span
                 className="absolute -translate-x-1/2 font-semibold text-lazarus"

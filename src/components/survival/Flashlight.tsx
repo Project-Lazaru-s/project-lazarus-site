@@ -53,7 +53,10 @@ export function Flashlight({ children }: { children: ReactNode }) {
         />
       )}
       {night && spotted > 0 && (
-        <p key={spotted} className="flash-warning pointer-events-none absolute top-2 left-1/2 z-20 -translate-x-1/2 rounded bg-lazarus px-3 py-1 font-mono text-xs text-plate">
+        <p
+          key={spotted}
+          className="flash-warning pointer-events-none absolute top-2 left-1/2 z-20 -translate-x-1/2 rounded bg-lazarus px-3 py-1 font-mono text-xs text-plate"
+        >
           Eles viram a luz.
         </p>
       )}
@@ -61,7 +64,7 @@ export function Flashlight({ children }: { children: ReactNode }) {
         <button
           type="button"
           onClick={() => setLightsOn((on) => !on)}
-          className="absolute -top-9 right-0 z-20 rounded border border-plate/30 bg-asphalt-deep/80 px-2 py-1 font-mono text-xs text-plate/70 hover:text-plate"
+          className="absolute -top-9 right-0 z-20 rounded border border-plate/30 bg-asphalt-deep/80 px-2 py-1 font-mono text-xs pointer-coarse:-top-12 pointer-coarse:min-h-11 pointer-coarse:px-3 text-plate/70 hover:text-plate"
         >
           {lightsOn ? "Usar a lanterna" : "Acender a luz"}
         </button>

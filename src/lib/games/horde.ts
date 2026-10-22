@@ -76,6 +76,22 @@ export function hitPart(xRatio: number, yRatio: number, jitter: number): Part {
   return Math.abs(xRatio - 0.5) <= HEAD_HALF_WIDTH ? "head" : "miss";
 }
 
+// No toque o dedo cobre a cabeça inteira: um toque perto dela conta como mira na cabeça.
+const TOUCH_HEAD_SLACK_X = 0.15;
+const TOUCH_HEAD_SLACK_Y = 0.1;
+const clamp01 = (n: number) => Math.min(Math.max(n, 0), 1);
+
+/**
+ * Mira de um toque: traz de volta para o sprite um toque na área de toque ampliada e
+ * encaixa na cabeça o que caiu perto dela. O tremor do medo continua valendo depois.
+ */
+export function touchAim(xRatio: number, yRatio: number) {
+  const x = clamp01(xRatio);
+  const y = clamp01(yRatio);
+  const nearHead = y < HEAD_ROWS + TOUCH_HEAD_SLACK_Y && Math.abs(x - 0.5) <= HEAD_HALF_WIDTH + TOUCH_HEAD_SLACK_X;
+  return nearHead ? { x: 0.5, y: HEAD_ROWS / 2 } : { x, y: Math.max(y, HEAD_ROWS) };
+}
+
 /** Tremor da mira causado pelo medo (moodle Fearful/Panicked). */
 export function aimJitter(fear: number, random: Random) {
   return (random() * 2 - 1) * (fear / 100) * MAX_JITTER;
