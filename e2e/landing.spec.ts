@@ -183,6 +183,25 @@ test("progress: an achievement survives a reload and the run can be continued", 
   await expect(unlocked).toContainText("Silêncio absoluto");
 });
 
+test("the day turns with a stamp that goes away by itself", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("application", { name: "Rua com infectados" }).scrollIntoViewIfNeeded();
+  const stamp = page.locator(".day-stamp");
+  await expect(stamp).toContainText("Dia 3");
+  await expect(stamp).toBeHidden({ timeout: 4_000 });
+});
+
+test("by day 60 the street is full, and a click on one is a bonus kill", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("link", { name: /sobreviver de verdade/ }).scrollIntoViewIfNeeded();
+  await expect(hud(page)).toContainText("Dia 60");
+  const street = page.getByRole("button", { name: "Infectado na rua" });
+  await expect(street).toHaveCount(12);
+  const target = page.locator('button[aria-label="Infectado na rua"][data-dead="false"]').first();
+  await target.click({ force: true });
+  await expect(hud(page)).toContainText("Abates 1");
+});
+
 test.describe("mobile", () => {
   test.use({ viewport: { width: 375, height: 812 }, hasTouch: true });
 

@@ -11,9 +11,12 @@ import { VoiceGame } from "@/components/games/VoiceGame";
 import { WaterGame } from "@/components/games/WaterGame";
 import { Radio } from "@/components/radio/Radio";
 import { AchievementToasts } from "@/components/survival/AchievementToasts";
+import { AmbientZombies } from "@/components/survival/AmbientZombies";
 import { DaySection } from "@/components/survival/DaySection";
+import { DayStamp } from "@/components/survival/DayStamp";
 import { Dossier } from "@/components/survival/Dossier";
 import { ResumeBanner } from "@/components/survival/ResumeBanner";
+import { Scenery } from "@/components/survival/Scenery";
 import { ConnectedAtmosphere, ConnectedHud, SurvivalProvider } from "@/components/survival/SurvivalProvider";
 import { slogans } from "@/content/home";
 import { site } from "@/content/site";
@@ -33,6 +36,9 @@ export default function HomePage() {
     <SurvivalProvider persist>
       <ConnectedAtmosphere />
       <ConnectedHud />
+      <Scenery />
+      <AmbientZombies />
+      <DayStamp />
       <ResumeBanner />
       <AchievementToasts />
 
