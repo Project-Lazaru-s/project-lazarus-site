@@ -16,18 +16,36 @@ export const factions: Faction[] = [
       "Recebe os inimigos rendidos que você manda para lá.",
       "Vende perdão em troca de comida e ferro.",
     ],
+    image: {
+      src: "/images/factions/haven-skins.png",
+      width: 668,
+      height: 502,
+      alt: "Skins dos NPCs Haven, de frente e de costas: líder, guarda, armeiro, comerciante, médico e soldado de expedição",
+    },
   },
   {
     slug: "rovers",
     name: "Rovers",
     profile: "Nômades e saqueadores organizados, com acampamento de ônibus, tendas e torre.",
     details: ["Rivais dos Wardens.", "Saem em expedições e entram em escaramuças com o forte rival."],
+    image: {
+      src: "/images/factions/rovers-skins.png",
+      width: 668,
+      height: 502,
+      alt: "Skins dos NPCs Rovers, de frente e de costas: líder, guarda, armeiro, comerciante, médico e soldado de expedição",
+    },
   },
   {
     slug: "wardens",
     name: "Wardens",
     profile: "Milícia de forte murado, com arame farpado, bunker e arsenal.",
     details: ["Rivais dos Rovers.", "Saem em expedições e entram em escaramuças com o acampamento rival."],
+    image: {
+      src: "/images/factions/wardens-skins.png",
+      width: 668,
+      height: 502,
+      alt: "Skins dos NPCs Wardens, de frente e de costas: líder, guarda, armeiro, comerciante, médico e soldado de expedição",
+    },
   },
   {
     slug: "military",

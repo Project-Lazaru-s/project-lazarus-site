@@ -16,6 +16,9 @@ describe("/faccoes", () => {
   it("shows the skin previews with descriptive alt text", () => {
     render(<FactionsPage />);
     expect(screen.getByRole("img", { name: /the preacher/i })).toBeInTheDocument();
+    for (const name of ["Haven", "Rovers", "Wardens"]) {
+      expect(screen.getByRole("img", { name: new RegExp(`skins dos npcs ${name}`, "i") })).toBeInTheDocument();
+    }
   });
 
   it("explains the wanted system", () => {
