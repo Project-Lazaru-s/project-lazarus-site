@@ -133,6 +133,31 @@ body {
   }
 }
 
+/* "Eles viram a luz." */
+.flash-warning {
+  animation: fade-hold 2s forwards;
+}
+
+/* Transmissão de rádio: sobe do canto, fica o bastante para ler e some. */
+@keyframes radio-interrupt {
+  0% {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  6%,
+  90% {
+    opacity: 1;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+.radio-interrupt {
+  animation: radio-interrupt 9s ease-out forwards;
+}
+
 /* Carimbo da virada de dia: bate na tela, segura e some. */
 @keyframes day-stamp {
   0% {
@@ -234,7 +259,8 @@ body {
   }
   /* Sem movimento: carimbo e avisos só aparecem e somem, e a rua fica sem zumbis andando. */
   .day-stamp,
-  .achievement-toast {
+  .achievement-toast,
+  .radio-interrupt {
     animation-name: fade-hold;
   }
   .ambient-street {

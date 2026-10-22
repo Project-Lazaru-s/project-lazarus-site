@@ -3,7 +3,7 @@
 
 import { isWanted, PARDONED_REPUTATION, type Deal, type HunterOutcome } from "@/lib/games/negotiation";
 
-export type Item = "antibiotic" | "painkiller" | "bandage" | "water" | "ammo";
+export type Item = "antibiotic" | "painkiller" | "bandage" | "water" | "ammo" | "food";
 export type DrinkOutcome = "safe" | "sick" | "severe";
 export type Stomach = "ok" | "sick" | "severe";
 
@@ -35,6 +35,9 @@ export type SurvivalState = {
   inventory: Item[];
   stomach: Stomach;
   infected: boolean;
+  /** Sede e fome, de 100 (satisfeito) a 0. Caem com o tempo na página. */
+  thirst: number;
+  hunger: number;
   /** Reputação com os Rovers, de -100 a +100. */
   reputation: number;
   /** Som ligado pelo visitante (ambiente e efeitos). */
@@ -52,6 +55,7 @@ export type SurvivalAction =
   | { type: "death" }
   | { type: "fear"; amount: number }
   | { type: "sedative" }
+  | { type: "time"; seconds: number }
   | { type: "sound"; on: boolean }
   | { type: "loot"; item: Item | null }
   | { type: "drink"; outcome: DrinkOutcome }
@@ -72,6 +76,8 @@ export const initialSurvival: SurvivalState = {
   inventory: [],
   stomach: "ok",
   infected: false,
+  thirst: 100,
+  hunger: 100,
   reputation: 0,
   sound: false,
   record: {
@@ -98,6 +104,14 @@ const clamp = (value: number, min: number, max: number) => Math.min(max, Math.ma
 
 const STOMACH: Record<DrinkOutcome, Stomach> = { safe: "ok", sick: "sick", severe: "severe" };
 
+// Sede zera em ~8 min e fome em ~12 min de página aberta.
+const THIRST_PER_SECOND = 100 / (8 * 60);
+const HUNGER_PER_SECOND = 100 / (12 * 60);
+const WATER_RESTORES = 60;
+const FOOD_RESTORES = 50;
+// Vômito da disenteria (Lazarus Moodles) leva comida e água.
+const VOMIT = { thirst: 40, hunger: 30 };
+
 function withoutItems(inventory: Item[], items: Item[]) {
   return items.reduce((left, item) => {
     const index = left.indexOf(item);
@@ -116,6 +130,8 @@ function consume(state: SurvivalState, item: Item): SurvivalState {
   const index = state.inventory.indexOf(item);
   if (index === -1) return state;
   const inventory = state.inventory.toSpliced(index, 1);
+  if (item === "water") return { ...state, inventory, thirst: clamp(state.thirst + WATER_RESTORES, 0, 100) };
+  if (item === "food") return { ...state, inventory, hunger: clamp(state.hunger + FOOD_RESTORES, 0, 100) };
   if (item !== "antibiotic") return { ...state, inventory };
   // Antibiótico cura disenteria e infecção.
   const wasIll = state.stomach !== "ok" || state.infected;
@@ -141,6 +157,12 @@ export function survivalReducer(state: SurvivalState, action: SurvivalAction): S
       return { ...state, fear: clamp(state.fear + action.amount, 0, 100) };
     case "sedative":
       return { ...state, fear: 0 };
+    case "time":
+      return {
+        ...state,
+        thirst: clamp(state.thirst - THIRST_PER_SECOND * action.seconds, 0, 100),
+        hunger: clamp(state.hunger - HUNGER_PER_SECOND * action.seconds, 0, 100),
+      };
     case "sound":
       return { ...state, sound: action.on };
     case "loot":
@@ -149,8 +171,15 @@ export function survivalReducer(state: SurvivalState, action: SurvivalAction): S
         inventory: action.item ? [...state.inventory, action.item] : state.inventory,
         record: { ...record, lootOpened: record.lootOpened + 1, lootFound: record.lootFound + (action.item ? 1 : 0) },
       };
-    case "drink":
-      return { ...state, stomach: STOMACH[action.outcome] };
+    case "drink": {
+      const vomit = action.outcome !== "safe";
+      return {
+        ...state,
+        stomach: STOMACH[action.outcome],
+        thirst: vomit ? 100 - VOMIT.thirst : 100,
+        hunger: vomit ? clamp(state.hunger - VOMIT.hunger, 0, 100) : state.hunger,
+      };
+    }
     case "takedown":
       return action.success
         ? { ...state, kills: state.kills + 1, record: { ...record, takedowns: record.takedowns + 1 } }
@@ -211,6 +240,16 @@ export function survivalReducer(state: SurvivalState, action: SurvivalAction): S
           return state;
       }
   }
+}
+
+/** Moodles de sede e fome (Legendary Survival Overhaul + Diet). */
+export function needsMoodles(state: SurvivalState) {
+  const moodles: string[] = [];
+  if (state.thirst <= 0) moodles.push("Dehydrated");
+  else if (state.thirst <= 25) moodles.push("Thirsty");
+  if (state.hunger <= 0) moodles.push("Starving");
+  else if (state.hunger <= 25) moodles.push("Hungry");
+  return moodles;
 }
 
 export function conditionMoodles(state: SurvivalState) {

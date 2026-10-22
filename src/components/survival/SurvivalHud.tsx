@@ -5,6 +5,7 @@ import {
   conditionMoodles,
   fearMoodle,
   lootForDay,
+  needsMoodles,
   threatForDay,
   type Item,
   type SurvivalState,
@@ -15,7 +16,34 @@ const conditionIcon: Record<string, string> = {
   Sick: "/images/game/moodle-sick.png",
   "Severely Sick": "/images/game/moodle-sick.png",
   Infection: "/images/game/moodle-infection.png",
+  Thirsty: "/images/game/water-bottle.png",
+  Dehydrated: "/images/game/water-bottle.png",
+  Hungry: "/images/game/item-food.png",
+  Starving: "/images/game/item-food.png",
 };
+
+/** Barra de necessidade (sede/fome), de 0 a 100. */
+function NeedBar({ label, value }: { label: string; value: number }) {
+  const rounded = Math.round(value);
+  const color = rounded <= 25 ? "bg-lazarus" : rounded <= 50 ? "bg-sunset" : "bg-plate/60";
+  return (
+    <div className="flex items-center gap-2">
+      <span className="w-9 text-plate/60">{label}</span>
+      <div
+        role="meter"
+        aria-label={label}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={rounded}
+        className="h-1.5 flex-1 rounded bg-black/60"
+      >
+        <div className={`h-full rounded transition-[width] duration-500 ${color}`} style={{ width: `${rounded}%` }} />
+      </div>
+    </div>
+  );
+}
+
+const NEED_USE_BELOW = 90; // só oferece beber/comer se fizer diferença
 
 type Props = {
   state: SurvivalState;
@@ -26,12 +54,14 @@ type Props = {
 
 export function SurvivalHud({ state, onSedative, onUse, children }: Props) {
   const moodle = fearMoodle(state.fear);
-  const conditions = conditionMoodles(state);
+  const conditions = [...conditionMoodles(state), ...needsMoodles(state)];
+  const canDrink = state.inventory.includes("water") && state.thirst < NEED_USE_BELOW;
+  const canEat = state.inventory.includes("food") && state.hunger < NEED_USE_BELOW;
   const counts = state.inventory.reduce<Partial<Record<Item, number>>>(
     (acc, item) => ({ ...acc, [item]: (acc[item] ?? 0) + 1 }),
     {},
   );
-  const canCure = conditions.length > 0 && state.inventory.includes("antibiotic");
+  const canCure = conditionMoodles(state).length > 0 && state.inventory.includes("antibiotic");
 
   return (
     <aside
@@ -42,6 +72,32 @@ export function SurvivalHud({ state, onSedative, onUse, children }: Props) {
       <p className="font-stencil text-xl text-plate">Dia {state.day}</p>
       <p>Saque {lootForDay(state.day)}%</p>
       <p className="text-plate/60">{threatForDay(state.day)}</p>
+      <div className="mt-2 space-y-1">
+        <NeedBar label="Sede" value={state.thirst} />
+        <NeedBar label="Fome" value={state.hunger} />
+      </div>
+      {(canDrink || canEat) && (
+        <div className="mt-1.5 flex gap-1">
+          {canDrink && (
+            <button
+              type="button"
+              onClick={() => onUse?.("water")}
+              className="flex-1 rounded border border-plate/30 px-1 py-0.5 hover:border-sunset hover:text-sunset"
+            >
+              Beber água
+            </button>
+          )}
+          {canEat && (
+            <button
+              type="button"
+              onClick={() => onUse?.("food")}
+              className="flex-1 rounded border border-plate/30 px-1 py-0.5 hover:border-sunset hover:text-sunset"
+            >
+              Comer
+            </button>
+          )}
+        </div>
+      )}
       {isWanted(state.reputation) && (
         <p className="mt-1 rounded bg-lazarus px-1.5 py-0.5 text-center font-semibold tracking-widest text-plate uppercase">
           Procurado · Rovers

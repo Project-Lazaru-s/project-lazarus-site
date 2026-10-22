@@ -6,4 +6,5 @@ export const items: Record<Item, { label: string; icon: string }> = {
   bandage: { label: "Bandagem", icon: "/images/game/item-bandage.png" },
   water: { label: "Água engarrafada", icon: "/images/game/water-bottle.png" },
   ammo: { label: "Munição", icon: "/images/game/item-ammo.png" },
+  food: { label: "Comida enlatada", icon: "/images/game/item-food.png" },
 };

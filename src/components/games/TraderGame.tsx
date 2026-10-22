@@ -16,7 +16,7 @@ import {
 import type { Item } from "@/lib/survival/survival";
 import { GameFrame, type Phase } from "./GameFrame";
 
-const WANTS: Item[] = ["antibiotic", "ammo"];
+const WANTS: Item[] = ["antibiotic", "ammo", "food"];
 
 const stanceLabel: Record<Stance, string> = { trade: "Trocar", haggle: "Pechinchar", intimidate: "Intimidar" };
 

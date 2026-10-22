@@ -10,11 +10,13 @@ import { TraderGame } from "@/components/games/TraderGame";
 import { VoiceGame } from "@/components/games/VoiceGame";
 import { WaterGame } from "@/components/games/WaterGame";
 import { Radio } from "@/components/radio/Radio";
+import { RadioInterrupt } from "@/components/radio/RadioInterrupt";
 import { AchievementToasts } from "@/components/survival/AchievementToasts";
 import { AmbientZombies } from "@/components/survival/AmbientZombies";
 import { DaySection } from "@/components/survival/DaySection";
 import { DayStamp } from "@/components/survival/DayStamp";
 import { Dossier } from "@/components/survival/Dossier";
+import { Flashlight } from "@/components/survival/Flashlight";
 import { ResumeBanner } from "@/components/survival/ResumeBanner";
 import { Scenery } from "@/components/survival/Scenery";
 import { ConnectedAtmosphere, ConnectedHud, SurvivalProvider } from "@/components/survival/SurvivalProvider";
@@ -33,7 +35,7 @@ function Chapter({ day, title, children }: { day: number; title: string; childre
 
 export default function HomePage() {
   return (
-    <SurvivalProvider persist>
+    <SurvivalProvider persist clock>
       <ConnectedAtmosphere />
       <ConnectedHud />
       <Scenery />
@@ -41,6 +43,7 @@ export default function HomePage() {
       <DayStamp />
       <ResumeBanner />
       <AchievementToasts />
+      <RadioInterrupt />
 
       <DaySection day={0} aria-label="Apresentação" className="relative isolate overflow-hidden">
         <Image
@@ -137,7 +140,9 @@ export default function HomePage() {
           </p>
         </Chapter>
         <div className="mx-auto max-w-4xl">
-          <HordeGame />
+          <Flashlight>
+            <HordeGame />
+          </Flashlight>
         </div>
       </DaySection>
 
@@ -148,7 +153,9 @@ export default function HomePage() {
             Errar é levar uma mordida.
           </p>
         </Chapter>
-        <TakedownGame />
+        <Flashlight>
+          <TakedownGame />
+        </Flashlight>
       </DaySection>
 
       <DaySection day={15} className="mx-auto grid max-w-6xl gap-8 px-4 py-24 lg:grid-cols-[1.4fr_1fr] lg:items-center">

@@ -5,6 +5,7 @@ import {
   fearMoodle,
   initialSurvival,
   lootForDay,
+  needsMoodles,
   rank,
   shareText,
   survivalReducer,
@@ -224,5 +225,49 @@ describe("sound", () => {
   it("starts muted and follows the visitor's choice", () => {
     expect(initialSurvival.sound).toBe(false);
     expect(survivalReducer(initialSurvival, { type: "sound", on: true }).sound).toBe(true);
+  });
+});
+
+describe("thirst and hunger", () => {
+  it("start full and drop while time passes, thirst faster than hunger", () => {
+    expect(initialSurvival).toMatchObject({ thirst: 100, hunger: 100 });
+    const later = survivalReducer(initialSurvival, { type: "time", seconds: 120 });
+    expect(later.thirst).toBeLessThan(100);
+    expect(later.hunger).toBeLessThan(100);
+    expect(100 - later.thirst).toBeGreaterThan(100 - later.hunger);
+  });
+
+  it("never go below zero", () => {
+    const state = survivalReducer(initialSurvival, { type: "time", seconds: 3600 });
+    expect(state).toMatchObject({ thirst: 0, hunger: 0 });
+  });
+
+  it("bottled water and canned food bring them back", () => {
+    const empty = { ...initialSurvival, thirst: 10, hunger: 10, inventory: ["water" as const, "food" as const] };
+    let state = survivalReducer(empty, { type: "use", item: "water" });
+    state = survivalReducer(state, { type: "use", item: "food" });
+    expect(state.thirst).toBeGreaterThan(50);
+    expect(state.hunger).toBeGreaterThan(50);
+    expect(state.inventory).toEqual([]);
+  });
+
+  it("drinking quenches thirst, but dysentery throws up water and food", () => {
+    const thirsty = { ...initialSurvival, thirst: 20, hunger: 80 };
+    expect(survivalReducer(thirsty, { type: "drink", outcome: "safe" })).toMatchObject({ thirst: 100, hunger: 80 });
+    const sick = survivalReducer(thirsty, { type: "drink", outcome: "sick" });
+    expect(sick.thirst).toBeLessThan(100);
+    expect(sick.hunger).toBeLessThan(80);
+  });
+});
+
+describe("needs moodles", () => {
+  it.each([
+    [{ thirst: 30, hunger: 30 }, []],
+    [{ thirst: 20, hunger: 100 }, ["Thirsty"]],
+    [{ thirst: 0, hunger: 100 }, ["Dehydrated"]],
+    [{ thirst: 100, hunger: 25 }, ["Hungry"]],
+    [{ thirst: 100, hunger: 0 }, ["Starving"]],
+  ])("%o → %o", (needs, moodles) => {
+    expect(needsMoodles({ ...initialSurvival, ...needs })).toEqual(moodles);
   });
 });

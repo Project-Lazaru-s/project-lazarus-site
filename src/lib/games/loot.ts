@@ -2,7 +2,7 @@
 import type { Item } from "@/lib/survival/survival";
 import type { Random } from "./random";
 
-export const PHARMACY_LOOT: Item[] = ["antibiotic", "painkiller", "bandage", "water"];
+export const PHARMACY_LOOT: Item[] = ["antibiotic", "painkiller", "bandage", "water", "food"];
 
 export function openCabinet(lootPercent: number, random: Random): Item | null {
   const roll = random();

@@ -76,11 +76,32 @@ function readStorage() {
   }
 }
 
-type Props = { children: ReactNode; initial?: Partial<SurvivalState>; persist?: boolean };
+type Props = {
+  children: ReactNode;
+  initial?: Partial<SurvivalState>;
+  /** Salva a partida no navegador (só a landing). */
+  persist?: boolean;
+  /** Relógio da sede e da fome (só a landing). */
+  clock?: boolean;
+};
 
-export function SurvivalProvider({ children, initial, persist = false }: Props) {
+const CLOCK_SECONDS = 5;
+
+/** Desconta o tempo de página aberta; parado com a aba escondida. */
+function useNeedsClock(enabled: boolean, dispatch: Dispatch<RunAction>) {
+  useEffect(() => {
+    if (!enabled) return;
+    const id = setInterval(() => {
+      if (document.visibilityState === "visible") dispatch({ type: "time", seconds: CLOCK_SECONDS });
+    }, CLOCK_SECONDS * 1000);
+    return () => clearInterval(id);
+  }, [enabled, dispatch]);
+}
+
+export function SurvivalProvider({ children, initial, persist = false, clock = false }: Props) {
   const [state, dispatch] = useReducer(runReducer, { ...initialSurvival, ...initial });
   useDayTracking(state.day, dispatch);
+  useNeedsClock(clock, dispatch);
 
   const saved = useSavedRun(persist);
   // Com uma partida salva, nada é gravado até o visitante escolher: rolar a página não apaga o progresso.

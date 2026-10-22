@@ -7,10 +7,13 @@ export const SAVE_KEY = "lazarus:run:v1";
 
 type Storage = Pick<globalThis.Storage, "getItem" | "setItem" | "removeItem">;
 
-const ITEMS: Item[] = ["antibiotic", "painkiller", "bandage", "water", "ammo"];
+const ITEMS: Item[] = ["antibiotic", "painkiller", "bandage", "water", "ammo", "food"];
 const STOMACHS: Stomach[] = ["ok", "sick", "severe"];
 const CHESTS: unknown[] = [null, "forced", "picked", "picked-clean"];
 const FLAGS = ["stealthClean", "cleanHorde", "wanted", "huntersSurvived", "voiceQuiet", "cured"];
+
+// Campos que saves antigos podem não ter: se vierem, precisam estar na faixa.
+const optionalPercent = (v: unknown) => v === undefined || (typeof v === "number" && v >= 0 && v <= 100);
 
 const int = (v: unknown, min: number, max: number) =>
   typeof v === "number" && Number.isInteger(v) && v >= min && v <= max;
@@ -32,6 +35,8 @@ function valid(raw: unknown): raw is SurvivalState {
     s.inventory.every((i) => ITEMS.includes(i)) &&
     STOMACHS.includes(s.stomach as Stomach) &&
     typeof s.infected === "boolean" &&
+    optionalPercent(s.thirst) &&
+    optionalPercent(s.hunger) &&
     Array.isArray(s.achievements) &&
     (r.stealthBest === null || (typeof r.stealthBest === "number" && r.stealthBest > 0)) &&
     int(r.hordesHeld, 0, 999) &&

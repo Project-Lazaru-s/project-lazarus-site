@@ -100,3 +100,17 @@ describe("hasProgress", () => {
     expect(hasProgress({ ...initialSurvival, achievements: ["silencio"] })).toBe(true);
   });
 });
+
+describe("older saves", () => {
+  it("load with full thirst and hunger when the save predates them", () => {
+    const old: Record<string, unknown> = { ...run };
+    delete old.thirst;
+    delete old.hunger;
+    const loaded = loadRun(memoryStorage({ [SAVE_KEY]: JSON.stringify(old) }));
+    expect(loaded).toMatchObject({ thirst: 100, hunger: 100, day: 13 });
+  });
+
+  it("reject needs out of range", () => {
+    expect(loadRun(memoryStorage({ [SAVE_KEY]: JSON.stringify({ ...run, thirst: 500 }) }))).toBeNull();
+  });
+});

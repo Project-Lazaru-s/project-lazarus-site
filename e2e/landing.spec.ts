@@ -198,8 +198,32 @@ test("by day 60 the street is full, and a click on one is a bonus kill", async (
   const street = page.getByRole("button", { name: "Infectado na rua" });
   await expect(street).toHaveCount(12);
   const target = page.locator('button[aria-label="Infectado na rua"][data-dead="false"]').first();
-  await target.click({ force: true });
+  await target.dispatchEvent("click"); // o rádio do canto pode estar por cima
   await expect(hud(page)).toContainText("Abates 1");
+});
+
+test("needs: thirst and hunger live in the HUD", async ({ page }) => {
+  await page.goto("/");
+  await expect(hud(page).getByRole("meter", { name: "Sede" })).toHaveAttribute("aria-valuenow", "100");
+  await expect(hud(page).getByRole("meter", { name: "Fome" })).toBeVisible();
+});
+
+test("the radio breaks in on day 4 and tunes to the water encounter", async ({ page }) => {
+  await page.goto("/");
+  await page.locator('[data-day="4"]').scrollIntoViewIfNeeded();
+  const radio = page.getByRole("log", { name: "Transmissão de rádio" });
+  await expect(radio).toContainText("só bebam lacrada");
+  await radio.getByRole("button", { name: "Sintonizar" }).click();
+  await expect(page.getByRole("application", { name: "Fontes de água" })).toBeInViewport();
+});
+
+test("from day 10 the horde is fought by flashlight, and the light can be switched on", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("application", { name: "Contenção de horda" }).scrollIntoViewIfNeeded();
+  await expect(hud(page)).toContainText("Dia 10");
+  await expect(page.locator("[data-flashlight]").first()).toBeAttached();
+  await page.getByRole("button", { name: "Acender a luz" }).first().click();
+  await expect(page.locator("[data-flashlight]")).toHaveCount(1);
 });
 
 test.describe("mobile", () => {
