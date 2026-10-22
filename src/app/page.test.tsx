@@ -29,6 +29,22 @@ describe("/ (home)", () => {
     }
   });
 
+  it("is a journey through the days, in order", () => {
+    const { container } = render(<HomePage />);
+    const days = [...container.querySelectorAll<HTMLElement>("[data-day]")].map((s) => Number(s.dataset.day));
+    expect(days[0]).toBe(0);
+    expect(days.at(-1)).toBe(60);
+    expect(days).toEqual([...days].sort((a, b) => a - b));
+  });
+
+  it("has the stealth and horde encounters, the radio and the survivor HUD", () => {
+    render(<HomePage />);
+    expect(screen.getByRole("application", { name: /rua com infectados/i })).toBeInTheDocument();
+    expect(screen.getByRole("application", { name: /contenção de horda/i })).toBeInTheDocument();
+    expect(screen.getByRole("log", { name: /rádio/i })).toBeInTheDocument();
+    expect(screen.getByRole("status", { name: /sobrevivente/i })).toHaveTextContent("Dia 0");
+  });
+
   it("never mentions alpha builds", () => {
     const { container } = render(<HomePage />);
     expect(container.textContent?.toLowerCase()).not.toContain("alpha");

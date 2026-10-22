@@ -26,6 +26,9 @@ src/app/            rotas: só compõem páginas
 src/components/     UI (layout/, ui/, mods/, blog/, releases/)
 src/content/        dados tipados do site: links, mods, facções, progressão, sistemas, créditos
 src/lib/            regras: blog (leitura de posts), releases (API do GitHub), markdown, formatação
+src/lib/games/      motores puros dos minigames (furtividade, horda), testados sem navegador
+src/lib/survival/   estado do sobrevivente na landing (dias, medo, abates) e som ambiente sintetizado
+public/images/game/ sprites em pixel art (gerados com o Codex)
 e2e/                testes de ponta a ponta
 ```
 
