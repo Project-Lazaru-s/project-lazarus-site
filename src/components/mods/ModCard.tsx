@@ -20,7 +20,7 @@ export function ModCard({ mod }: { mod: LazarusMod }) {
         />
       </div>
       <div className="p-5">
-        <div className="flex items-baseline justify-between gap-3">
+        <div className="flex items-center justify-between gap-3">
           <h2 id={titleId} className="font-stencil text-xl">
             <Link
               href={`/mods/${mod.slug}`}

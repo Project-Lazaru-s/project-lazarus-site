@@ -3,8 +3,12 @@ import { expect, test } from "@playwright/test";
 test("Progressão: dragging to day 45 shows the world of that day", async ({ page }) => {
   await page.goto("/progressao");
   const slider = page.getByRole("slider", { name: "Dia" });
-  await slider.fill("45");
-  await expect(page.getByRole("heading", { name: "Dia 45" })).toBeVisible();
+  // No dev server o input pode receber o valor antes da hidratação; repete (zerando antes) até o React reagir.
+  await expect(async () => {
+    await slider.fill("0");
+    await slider.fill("45");
+    await expect(page.getByRole("heading", { name: "Dia 45" })).toBeVisible({ timeout: 1000 });
+  }).toPass();
   await expect(page.getByText("Teto de hostis por perto").locator("xpath=following-sibling::dd")).toHaveText("90");
   await page.getByRole("group", { name: "Dias importantes" }).getByRole("button", { name: "14" }).click();
   await expect(page.getByRole("list", { name: "Ameaças ativas" }).locator("li", { hasText: "Runners em dobro." })).toContainText("Novo");

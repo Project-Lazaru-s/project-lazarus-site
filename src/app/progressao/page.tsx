@@ -18,7 +18,7 @@ export default function ProgressionPage() {
         </p>
       </PageHeader>
       <DaySlider />
-      <ol aria-label="Linha do tempo da dificuldade" className="mx-auto max-w-3xl px-4 pb-20">
+      <ol aria-label="Linha do tempo da dificuldade" className="mx-auto max-w-6xl px-4 pb-20 *:max-w-3xl">
         {progression.map((stage) => (
           <li
             key={stage.from}

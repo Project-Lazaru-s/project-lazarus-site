@@ -456,21 +456,16 @@ html[data-boot] .boot-screen {
     inset 0 -1px 0 rgb(0 0 0 / 0.25),
     0 1px 2px rgb(0 0 0 / 0.5);
 }
+/* O furo é fundo, não um ::before: um item vazio no flex jogava a linha de base para a borda de baixo. */
 .dogtag {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4em;
+  display: inline-block;
   border-radius: 999px 0.35em 0.35em 999px;
-  padding: 0.15em 0.7em 0.15em 0.45em;
+  padding: 0.15em 0.7em 0.15em 1.2em;
   font-family: var(--font-mono, ui-monospace, monospace);
-}
-.dogtag::before {
-  content: "";
-  width: 0.5em;
-  height: 0.5em;
-  border-radius: 999px;
-  background: var(--color-asphalt-deep);
-  box-shadow: inset 0 1px 1px rgb(0 0 0 / 0.6);
+  line-height: 1.4;
+  background:
+    radial-gradient(circle at 0.65em 50%, var(--color-asphalt-deep) 0.22em, transparent 0.27em),
+    linear-gradient(160deg, #d9d6cc, #a9a59a 55%, #c9c5b9);
 }
 
 /* Progresso de leitura do blog: barra de stamina que esvazia com o scroll. Sem suporte, some. */

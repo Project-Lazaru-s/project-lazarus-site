@@ -18,7 +18,7 @@ export default async function ModPage({ params }: PageProps<"/mods/[slug]">) {
   if (!mod) notFound();
 
   return (
-    <article className="mx-auto max-w-4xl px-4 py-12">
+    <article className="mx-auto max-w-6xl px-4 py-12 *:max-w-4xl">
       <Link href="/mods" className="text-sm text-plate/60 hover:text-plate">
         ← Mods Lazarus
       </Link>
@@ -31,7 +31,7 @@ export default async function ModPage({ params }: PageProps<"/mods/[slug]">) {
         sizes="(min-width: 896px) 896px, 100vw"
         className="mt-6 rounded border border-rust/40"
       />
-      <header className="mt-8 flex flex-wrap items-baseline gap-4">
+      <header className="mt-8 flex flex-wrap items-center gap-4">
         <h1 className="font-stencil text-4xl text-plate sm:text-5xl">{mod.name}</h1>
         <span className="dogtag text-sm">v{mod.version}</span>
       </header>
