@@ -12,7 +12,7 @@ export default function ModsPage() {
   return (
     <>
       <PageHeader title="Mods Lazarus">
-        <p>Oito mods escritos para o Project Lazarus. Cada um tem código aberto para leitura no GitHub.</p>
+        <p>Oito mods escritos para o Project Lazarus. O código de cada um está no GitHub.</p>
       </PageHeader>
       <section className="mx-auto grid max-w-6xl gap-6 px-4 pb-20 sm:grid-cols-2 lg:grid-cols-3">
         {lazarusMods.map((mod) => (
