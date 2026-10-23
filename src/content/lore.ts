@@ -30,12 +30,12 @@ export const archive: ArchiveEntry[] = [
   {
     sealed: false,
     code: "Arquivo 02",
-    meta: "Dossiês de origem · jogável · Haven aberto",
+    meta: "4 dossiês de origem · jogável · ~12 min",
     slug: "antes-das-bandeiras",
     title: "Antes das Bandeiras",
     summary:
       "Quatro pastas confidenciais: como Haven, Rovers, Wardens e Military começaram, antes de existir qualquer facção.",
-    minutes: 3,
+    minutes: 10,
     cover: "/images/lore/origens/capa-origens.png",
   },
   { sealed: true, code: "Arquivo 03" },

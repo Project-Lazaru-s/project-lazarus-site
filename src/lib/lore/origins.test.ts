@@ -4,6 +4,8 @@ import {
   available,
   crewVerdict,
   entryVerdict,
+  ledgerBalance,
+  quarantineVerdict,
   retreatAt,
   cuesFor,
   decodeSave,
@@ -40,18 +42,15 @@ describe("Antes das Bandeiras: script", () => {
     expect(havenScript.at(-1)?.kind).toBe("end");
   });
 
-  it("Haven, Rovers and Wardens are open; Military is still sealed; the other folders are sealed", () => {
-    expect(available("haven")).toBe(true);
-    for (const id of ["military"] as const) expect(available(id)).toBe(false);
+  it("all four folders are open, in the guide's order", () => {
+    for (const id of ["haven", "rovers", "wardens", "military"] as const) expect(available(id)).toBe(true);
     expect(dossiers.map((d) => d.id)).toEqual(["haven", "rovers", "wardens", "military"]);
   });
 });
 
 describe("Antes das Bandeiras: reducer", () => {
   it("opens a folder, waits at each gate and only the right gate opens it", () => {
-    let s = reduce(START, { type: "open", faction: "military" });
-    expect(s).toBe(START); // lacrada
-    s = reduce(START, { type: "open", faction: "haven" });
+    let s = reduce(START, { type: "open", faction: "haven" });
     expect(s.open).toBe("haven");
     const gateAt = havenScript.findIndex((x) => x.kind === "gate");
     s = { ...s, at: { haven: gateAt } };
@@ -173,5 +172,26 @@ describe("Antes das Bandeiras: Wardens gates", () => {
     expect(retreatAt(0)).toEqual({ outside: 4, distance: 6, overrun: false });
     expect(retreatAt(4)).toEqual({ outside: 0, distance: 2, overrun: false });
     expect(retreatAt(5).overrun).toBe(true); // um passo a mais e a horda chega
+  });
+});
+
+describe("Antes das Bandeiras: Military gates", () => {
+  it("runs Military as 3 parts with quarantine marks, two orders and the dose count", () => {
+    const ids = scriptFor("military").flatMap((s) => (s.kind === "gate" ? [s.gate] : []));
+    expect(ids).toEqual(["quarentena", "ordens", "doses"]);
+  });
+
+  it("marks only the buildings with signs of infection", () => {
+    expect(quarantineVerdict(["padaria", "farmacia", "predio", "escola"])).toMatchObject({
+      ok: false,
+      reply: /Escola/,
+    });
+    expect(quarantineVerdict(["padaria", "predio"])).toMatchObject({ ok: false, reply: /Farmácia/ });
+    expect(quarantineVerdict(["padaria", "farmacia", "predio"])).toEqual({ ok: true });
+  });
+
+  it("the stock book closes at 6 filters and 1 dose", () => {
+    expect(ledgerBalance("filtros")).toBe(6);
+    expect(ledgerBalance("doses")).toBe(1);
   });
 });

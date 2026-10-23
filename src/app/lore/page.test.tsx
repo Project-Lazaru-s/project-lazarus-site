@@ -19,7 +19,7 @@ describe("/lore", () => {
       "href",
       "/lore/antes-das-bandeiras",
     );
-    expect(screen.getByText(/arquivo 02 · dossiês de origem/i)).toBeInTheDocument();
+    expect(screen.getByText(/arquivo 02 · 4 dossiês de origem/i)).toBeInTheDocument();
   });
 
   it("shows sealed files that cannot be opened yet", () => {

@@ -5,7 +5,18 @@ import type { Line } from "./lore";
 
 export type FactionId = "haven" | "rovers" | "wardens" | "military";
 export type OriginGateId =
-  "poco" | "enfermaria" | "trocas" | "onibus" | "tripulacao" | "volta" | "turnos" | "entrada" | "retirada";
+  | "poco"
+  | "enfermaria"
+  | "trocas"
+  | "onibus"
+  | "tripulacao"
+  | "volta"
+  | "turnos"
+  | "entrada"
+  | "retirada"
+  | "quarentena"
+  | "ordens"
+  | "doses";
 
 export type Part = {
   id: string;
@@ -294,32 +305,87 @@ const wardens: Dossier = {
   },
 };
 
-/** Ainda sem roteiro: a pasta aparece na mesa, lacrada. */
-const sealed = (id: FactionId, name: string, title: string, need: string, photo: string, focus: string): Dossier => ({
-  id,
-  name,
-  title,
-  need,
-  photo,
-  focus,
-  ambience: null,
-  parts: [],
-  trace: null,
-});
+const military: Dossier = {
+  id: "military",
+  name: "Military",
+  title: "As ordens que pararam de chegar",
+  need: "Continuar a resposta de emergência",
+  photo: "/images/factions/cenas/military.png",
+  focus: "40% 55%",
+  ambience: "/sounds/lore/amb-military.mp3",
+  parts: [
+    {
+      id: "quarentena",
+      numeral: "I",
+      title: "O posto",
+      when: "Primeiros dias do surto · um posto de triagem",
+      image: "/images/lore/origens/military-posto.png",
+      scenes: [
+        {
+          text: "Military já existia antes do surto. O que precisou nascer durante ele foi um jeito de continuar trabalhando quando as ordens deixaram de corresponder ao terreno.",
+          image: "/images/lore/origens/military-posto.png",
+          alt: "Um posto militar de triagem com tendas brancas e arame farpado; uma equipe de máscara de gás pinta um X na porta de um prédio fechado.",
+        },
+        "As primeiras equipes instalaram postos de triagem, abriram corredores para ambulâncias e protegeram entregas de água e remédios. Tinham equipamento, treinamento e uma vantagem curta: ainda sabiam a quem pedir reforço.",
+        "A lista da manhã cabia numa folha: manter a barreira, contar filtros, verificar a quadra. As equipes de quarentena marcavam os prédios que ninguém deveria abrir sem proteção.",
+      ],
+      gate: "quarentena",
+      quote: "A rotina continuava porque salvava vidas.",
+      note: "Prédio com sinal de infecção recebe a marca. Prédio com gente viva recebe visita.",
+      after: [],
+    },
+    {
+      id: "ordens",
+      numeral: "II",
+      title: "Duas ordens",
+      when: "Uma noite · o rádio do posto",
+      image: "/images/lore/origens/military-radio.png",
+      scenes: [
+        {
+          text: "À tarde, uma chamada mandou buscar uma amostra em outra área. À noite, o rádio trouxe uma ordem para evacuar o posto.",
+          image: "/images/lore/origens/military-radio.png",
+          alt: "Numa tenda de comando à noite, um operador de rádio escreve enquanto o comandante encara duas ordens presas lado a lado num quadro de avisos.",
+        },
+        "Minutos depois, outra ordem, pela mesma frequência: não abandonar a barreira. Ainda havia civis na rua interna.",
+      ],
+      gate: "ordens",
+      quote: "No dia seguinte, a frequência que enviara as duas ordens estava muda.",
+      note: "Duas ordens no mesmo quadro. Embaixo, a lápis: retirar os civis da rua interna primeiro.",
+      after: [
+        "O equipamento também criava distância. Civis viam uniformes e esperavam respostas que aqueles soldados não tinham. Alguns respondiam com sinceridade; outros repetiam comunicados vencidos.",
+      ],
+    },
+    {
+      id: "doses",
+      numeral: "III",
+      title: "Cada dose",
+      when: "Semanas depois · um posto isolado",
+      image: "/images/lore/origens/military-doses.png",
+      scenes: [
+        {
+          text: "Sem reforço, o posto passou a viver de contagem. Guardas se revezavam, e o médico de campo tratava quem conseguia alcançar a tenda.",
+          image: "/images/lore/origens/military-doses.png",
+          alt: "Numa tenda médica, um médico e um soldado contam filtros e anotam num livro; ao lado, uma caixa térmica aberta com poucos frascos de soro.",
+        },
+        "A amostra recolhida servia a uma pesquisa limitada. O soro experimental era tentativa, não cura. Cada dose tinha destinatário, e cada filtro precisava ser contado.",
+      ],
+      gate: "doses",
+      quote: "A falha da rede de comando não tornou todos os militares iguais.",
+      note: "Filtros e doses: a conta fecha todo dia, mesmo quando ninguém mais pede o relatório.",
+      after: [
+        "Em certos lugares, a barreira que protegia um bairro impedia a saída de outro. Uma boa decisão local podia receber, horas depois, uma notícia que a tornava cruel.",
+        "Postos caíram ou foram abandonados. Uma parte da tropa continuou cooperando com sobreviventes. Outra desertou.",
+        "Military, no mundo que você encontra, é o conjunto desigual dos que ainda usam a estrutura de um posto para conter, proteger ou estudar o que podem.",
+      ],
+    },
+  ],
+  trace: {
+    title: "Duas ordens no quadro de avisos",
+    text: "Duas ordens incompatíveis presas ao mesmo quadro, com uma anotação à mão sobre a retirada dos civis. O carimbo não prova quem ainda controlava a frequência naquela noite.",
+  },
+};
 
-export const dossiers: Dossier[] = [
-  haven,
-  rovers,
-  wardens,
-  sealed(
-    "military",
-    "Military",
-    "As ordens que pararam de chegar",
-    "Continuar a resposta de emergência",
-    "/images/factions/cenas/military.png",
-    "40% 55%",
-  ),
-];
+export const dossiers: Dossier[] = [haven, rovers, wardens, military];
 
 // ---------- Portões de Haven ----------
 
@@ -478,3 +544,74 @@ export const arrivals = [
 
 /** Parte III: a retirada. Cada vez que o guarda segura o portão, entra um sobrevivente e a horda avança. */
 export const RETREAT = { survivors: 4, distance: 6, approach: [1, 1, 1, 1, 2, 2] } as const;
+
+// ---------- Portões de Military ----------
+
+/** Parte I: o relatório da quadra. Marcar só onde há sinal de infecção. */
+export const blockBuildings = [
+  { id: "padaria", label: "Padaria", report: "Porta arrombada por dentro. Arranhões no vidro.", infected: true },
+  { id: "escola", label: "Escola", report: "Doze famílias abrigadas. Pediram água ontem.", infected: false },
+  { id: "farmacia", label: "Farmácia", report: "Silêncio de dia, batidas na porta à noite.", infected: true },
+  { id: "oficina", label: "Oficina", report: "Vazia. O dono saiu com a família no primeiro dia.", infected: false },
+  {
+    id: "predio",
+    label: "Prédio azul",
+    report: "Janelas pregadas por dentro. Ninguém responde, alguém geme.",
+    infected: true,
+  },
+  { id: "igreja", label: "Igreja", report: "Um idoso e o neto. Pedem notícias do posto.", infected: false },
+] as const;
+
+/** Parte II: o que fazer com as duas ordens. */
+export const orderChoices = [
+  {
+    id: "evacuar",
+    label: "Evacuar o posto agora",
+    ok: false,
+    reply: "A rua interna ainda tem civis. Sair agora é deixá-los atrás da barreira.",
+  },
+  {
+    id: "barreira",
+    label: "Manter a barreira e esperar",
+    ok: false,
+    reply: "A barreira fica de pé e prende os civis do lado de dentro.",
+  },
+  {
+    id: "retirar",
+    label: "Ficar até retirar os civis da rua interna",
+    ok: true,
+    reply: "O comandante fica. A última família passa a barreira antes do amanhecer.",
+  },
+] as const;
+
+/** Parte III: o livro de estoque. A conta precisa fechar. */
+export const ledger = [
+  {
+    id: "filtros",
+    label: "Filtros",
+    start: 12,
+    entries: [
+      { text: "Entregues à rua norte", delta: -4 },
+      { text: "Trocados na barreira por notícias", delta: -3 },
+      { text: "Recuperados de uma ambulância", delta: 2 },
+      { text: "Quebrado na limpeza", delta: -1 },
+    ],
+  },
+  {
+    id: "doses",
+    label: "Doses de soro",
+    start: 3,
+    entries: [
+      { text: "Aplicada no cabo Prado (tentativa, registrada)", delta: -1 },
+      { text: "Enviada junto com a amostra", delta: -1 },
+    ],
+  },
+] as const;
+
+/** Epílogo, depois das quatro pastas. */
+export const epilogue = [
+  "Quatro necessidades, quatro começos. Haven dividiu a água. Os Rovers mantiveram a estrada aberta. Os Wardens fecharam a linha. Military continuou contando filtros quando as ordens pararam.",
+  "Por um tempo, essas necessidades se completaram: peças dos Rovers passavam pelo forte, Haven tratava feridos de todos os lados, e os postos ainda protegiam entregas.",
+  "Depois veio a Noite da Cancela. Uma estrada aberta e uma estrada fechada não cabiam mais no mesmo mapa.",
+  "O resto está no Arquivo 01. O seu Dia 1 começa depois disso.",
+];

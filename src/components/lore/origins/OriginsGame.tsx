@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { type ReactNode, useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { type Dossier, dossiers, type OriginGateId, origins } from "@/content/origins";
+import { type Dossier, dossiers, epilogue, type OriginGateId, origins } from "@/content/origins";
 import {
   available,
   cuesFor,
@@ -25,6 +25,7 @@ import { LoreSfx, SoundButton, useSoundPref } from "@/components/lore/game/sound
 import { InfirmaryGate, TradeGate, WellGate } from "./HavenGates";
 import { BusGate, CrewGate, ReturnGate } from "./RoversGates";
 import { EntryGate, RetreatGate, WatchGate } from "./WardensGates";
+import { DosesGate, OrdersGate, QuarantineGate } from "./MilitaryGates";
 
 const READING = `/lore/${origins.slug}/leitura`;
 const OPEN_MS = 550;
@@ -56,6 +57,9 @@ const GATES: Record<OriginGateId, (pass: () => void) => ReactNode> = {
   turnos: (pass) => <WatchGate onPass={pass} />,
   entrada: (pass) => <EntryGate onPass={pass} />,
   retirada: (pass) => <RetreatGate onPass={pass} />,
+  quarentena: (pass) => <QuarantineGate onPass={pass} />,
+  ordens: (pass) => <OrdersGate onPass={pass} />,
+  doses: (pass) => <DosesGate onPass={pass} />,
 };
 
 /** "Antes das Bandeiras" jogável: a mesa com as quatro pastas e, dentro de cada uma, a origem da facção. */
@@ -63,6 +67,7 @@ export function OriginsGame() {
   const saved = decodeSave(useSyncExternalStore(noop, readSave, () => ""));
   const [state, setState] = useState<OriginsState | null>(null);
   const [notebook, setNotebook] = useState(false);
+  const [ending, setEnding] = useState(false);
   const [soundOn, setSoundOn] = useSoundPref();
 
   const sfxRef = useRef<Sfx>(null);
@@ -208,9 +213,15 @@ export function OriginsGame() {
             </div>
           )}
 
-          {state && !open && (
+          {state && !open && ending && <Epilogue onBack={() => setEnding(false)} />}
+
+          {state && !open && !ending && (
             <Desk
               state={state}
+              onEpilogue={() => {
+                sfx("loreEnding", 0.6);
+                setEnding(true);
+              }}
               onOpen={(id) => {
                 sfx("loreFolder", 0.9);
                 go(reduce(state, { type: "open", faction: id }), state);
@@ -282,7 +293,12 @@ export function OriginsGame() {
               <button
                 type="button"
                 autoFocus
-                onClick={() => play({ type: "finish" })}
+                onClick={() => {
+                  const next = reduce(state!, { type: "finish" });
+                  go(next, state!);
+                  // A última pasta lida abre o epílogo.
+                  if (next.done.length === dossiers.length && state!.done.length < dossiers.length) setEnding(true);
+                }}
                 className="mt-8 rounded bg-lazarus px-8 py-4 text-lg font-semibold text-plate hover:bg-lazarus/85"
               >
                 Devolver a pasta ao arquivo
@@ -352,10 +368,12 @@ function FreshPage({ state, dossier }: { state: OriginsState; dossier: Dossier }
 function Desk({
   state,
   onOpen,
+  onEpilogue,
   soundOn,
   onSound,
 }: {
   state: OriginsState;
+  onEpilogue: () => void;
   onOpen: (id: Dossier["id"]) => void;
   soundOn: boolean;
   onSound: (on: boolean) => void;
@@ -468,10 +486,60 @@ function Desk({
         })}
       </ul>
 
-      <p className="mt-8 font-mono text-xs text-plate/50">
-        {state.done.length}/{dossiers.filter((d) => available(d.id)).length} pastas lidas
-        {sealedNames && ` · ${sealedNames} ainda estão em recuperação.`}
-      </p>
+      <div className="mt-8 flex flex-wrap items-center gap-4">
+        <p className="font-mono text-xs text-plate/50">
+          {state.done.length}/{dossiers.filter((d) => available(d.id)).length} pastas lidas
+          {sealedNames && ` · ${sealedNames} ainda estão em recuperação.`}
+        </p>
+        {state.done.length === dossiers.length && (
+          <button
+            type="button"
+            onClick={onEpilogue}
+            className="rounded border border-sunset/60 px-4 py-2 text-sm text-sunset hover:bg-sunset/10"
+          >
+            Ler o epílogo
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/** Depois das quatro pastas: o que as origens têm em comum, e a ponte para o Arquivo 01. */
+function Epilogue({ onBack }: { onBack: () => void }) {
+  return (
+    <div role="group" aria-labelledby="epilogo" className="mx-auto my-auto w-full max-w-2xl text-center">
+      <div className="lore-paper rounded-sm px-6 py-10 text-asphalt-deep shadow-2xl sm:px-10">
+        <p className="font-mono text-xs tracking-[0.25em] uppercase opacity-60">Arquivo 02 · epílogo</p>
+        <h2
+          id="epilogo"
+          className="lore-stamp-hit mx-auto mt-3 inline-block -rotate-3 rounded-sm border-[6px] border-lazarus px-5 py-1 font-stencil text-4xl text-lazarus uppercase sm:text-5xl"
+        >
+          Arquivo completo
+        </h2>
+        <div className="mt-6 space-y-3 text-left">
+          {epilogue.map((p) => (
+            <p key={p} className="font-hand text-2xl leading-tight">
+              {p}
+            </p>
+          ))}
+        </div>
+      </div>
+      <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+        <Link
+          href="/lore/o-inicio-do-caos"
+          className="rounded bg-lazarus px-8 py-4 text-lg font-semibold text-plate hover:bg-lazarus/85"
+        >
+          Jogar o Arquivo 01: O Início do Caos
+        </Link>
+        <button
+          type="button"
+          onClick={onBack}
+          className="rounded border border-plate/30 px-6 py-4 text-plate hover:border-sunset hover:text-sunset"
+        >
+          Voltar às pastas
+        </button>
+      </div>
     </div>
   );
 }

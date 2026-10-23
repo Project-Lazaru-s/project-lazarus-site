@@ -34,7 +34,7 @@ describe("OriginsGame", () => {
   });
   afterEach(() => vi.useRealTimers());
 
-  it("opens on the desk with four folders; Haven, Rovers and Wardens can be opened", () => {
+  it("opens on the desk with four folders, all of them open", () => {
     render(<OriginsGame />);
     expect(within(game()).getByRole("link", { name: /ler sem jogar/i })).toHaveAttribute(
       "href",
@@ -42,10 +42,9 @@ describe("OriginsGame", () => {
     );
     fireEvent.click(screen.getByRole("button", { name: /abrir o arquivo/i }));
     expect(screen.getByRole("heading", { name: /escolha uma pasta/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /abrir a pasta haven/i })).toBeEnabled();
-    expect(screen.getByRole("button", { name: /abrir a pasta rovers/i })).toBeEnabled();
-    for (const name of ["Military"])
-      expect(screen.getByRole("button", { name: `${name}: pasta em recuperação` })).toBeDisabled();
+    for (const name of ["Haven", "Rovers", "Wardens", "Military"])
+      expect(screen.getByRole("button", { name: `Abrir a pasta ${name}` })).toBeEnabled();
+    expect(screen.queryByRole("button", { name: /ler o epílogo/i })).not.toBeInTheDocument();
   });
 
   it("the well notebook refuses an empty share and signs a rule once every bucket is given", () => {
@@ -203,5 +202,46 @@ describe("OriginsGame", () => {
     expect(
       within(screen.getByRole("button", { name: /abrir a pasta wardens/i })).getByText("Lido"),
     ).toBeInTheDocument();
+  });
+
+  it("plays Military and, as the fourth folder, opens the epilogue", () => {
+    localStorage.setItem(SAVE_KEY, JSON.stringify({ v: 1, open: null, at: {}, done: ["haven", "rovers", "wardens"] }));
+    render(<OriginsGame />);
+    fireEvent.click(screen.getByRole("button", { name: /abrir o arquivo/i }));
+    fireEvent.click(screen.getByRole("button", { name: /abrir a pasta military/i }));
+    act(() => vi.runAllTimers());
+
+    const block = advanceUntil(/quarentena da quadra/i);
+    for (const b of ["Padaria", "Escola", "Farmácia", "Prédio azul"])
+      fireEvent.click(within(block).getByRole("button", { name: `Marcar ${b}` }));
+    fireEvent.click(within(block).getByRole("button", { name: /entregar o relatório/i }));
+    expect(within(block).getByText(/escola: tem gente viva/i)).toBeInTheDocument();
+    fireEvent.click(within(block).getByRole("button", { name: "Tirar a marca de Escola" }));
+    fireEvent.click(within(block).getByRole("button", { name: /entregar o relatório/i }));
+    fireEvent.click(within(block).getByRole("button", { name: /^continuar/i }));
+
+    const radio = advanceUntil(/duas ordens no rádio/i);
+    fireEvent.click(within(radio).getByRole("button", { name: /ouvir o rádio/i }));
+    fireEvent.click(within(radio).getByRole("button", { name: /próxima transmissão/i }));
+    fireEvent.click(within(radio).getByRole("button", { name: /evacuar o posto agora/i }));
+    expect(within(radio).getByText(/deixá-los atrás da barreira/i)).toBeInTheDocument();
+    fireEvent.click(within(radio).getByRole("button", { name: /retirar os civis/i }));
+    fireEvent.click(within(radio).getByRole("button", { name: /confirmar pela frequência/i }));
+    fireEvent.click(within(radio).getByRole("button", { name: /^continuar/i }));
+
+    const book = advanceUntil(/livro de estoque/i);
+    fireEvent.click(within(book).getByRole("button", { name: /fechar a conta/i }));
+    expect(within(book).getByText(/filtros: a conta não fecha/i)).toBeInTheDocument();
+    for (let i = 0; i < 6; i++) fireEvent.click(within(book).getByRole("button", { name: "Menos filtros" }));
+    for (let i = 0; i < 2; i++) fireEvent.click(within(book).getByRole("button", { name: "Menos doses de soro" }));
+    fireEvent.click(within(book).getByRole("button", { name: /fechar a conta/i }));
+    fireEvent.click(within(book).getByRole("button", { name: /assinar o livro/i }));
+
+    advanceUntil(/duas ordens no quadro de avisos/i);
+    fireEvent.click(screen.getByRole("button", { name: /devolver a pasta/i }));
+    expect(screen.getByRole("heading", { name: /arquivo completo/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /arquivo 01/i })).toHaveAttribute("href", "/lore/o-inicio-do-caos");
+    fireEvent.click(screen.getByRole("button", { name: /voltar às pastas/i }));
+    expect(screen.getByRole("button", { name: /ler o epílogo/i })).toBeInTheDocument();
   });
 });

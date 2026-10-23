@@ -193,7 +193,7 @@ test("Lore (Arquivo 02): the folders on the desk and Haven from the well to the 
   await page.getByRole("link", { name: "Antes das Bandeiras" }).click();
   await expect(page).toHaveURL("/lore/antes-das-bandeiras");
   await page.getByRole("button", { name: "Abrir o arquivo" }).click();
-  await expect(page.getByRole("button", { name: "Military: pasta em recuperação" })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Abrir a pasta Military" })).toBeEnabled();
   await page.getByRole("button", { name: "Abrir a pasta Haven" }).click();
   await expect(page.getByRole("heading", { name: "O poço" })).toBeVisible();
 
@@ -321,4 +321,51 @@ test("Lore (Arquivo 02): Wardens, from the first night watch to the retreat", as
   await reach(/o primeiro livro de entradas/i);
   await page.getByRole("button", { name: /devolver a pasta/i }).click();
   await expect(page.getByRole("button", { name: "Abrir a pasta Wardens" })).toContainText("Lido");
+});
+
+test("Lore (Arquivo 02): Military, from the quarantine marks to the epilogue", async ({ page }) => {
+  await page.goto("/lore/antes-das-bandeiras");
+  // As outras três pastas já lidas: Military é a última e abre o epílogo.
+  await page.evaluate(() =>
+    localStorage.setItem(
+      "lazarus:lore:antes-das-bandeiras",
+      JSON.stringify({ v: 1, open: null, at: {}, done: ["haven", "rovers", "wardens"] }),
+    ),
+  );
+  await page.reload();
+  await page.getByRole("button", { name: "Abrir o arquivo" }).click();
+  await page.getByRole("button", { name: "Abrir a pasta Military" }).click();
+  await expect(page.getByRole("heading", { name: "O posto" })).toBeVisible();
+
+  const reach = async (gate: RegExp) => {
+    const group = page.getByRole("group", { name: gate });
+    for (let i = 0; i < 60 && !(await group.isVisible()); i++) await page.keyboard.press("Enter");
+    await expect(group).toBeVisible();
+    return group;
+  };
+
+  const block = await reach(/quarentena da quadra/i);
+  for (const b of ["Padaria", "Farmácia", "Prédio azul"])
+    await block.getByRole("button", { name: `Marcar ${b}` }).click();
+  await block.getByRole("button", { name: /entregar o relatório/i }).click();
+  await block.getByRole("button", { name: /^continuar/i }).click();
+
+  const radio = await reach(/duas ordens no rádio/i);
+  await radio.getByRole("button", { name: /ouvir o rádio/i }).click();
+  await radio.getByRole("button", { name: /próxima transmissão/i }).click();
+  await radio.getByRole("button", { name: /retirar os civis/i }).click();
+  await radio.getByRole("button", { name: /confirmar pela frequência/i }).click();
+  await radio.getByRole("button", { name: /^continuar/i }).click();
+
+  const book = await reach(/livro de estoque/i);
+  for (let i = 0; i < 6; i++) await book.getByRole("button", { name: "Menos filtros" }).click();
+  for (let i = 0; i < 2; i++) await book.getByRole("button", { name: "Menos doses de soro" }).click();
+  await book.getByRole("button", { name: /fechar a conta/i }).click();
+  await book.getByRole("button", { name: /assinar o livro/i }).click();
+
+  await reach(/duas ordens no quadro de avisos/i);
+  await page.getByRole("button", { name: /devolver a pasta/i }).click();
+  await expect(page.getByRole("heading", { name: /arquivo completo/i })).toBeVisible();
+  await page.getByRole("link", { name: /arquivo 01/i }).click();
+  await expect(page).toHaveURL("/lore/o-inicio-do-caos");
 });

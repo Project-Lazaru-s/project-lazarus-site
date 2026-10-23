@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { LorePhoto } from "@/components/lore/LorePhoto";
 import { type Line, lineText } from "@/content/lore";
-import { type Dossier, dossiers, origins } from "@/content/origins";
+import { type Dossier, dossiers, epilogue, origins } from "@/content/origins";
 
 const hand = Caveat({ variable: "--font-caveat", subsets: ["latin"] });
 
@@ -128,6 +128,28 @@ export default function OriginsReadingPage() {
       {dossiers.map((d, i) => (
         <DossierSection key={d.id} dossier={d} index={i} />
       ))}
+      <section aria-labelledby="epilogo" className="bg-[#05070d] px-4 py-20">
+        <div className="lore-paper mx-auto max-w-2xl rounded-sm px-6 py-10 text-asphalt-deep shadow-2xl sm:px-10">
+          <h2 id="epilogo" className="font-stencil text-4xl text-lazarus">
+            Epílogo
+          </h2>
+          <div className="mt-4 space-y-3">
+            {epilogue.map((p) => (
+              <p key={p} className="font-hand text-2xl leading-tight">
+                {p}
+              </p>
+            ))}
+          </div>
+        </div>
+        <p className="mt-8 text-center">
+          <Link
+            href="/lore/o-inicio-do-caos"
+            className="rounded bg-lazarus px-6 py-3 font-semibold text-plate hover:bg-lazarus/85"
+          >
+            Continuar no Arquivo 01: O Início do Caos
+          </Link>
+        </p>
+      </section>
     </article>
   );
 }

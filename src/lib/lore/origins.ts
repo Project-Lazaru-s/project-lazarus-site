@@ -1,6 +1,8 @@
 import type { Line } from "@/content/lore";
 import {
   arrivals,
+  blockBuildings,
+  ledger,
   candidates,
   crewSkills,
   dossiers,
@@ -200,6 +202,22 @@ export function retreatAt(holds: number) {
   const walked = RETREAT.approach.slice(0, holds).reduce((a: number, b) => a + b, 0);
   const distance = RETREAT.distance - walked;
   return { outside: Math.max(0, RETREAT.survivors - holds), distance, overrun: distance <= 0 };
+}
+
+/** Parte I de Military: a marca vai só nos prédios com sinal de infecção. */
+export function quarantineVerdict(marked: string[]): { ok: true } | { ok: false; reply: string } {
+  const wrong = blockBuildings.find((b) => !b.infected && marked.includes(b.id));
+  if (wrong)
+    return { ok: false, reply: `${wrong.label}: tem gente viva lá dentro. A marca condena quem espera ajuda.` };
+  const missing = blockBuildings.find((b) => b.infected && !marked.includes(b.id));
+  if (missing) return { ok: false, reply: `${missing.label} ficou sem marca. Releia o relatório.` };
+  return { ok: true };
+}
+
+/** Parte III de Military: quanto deve sobrar de cada item do livro de estoque. */
+export function ledgerBalance(id: (typeof ledger)[number]["id"]) {
+  const item = ledger.find((l) => l.id === id)!;
+  return item.entries.reduce((n: number, e) => n + e.delta, item.start);
 }
 
 // ---------- Sons ----------
