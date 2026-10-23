@@ -85,6 +85,7 @@ test.describe("mobile", () => {
     "/creditos",
     "/lore",
     "/lore/o-inicio-do-caos",
+    "/lore/o-inicio-do-caos/leitura",
   ]) {
     test(`${route} has no horizontal scroll`, async ({ page }) => {
       await page.goto(route);
@@ -93,12 +94,8 @@ test.describe("mobile", () => {
   }
 });
 
-test("Lore: from the archive through the night of the gate to the reader's Day 1", async ({ page }) => {
-  await page.goto("/lore");
-  await expect(page.getByRole("article", { name: /lacrado/i }).first()).toBeVisible();
-  await page.getByRole("link", { name: "O Início do Caos" }).click();
-  await expect(page).toHaveURL("/lore/o-inicio-do-caos");
-
+test("Lore (reading mode): the night of the gate, the roads and the reader's Day 1", async ({ page }) => {
+  await page.goto("/lore/o-inicio-do-caos/leitura");
   await page.getByRole("navigation", { name: "Atos" }).getByRole("link", { name: /^IV/ }).click();
   await page.getByRole("tab", { name: /noite da cancela/i }).click();
   await expect(page.getByRole("tabpanel")).toContainText("O tiro saiu da guarita.");
@@ -108,5 +105,74 @@ test("Lore: from the archive through the night of the gate to the reader's Day 1
 
   const cta = page.getByRole("region", { name: /seu dia 1/i });
   await cta.getByRole("link", { name: /baixar e começar/i }).click();
+  await expect(page).toHaveURL("/baixar");
+});
+
+test("Lore (game): every act waits for the player, from the archive to Day 1", async ({ page }) => {
+  await page.goto("/lore");
+  await expect(page.getByRole("article", { name: /lacrado/i }).first()).toBeVisible();
+  await page.getByRole("link", { name: "O Início do Caos" }).click();
+  await expect(page).toHaveURL("/lore/o-inicio-do-caos");
+  await page.getByRole("button", { name: "Novo jogo" }).click();
+
+  // Avança falas e cartões de ato com o teclado até o portão aparecer.
+  const reach = async (gate: RegExp) => {
+    const group = page.getByRole("group", { name: gate });
+    for (let i = 0; i < 60 && !(await group.isVisible()); i++) await page.keyboard.press("Enter");
+    await expect(group).toBeVisible();
+    return group;
+  };
+
+  const sheet = await reach(/ficha de triagem/i);
+  await sheet.getByRole("button", { name: "óbito", exact: true }).click();
+  await expect(sheet).toContainText("Óbito não explica");
+  await sheet.getByRole("button", { name: "movimento após declaração de óbito" }).click();
+  const stamp = sheet.getByRole("button", { name: /carimbar/i });
+  await stamp.hover();
+  await page.mouse.down();
+  await page.waitForTimeout(900);
+  await page.mouse.up();
+  await sheet.getByRole("button", { name: /^continuar/i }).click();
+  await expect(page.getByText("Página recuperada")).toBeVisible();
+
+  const radio = await reach(/rádio de emergência/i);
+  await radio.getByRole("slider", { name: /frequência/i }).fill("93.7");
+  await radio.getByRole("button", { name: /desligar o rádio/i }).click();
+
+  const scene = await reach(/investigar/i);
+  for (const spot of await scene.getByRole("button", { name: /examinar/i }).all()) await spot.click();
+  await scene.getByRole("button", { name: /^continuar/i }).click();
+
+  const night = await reach(/reconstruir a noite/i);
+  for (const fact of [
+    "A cancela não abriu.",
+    "Houve tiros.",
+    "Morreram um motorista Rover e um guarda Warden.",
+    "Parte da carga sumiu.",
+  ])
+    await night.getByRole("button", { name: fact }).first().click();
+  await night.getByRole("button", { name: /^continuar/i }).click();
+
+  const walls = await reach(/paredes/i);
+  for (let i = 0; i < 8; i++)
+    await walls
+      .getByRole("button", { name: /parede/i })
+      .first()
+      .click();
+  await walls.getByRole("button", { name: /^continuar/i }).click();
+
+  const roads = await reach(/três caminhos/i);
+  await roads.getByText("O mais longo").click();
+  await roads.getByRole("button", { name: /seguir por aqui/i }).click();
+
+  const end = await reach(/seu dia 1/i);
+  await expect(end).toContainText("5/5");
+  await page.reload();
+  await expect(page.getByRole("button", { name: /continuar de onde parou/i })).toBeVisible();
+  await page.getByRole("button", { name: /continuar de onde parou/i }).click();
+  await page
+    .getByRole("group", { name: /seu dia 1/i })
+    .getByRole("link", { name: /baixar e começar/i })
+    .click();
   await expect(page).toHaveURL("/baixar");
 });

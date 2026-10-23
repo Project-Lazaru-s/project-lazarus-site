@@ -57,7 +57,7 @@ export default function LorePage() {
               </div>
               <div className="p-6">
                 <p className="font-mono text-xs tracking-[0.3em] text-sunset uppercase">
-                  Arquivo 01 · {entry.acts} atos · {entry.minutes} min
+                  Arquivo 01 · {entry.acts} atos · jogável · ~8 min
                 </p>
                 <h2 className="mt-2 font-stencil text-3xl">
                   <Link
@@ -68,6 +68,16 @@ export default function LorePage() {
                   </Link>
                 </h2>
                 <p className="mt-2 text-plate/75">{entry.summary}</p>
+                <p className="mt-4 flex flex-wrap items-center gap-4 text-sm">
+                  <span className="rounded bg-lazarus px-4 py-2 font-semibold text-plate">Jogar ▸</span>
+                  {/* Acima do link do card inteiro (after:inset-0), para ser clicável. */}
+                  <Link
+                    href={`/lore/${entry.slug}/leitura`}
+                    className="relative z-10 text-plate/60 underline hover:text-plate"
+                  >
+                    ou ler sem jogar ({entry.minutes} min)
+                  </Link>
+                </p>
               </div>
             </article>
           ),

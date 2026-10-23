@@ -608,3 +608,53 @@ body:has([data-playing]) .day-stamp {
     }
   }
 }
+
+/* ---------- Lore jogável ---------- */
+
+/* Câmera lenta sobre a ilustração do ato. */
+@keyframes lore-kenburns {
+  from { transform: scale(1) translate(0, 0); }
+  to { transform: scale(1.08) translate(-1.5%, -1%); }
+}
+.lore-kenburns {
+  animation: lore-kenburns 28s ease-in-out infinite alternate;
+}
+/* Carimbo que bate na hora (cartão de ato, ficha, Seu Dia 1). */
+@keyframes lore-stamp-hit {
+  0% { opacity: 0; transform: scale(1.8); }
+  60% { opacity: 1; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.lore-stamp-hit {
+  animation: lore-stamp-hit 0.45s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+@keyframes lore-hotspot {
+  0%, 100% { box-shadow: 0 0 0 0 rgb(224 122 46 / 0.6); }
+  50% { box-shadow: 0 0 0 12px rgb(224 122 46 / 0); }
+}
+.lore-hotspot {
+  animation: lore-hotspot 1.6s ease-out infinite;
+}
+@keyframes lore-blink {
+  50% { opacity: 0.2; }
+}
+.lore-blink {
+  animation: lore-blink 1s steps(1) infinite;
+}
+@keyframes lore-page-toast {
+  from { opacity: 0; transform: translateY(12px); }
+}
+.lore-page-toast {
+  animation: lore-page-toast 0.4s ease-out both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lore-kenburns,
+  .lore-hotspot,
+  .lore-blink {
+    animation: none;
+  }
+  .lore-stamp-hit,
+  .lore-page-toast {
+    animation-name: lore-appear;
+  }
+}

@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { gangs, inicioDoCaos } from "@/content/lore";
 import StoryPage from "./page";
 
-describe("/lore/o-inicio-do-caos", () => {
+describe("/lore/o-inicio-do-caos/leitura", () => {
   it("tells the five acts in order, each with an anchor", () => {
     render(<StoryPage />);
     const titles = screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent);
