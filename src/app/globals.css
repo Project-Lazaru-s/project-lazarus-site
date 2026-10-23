@@ -658,3 +658,40 @@ body:has([data-playing]) .day-stamp {
     animation-name: lore-appear;
   }
 }
+
+/* Foto colada no caderno: moldura de revelação, fita adesiva e cor envelhecida. */
+.lore-photo {
+  position: relative;
+  background: #f4f1e8;
+  padding: 5px 5px 14px;
+  box-shadow: 0 6px 14px rgb(0 0 0 / 0.35);
+  transition:
+    rotate 0.2s ease,
+    scale 0.2s ease;
+}
+.lore-photo::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  top: -8px;
+  left: 50%;
+  width: 44%;
+  height: 16px;
+  translate: -50% 0;
+  rotate: -3deg;
+  background: rgb(232 220 180 / 0.75);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.15);
+}
+.lore-photo img {
+  filter: sepia(0.3) saturate(0.8) contrast(1.05);
+  transition: filter 0.2s ease;
+}
+.lore-photo:hover,
+.lore-photo:focus-visible {
+  rotate: 0deg !important;
+  scale: 1.03;
+}
+.lore-photo:hover img,
+.lore-photo:focus-visible img {
+  filter: none;
+}

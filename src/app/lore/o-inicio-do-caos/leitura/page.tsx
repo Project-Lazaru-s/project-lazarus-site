@@ -9,6 +9,7 @@ import { CancelaVersions } from "@/components/lore/CancelaVersions";
 import { EmergencyRadio } from "@/components/lore/EmergencyRadio";
 import { RoadChoice } from "@/components/lore/RoadChoice";
 import { ThreeWays } from "@/components/lore/ThreeWays";
+import { LorePhoto } from "@/components/lore/LorePhoto";
 import { type Act, dayOne, inicioDoCaos, type Line, lineText, whoIsWho } from "@/content/lore";
 import { site } from "@/content/site";
 
@@ -157,17 +158,16 @@ export default function StoryPage() {
           </h2>
           <p className="mt-2 text-plate/70">Os grupos que você vai encontrar, e como se relacionam.</p>
           <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {whoIsWho.map((group) => (
-              <li key={group.name} className="reveal rounded border border-rust/40 bg-asphalt p-4">
-                <Image
+            {whoIsWho.map((group, i) => (
+              <li key={group.name} className="reveal rounded border border-rust/40 bg-asphalt p-5 pt-7">
+                <LorePhoto
                   src={group.image}
-                  alt=""
-                  width={1672}
-                  height={941}
-                  sizes="(min-width: 1024px) 24rem, (min-width: 640px) 50vw, 100vw"
-                  className="aspect-[16/9] w-full rounded-sm object-cover"
+                  name={group.name}
+                  focus={group.focus}
+                  tilt={[-2.5, 1.5, -1, 2][i % 4]}
+                  className="mx-auto w-11/12"
                 />
-                <p className="mt-3 font-stencil text-2xl text-lazarus">{group.name}</p>
+                <p className="mt-5 font-stencil text-2xl text-lazarus">{group.name}</p>
                 <p className="text-sm text-plate/85">{group.who}</p>
                 <p className="mt-1 text-xs font-semibold text-plate/60">{group.relation}</p>
               </li>

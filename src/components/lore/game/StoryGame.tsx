@@ -22,6 +22,7 @@ import { AMBIENCE, type AmbiencePlayer, createAmbience, cuesFor, MUSIC } from "@
 import { createSfx, type Sfx, type SoundName } from "@/lib/survival/sfx";
 import { CompareGate, InspectGate, RadioGate, RoadGate, TriageGate, WallsGate } from "./Gates";
 import { LoreSfx, SoundButton, useSoundPref } from "./sound";
+import { LorePhoto } from "@/components/lore/LorePhoto";
 
 const { acts } = inicioDoCaos;
 
@@ -379,25 +380,26 @@ export function StoryGame() {
             </div>
             {notebookTab === "quem" ? (
               <ul aria-label="Quem é quem" className="mt-5 space-y-4">
-                {whoIsWho.map((group) => {
+                {whoIsWho.map((group, i) => {
                   // Só aparece depois que a história apresentou o grupo.
                   const known = state && script[state.at].act >= group.act;
                   return (
-                    <li key={group.name} className="border-b border-asphalt-deep/20 pb-3">
+                    <li key={group.name} className="border-b border-asphalt-deep/20 pb-4">
                       {known ? (
-                        <>
-                          <Image
+                        <div className="flex items-start gap-4">
+                          <LorePhoto
                             src={group.image}
-                            alt=""
-                            width={1672}
-                            height={941}
-                            sizes="24rem"
-                            className="aspect-[16/7] w-full rounded-sm object-cover"
+                            name={group.name}
+                            focus={group.focus}
+                            tilt={i % 2 ? 2 : -2.5}
+                            className="mt-2 w-28 shrink-0"
                           />
-                          <p className="mt-2 font-stencil text-xl text-lazarus">{group.name}</p>
-                          <p className="text-sm">{group.who}</p>
-                          <p className="mt-1 text-xs font-semibold opacity-75">{group.relation}</p>
-                        </>
+                          <div>
+                            <p className="font-stencil text-xl text-lazarus">{group.name}</p>
+                            <p className="text-sm">{group.who}</p>
+                            <p className="mt-1 text-xs font-semibold opacity-75">{group.relation}</p>
+                          </div>
+                        </div>
                       ) : (
                         <p className="font-hand text-2xl opacity-50">· · · ainda não apareceu na história</p>
                       )}

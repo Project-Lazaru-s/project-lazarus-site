@@ -276,11 +276,15 @@ export const dayOne = {
     "Não é o primeiro dia da infecção, da ruína, de Haven, dos Rovers ou dos Wardens. É o primeiro dia que você conseguiu sobreviver.",
 };
 
-/** Página "Quem é quem" do caderno: cada grupo aparece a partir do ato (índice) em que a história o apresenta. */
+/**
+ * Página "Quem é quem" do caderno: cada grupo aparece a partir do ato (índice) em que a história o apresenta.
+ * `focus` é onde estão os personagens na cena (object-position), para o recorte da foto não perdê-los.
+ */
 export const whoIsWho = [
   {
     name: "Military",
     image: "/images/factions/cenas/military.png",
+    focus: "40% 55%",
     act: 1,
     who: "O exército de verdade: soldados que ficaram nos postos de controle e quarentenas quando o comando parou de responder.",
     relation: "Não comandam nenhum grupo civil. Alguns postos ainda ajudam; outros sumiram.",
@@ -288,6 +292,7 @@ export const whoIsWho = [
   {
     name: "Haven",
     image: "/images/factions/cenas/haven.png",
+    focus: "50% 55%",
     act: 2,
     who: "Civis em volta de um poço que viraram enfermaria e refúgio.",
     relation: "Acolhe e trata gente dos dois lados da rivalidade.",
@@ -295,6 +300,7 @@ export const whoIsWho = [
   {
     name: "Rovers",
     image: "/images/factions/cenas/rovers.png",
+    focus: "45% 60%",
     act: 2,
     who: "Motoristas, mecânicos e comerciantes que vivem na estrada.",
     relation: "Rivais dos Wardens desde a noite da cancela.",
@@ -302,6 +308,7 @@ export const whoIsWho = [
   {
     name: "Wardens",
     image: "/images/factions/cenas/wardens.png",
+    focus: "55% 60%",
     act: 2,
     who: "Moradores e seguranças de um bairro murado. Civis armados, não militares.",
     relation: "Rivais dos Rovers desde a noite da cancela.",
@@ -309,6 +316,7 @@ export const whoIsWho = [
   {
     name: "Desertores",
     image: "/images/factions/cenas/desertores.png",
+    focus: "45% 60%",
     act: 4,
     who: "Ex-soldados que largaram o comando e cobram passagem com as armas do exército.",
     relation: "Não representam os Military que ainda ajudam.",
@@ -316,6 +324,7 @@ export const whoIsWho = [
   {
     name: "Gangues",
     image: "/images/factions/gangues.png",
+    focus: "55% 65%",
     act: 4,
     who: "Saqueadores que tomaram cruzamentos e depósitos e pintam o nome nos muros.",
     relation: "Cada gangue por si; nenhum território é seguro.",
@@ -323,6 +332,7 @@ export const whoIsWho = [
   {
     name: "The Hollow",
     image: "/images/factions/cenas/the-hollow.png",
+    focus: "50% 50%",
     act: 4,
     who: "Um culto canibal que leva pessoas à noite.",
     relation: "Inimigo de todos.",
