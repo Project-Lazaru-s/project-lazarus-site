@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { countRecruits, MAX_PER_HOUR, saveRecruit, type Sql } from "./db";
+import { countRecruits, deleteRecruit, MAX_PER_HOUR, saveRecruit, type Sql } from "./db";
 import type { Recruit } from "./enlist";
 
 vi.mock("server-only", () => ({}));
@@ -79,5 +79,13 @@ describe("countRecruits", () => {
       total: 5,
       bySide: { f873: 0, f1041: 3, f1215: 0, solo: 2 },
     });
+  });
+});
+
+describe("deleteRecruit", () => {
+  it("deletes by id and says whether there was a form", async () => {
+    const { sql, calls } = fakeSql((q) => (q.startsWith("delete") ? [{ id: 7 }] : []));
+    expect(await deleteRecruit(sql, 7)).toBe(true);
+    expect(calls.find((c) => c.query.startsWith("delete"))!.values).toEqual([7]);
   });
 });

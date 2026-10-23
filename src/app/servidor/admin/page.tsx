@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { DeleteRecruit } from "@/components/enlist/DeleteRecruit";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { isAdmin } from "@/lib/enlist/admin";
 import { connect, listRecruits } from "@/lib/enlist/db";
@@ -44,13 +45,23 @@ async function Recruits() {
         <table className="w-full text-left text-sm whitespace-nowrap">
           <thead className="bg-asphalt font-mono text-xs tracking-wider text-sunset uppercase">
             <tr>
-              {["Nº", "Nick", "E-mail", "WhatsApp", "Discord", "Lado", "Experiência", "Região", "Horário", "Data"].map(
-                (h) => (
-                  <th key={h} scope="col" className="px-3 py-2">
-                    {h}
-                  </th>
-                ),
-              )}
+              {[
+                "Nº",
+                "Nick",
+                "E-mail",
+                "WhatsApp",
+                "Discord",
+                "Lado",
+                "Experiência",
+                "Região",
+                "Horário",
+                "Data",
+                "Ações",
+              ].map((h) => (
+                <th key={h} scope="col" className="px-3 py-2">
+                  {h}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody className="divide-y divide-plate/10 text-plate/85">
@@ -83,6 +94,9 @@ async function Recruits() {
                 <td className="px-3 py-2">{label(REGIONS, r.region)}</td>
                 <td className="px-3 py-2">{label(PLAYTIMES, r.playtime)}</td>
                 <td className="px-3 py-2">{date(r.created_at)}</td>
+                <td className="px-3 py-2">
+                  <DeleteRecruit id={r.id as number} nick={r.nick as string} />
+                </td>
               </tr>
             ))}
           </tbody>

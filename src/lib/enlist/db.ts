@@ -77,6 +77,12 @@ export async function listRecruits(sql: Sql) {
     created_at, updated_at from recruits order by id desc`;
 }
 
+/** Apaga uma ficha (área restrita). Devolve se havia algo para apagar. */
+export async function deleteRecruit(sql: Sql, id: number) {
+  await ensureSchema(sql);
+  return (await sql`delete from recruits where id = ${id} returning id`).length > 0;
+}
+
 export type Stats = { total: number; bySide: Record<SideId, number> };
 
 /** Contagem pública: só números agregados por lado, nenhum dado pessoal. */
