@@ -389,9 +389,10 @@ export function StoryGame() {
                           <Image
                             src={group.image}
                             alt=""
-                            width={640}
-                            height={240}
-                            className="h-16 w-full rounded-sm object-cover object-top [image-rendering:pixelated]"
+                            width={1672}
+                            height={941}
+                            sizes="24rem"
+                            className="aspect-[16/7] w-full rounded-sm object-cover"
                           />
                           <p className="mt-2 font-stencil text-xl text-lazarus">{group.name}</p>
                           <p className="text-sm">{group.who}</p>

@@ -162,9 +162,10 @@ export default function StoryPage() {
                 <Image
                   src={group.image}
                   alt=""
-                  width={640}
-                  height={240}
-                  className="h-20 w-full rounded-sm object-cover object-top [image-rendering:pixelated]"
+                  width={1672}
+                  height={941}
+                  sizes="(min-width: 1024px) 24rem, (min-width: 640px) 50vw, 100vw"
+                  className="aspect-[16/9] w-full rounded-sm object-cover"
                 />
                 <p className="mt-3 font-stencil text-2xl text-lazarus">{group.name}</p>
                 <p className="text-sm text-plate/85">{group.who}</p>
