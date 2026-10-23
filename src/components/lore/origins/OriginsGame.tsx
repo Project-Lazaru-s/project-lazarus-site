@@ -24,6 +24,7 @@ import { Dialogue } from "@/components/lore/game/Dialogue";
 import { LoreSfx, SoundButton, useSoundPref } from "@/components/lore/game/sound";
 import { InfirmaryGate, TradeGate, WellGate } from "./HavenGates";
 import { BusGate, CrewGate, ReturnGate } from "./RoversGates";
+import { EntryGate, RetreatGate, WatchGate } from "./WardensGates";
 
 const READING = `/lore/${origins.slug}/leitura`;
 const OPEN_MS = 550;
@@ -52,6 +53,9 @@ const GATES: Record<OriginGateId, (pass: () => void) => ReactNode> = {
   onibus: (pass) => <BusGate onPass={pass} />,
   tripulacao: (pass) => <CrewGate onPass={pass} />,
   volta: (pass) => <ReturnGate onPass={pass} />,
+  turnos: (pass) => <WatchGate onPass={pass} />,
+  entrada: (pass) => <EntryGate onPass={pass} />,
+  retirada: (pass) => <RetreatGate onPass={pass} />,
 };
 
 /** "Antes das Bandeiras" jogável: a mesa com as quatro pastas e, dentro de cada uma, a origem da facção. */

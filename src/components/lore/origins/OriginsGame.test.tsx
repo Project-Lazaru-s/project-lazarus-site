@@ -34,7 +34,7 @@ describe("OriginsGame", () => {
   });
   afterEach(() => vi.useRealTimers());
 
-  it("opens on the desk with four folders; Haven and Rovers can be opened", () => {
+  it("opens on the desk with four folders; Haven, Rovers and Wardens can be opened", () => {
     render(<OriginsGame />);
     expect(within(game()).getByRole("link", { name: /ler sem jogar/i })).toHaveAttribute(
       "href",
@@ -44,7 +44,7 @@ describe("OriginsGame", () => {
     expect(screen.getByRole("heading", { name: /escolha uma pasta/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /abrir a pasta haven/i })).toBeEnabled();
     expect(screen.getByRole("button", { name: /abrir a pasta rovers/i })).toBeEnabled();
-    for (const name of ["Wardens", "Military"])
+    for (const name of ["Military"])
       expect(screen.getByRole("button", { name: `${name}: pasta em recuperação` })).toBeDisabled();
   });
 
@@ -155,5 +155,53 @@ describe("OriginsGame", () => {
     advanceUntil(/o mapa das rotas riscadas/i);
     fireEvent.click(screen.getByRole("button", { name: /devolver a pasta/i }));
     expect(within(screen.getByRole("button", { name: /abrir a pasta rovers/i })).getByText("Lido")).toBeInTheDocument();
+  });
+
+  it("plays Wardens: the night watch, the entry book and the retreat", () => {
+    render(<OriginsGame />);
+    fireEvent.click(screen.getByRole("button", { name: /abrir o arquivo/i }));
+    fireEvent.click(screen.getByRole("button", { name: /abrir a pasta wardens/i }));
+    act(() => vi.runAllTimers());
+
+    const watch = advanceUntil(/escala de vigia/i);
+    const put = (slot: string, who: string) =>
+      fireEvent.click(
+        within(within(watch).getByRole("radiogroup", { name: `Turno: ${slot}` })).getByRole("radio", { name: who }),
+      );
+    put("Anoitecer", "Nogueira");
+    put("Meia-noite", "Nogueira");
+    put("Madrugada", "Ivete");
+    put("Amanhecer", "Caio");
+    expect(within(watch).getByText(/dois turnos seguidos/i)).toBeInTheDocument();
+    put("Meia-noite", "Caio");
+    put("Amanhecer", "Nogueira");
+    fireEvent.click(within(watch).getByRole("button", { name: /assinar a escala/i }));
+
+    const gate = advanceUntil(/livro de entradas/i);
+    const rules = () => within(gate).getByRole("list", { name: /regras do portão/i });
+    fireEvent.click(within(gate).getByRole("button", { name: "Abrir o portão" })); // sem revista
+    expect(within(rules()).getByText("Ninguém entra sem revista.")).toBeInTheDocument();
+    for (const answer of ["Abrir o portão", "Área de espera", "Área de espera"]) {
+      fireEvent.click(within(gate).getByRole("button", { name: "Revistar" }));
+      fireEvent.click(within(gate).getByRole("button", { name: answer }));
+    }
+    fireEvent.click(within(gate).getByRole("button", { name: /passar o turno/i }));
+
+    const retreat = advanceUntil(/a retirada/i);
+    fireEvent.click(within(retreat).getByRole("button", { name: "Fechar o portão" }));
+    expect(within(retreat).getByText(/ficaram 4 do lado de fora/i)).toBeInTheDocument();
+    fireEvent.click(within(retreat).getByRole("button", { name: /tentar de novo/i }));
+    for (let i = 0; i < 5; i++) fireEvent.click(within(retreat).getByRole("button", { name: "Segurar o portão" }));
+    expect(within(retreat).getByText(/um passo a mais/i)).toBeInTheDocument();
+    fireEvent.click(within(retreat).getByRole("button", { name: /tentar de novo/i }));
+    for (let i = 0; i < 4; i++) fireEvent.click(within(retreat).getByRole("button", { name: "Segurar o portão" }));
+    fireEvent.click(within(retreat).getByRole("button", { name: "Fechar o portão" }));
+    fireEvent.click(within(retreat).getByRole("button", { name: /^continuar/i }));
+
+    advanceUntil(/o primeiro livro de entradas/i);
+    fireEvent.click(screen.getByRole("button", { name: /devolver a pasta/i }));
+    expect(
+      within(screen.getByRole("button", { name: /abrir a pasta wardens/i })).getByText("Lido"),
+    ).toBeInTheDocument();
   });
 });

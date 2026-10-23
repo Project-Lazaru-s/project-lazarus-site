@@ -86,10 +86,8 @@ function DossierSection({ dossier, index }: { dossier: Dossier; index: number })
               </div>
             ))}
             {dossier.trace && (
-              <p className="reveal flex max-w-3xl gap-3 rounded border border-dashed border-plate/20 p-4 text-sm text-plate/60">
-                <span className="font-mono text-xs tracking-widest whitespace-nowrap text-sunset uppercase">
-                  {dossier.trace.title}
-                </span>
+              <p className="reveal flex max-w-3xl flex-col gap-1 sm:flex-row sm:gap-3 rounded border border-dashed border-plate/20 p-4 text-sm text-plate/60">
+                <span className="font-mono text-xs tracking-widest text-sunset uppercase">{dossier.trace.title}</span>
                 {dossier.trace.text}
               </p>
             )}

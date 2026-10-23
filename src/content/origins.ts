@@ -4,7 +4,8 @@ import type { Line } from "./lore";
 // Fonte: Documents/Project Lazarus/Lore/01. Origens das faccoes. Aqui fica a versão enxuta para o jogo.
 
 export type FactionId = "haven" | "rovers" | "wardens" | "military";
-export type OriginGateId = "poco" | "enfermaria" | "trocas" | "onibus" | "tripulacao" | "volta";
+export type OriginGateId =
+  "poco" | "enfermaria" | "trocas" | "onibus" | "tripulacao" | "volta" | "turnos" | "entrada" | "retirada";
 
 export type Part = {
   id: string;
@@ -210,6 +211,89 @@ const rovers: Dossier = {
   },
 };
 
+const wardens: Dossier = {
+  id: "wardens",
+  name: "Wardens",
+  title: "A linha que não podia ceder",
+  need: "Defender acessos e moradores",
+  photo: "/images/factions/cenas/wardens.png",
+  focus: "55% 60%",
+  ambience: "/sounds/lore/amb-wardens.mp3",
+  parts: [
+    {
+      id: "turnos",
+      numeral: "I",
+      title: "O portão aberto",
+      when: "Começo do colapso · uma rua estreita",
+      image: "/images/lore/origens/wardens-portao.png",
+      scenes: [
+        {
+          text: "O lugar que viraria o forte Warden começou com uma rua estreita e uma noite de vigia. Algumas casas tinham sobrevivido ao primeiro incêndio, com água guardada e um depósito de ferramentas.",
+          image: "/images/lore/origens/wardens-portao.png",
+          alt: "Ao amanhecer, moradores com roupas improvisadas fincam postes e empilham sacos de areia numa rua estreita, diante de duas casas queimadas.",
+        },
+        "Na primeira tentativa de saída, um portão ficou aberto para um homem atrasado. Atrás dele vieram infectados. Os moradores fecharam a passagem, mas perderam duas casas e quem ainda estava nelas.",
+        "No amanhecer seguinte, antigos vigias, gente da manutenção e voluntários fincaram postes, empilharam sacos de areia e ergueram uma guarita. Ninguém se apresentou como governo.",
+      ],
+      gate: "turnos",
+      quote: "Cada morador sabia que dormir sem vigia podia custar outro quarteirão.",
+      note: "Quatro turnos, três pessoas. Ninguém vigia dois turnos seguidos.",
+      after: [],
+    },
+    {
+      id: "entrada",
+      numeral: "II",
+      title: "Quem entra",
+      when: "Semanas depois · o portão da barricada",
+      image: "/images/lore/origens/wardens-registro.png",
+      scenes: [
+        {
+          text: "O problema veio com os vivos. Pessoas pediam entrada para buscar abrigo, trocar comida, encontrar parentes. Algumas estavam feridas; outras escondiam feridas com medo de serem recusadas.",
+          image: "/images/lore/origens/wardens-registro.png",
+          alt: "Sob uma lona, na chuva, um guarda escreve num livro de entradas enquanto viajantes esperam numa área cercada por cordas e paletes.",
+        },
+        "Os defensores criaram um registro de entrada, uma área de espera e uma regra de inspeção. Quase tudo era decidido por quem estava no portão naquele turno.",
+      ],
+      gate: "entrada",
+      quote:
+        "Foi assim que uma barricada virou autoridade: cada exceção feita na chuva precisava ser explicada ao próximo guarda.",
+      note: "Registro, área de espera, revista. Cada erro vira uma regra nova, em outra tinta.",
+      after: [
+        "O nome Wardens apareceu numa ordem de patrulha escrita à mão. Queria dizer que tinham algo sob guarda: a vida dentro das muralhas.",
+        "Com o tempo, isso passou a incluir arsenal, estoque, bunker de comando e rotas de aproximação. Quem vivia dentro aceitava turnos, racionamento e limites de circulação. Quem vinha de fora esperava.",
+      ],
+    },
+    {
+      id: "retirada",
+      numeral: "III",
+      title: "A linha",
+      when: "Meses depois · uma retirada",
+      image: "/images/lore/origens/wardens-retirada.png",
+      scenes: [
+        {
+          text: "Houve coragem nas guaritas. Durante uma retirada, um Warden manteve uma passagem aberta mesmo sabendo que o barulho atrairia infectados.",
+          image: "/images/lore/origens/wardens-retirada.png",
+          alt: "À noite, sob um holofote, um guarda civil segura o portão aberto enquanto os últimos sobreviventes correm para dentro, com infectados vindo pela rua.",
+        },
+        "Segurar demais custava a muralha. Fechar cedo demais custava quem ainda corria na rua.",
+      ],
+      gate: "retirada",
+      quote:
+        "Os moradores aprenderam a ligar a própria sobrevivência à disciplina do forte. Os viajantes, a ligar a disciplina a horas perdidas do lado errado do portão.",
+      note: "Segurar a passagem até o último entrar. Nem um passo a mais.",
+      after: [
+        "Houve também decisões injustas: mantas requisitadas de viajantes, uma revista feita tarde demais para salvar um doente, outra cedo demais para manter a confiança de uma família.",
+        "Antes da ruptura, os Wardens recebiam peças dos Rovers e liberavam horários de travessia. Haven acolhia seus feridos.",
+        "A rivalidade que viria depois não mudaria o motivo da fundação: o medo de ver uma abertura pequena destruir tudo. Mudaria o tamanho da linha que estariam dispostos a traçar.",
+      ],
+    },
+  ],
+  trace: {
+    title: "O primeiro livro de entradas",
+    text: "Regras acrescentadas em tintas diferentes. A página da noite em que o portão ficou aberto guarda os nomes das casas perdidas.",
+  },
+};
+
 /** Ainda sem roteiro: a pasta aparece na mesa, lacrada. */
 const sealed = (id: FactionId, name: string, title: string, need: string, photo: string, focus: string): Dossier => ({
   id,
@@ -226,14 +310,7 @@ const sealed = (id: FactionId, name: string, title: string, need: string, photo:
 export const dossiers: Dossier[] = [
   haven,
   rovers,
-  sealed(
-    "wardens",
-    "Wardens",
-    "A linha que não podia ceder",
-    "Defender acessos e moradores",
-    "/images/factions/cenas/wardens.png",
-    "55% 60%",
-  ),
+  wardens,
   sealed(
     "military",
     "Military",
@@ -358,3 +435,46 @@ export const candidates = [
   { id: "rosa", who: "Rosa", line: "Conhece o bairro inteiro, mas não sai dele.", skill: "conhecer o bairro" },
   { id: "bento", who: "Bento", line: "Caçador. Ouve um infectado antes de vê-lo.", skill: "escutar" },
 ] as const;
+
+// ---------- Portões dos Wardens ----------
+
+/** Parte I: quatro turnos da noite, três pessoas de vigia. */
+export const watchSlots = ["Anoitecer", "Meia-noite", "Madrugada", "Amanhecer"] as const;
+export const watchers = [
+  { id: "nogueira", who: "Nogueira", line: "ex-vigia de condomínio" },
+  { id: "ivete", who: "Ivete", line: "da manutenção" },
+  { id: "caio", who: "Caio", line: "voluntário" },
+] as const;
+
+/** Parte II: quem chega ao portão. Errar não trava o portão: escreve uma regra nova no livro. */
+export const entryBaseRules = ["Todo nome vai para o registro de entrada.", "Quem não entra fica na área de espera."];
+export const UNINSPECTED_RULE = "Ninguém entra sem revista.";
+export const arrivals = [
+  {
+    id: "familia",
+    who: "Uma família com duas crianças",
+    ask: "Pedem abrigo antes de escurecer.",
+    found: "Ninguém ferido. Uma mala e um cobertor.",
+    answer: "entra",
+    rule: "Revistado e limpo, entra antes do anoitecer.",
+  },
+  {
+    id: "troca",
+    who: "Um homem com um saco de batatas",
+    ask: "Quer trocar comida por remédio.",
+    found: "Esconde a mão na manga. A atadura está úmida.",
+    answer: "espera",
+    rule: "Ferida escondida espera do lado de fora até alguém de Haven examinar.",
+  },
+  {
+    id: "atrasado",
+    who: "Um viajante atrasado",
+    ask: "Chama pelo nome de um morador depois do toque de recolher.",
+    found: "Escuro demais para revistar. Atrás dele, a rua geme.",
+    answer: "espera",
+    rule: "Depois do toque de recolher, o portão não abre. Nem para quem chama pelo nome.",
+  },
+] as const;
+
+/** Parte III: a retirada. Cada vez que o guarda segura o portão, entra um sobrevivente e a horda avança. */
+export const RETREAT = { survivors: 4, distance: 6, approach: [1, 1, 1, 1, 2, 2] } as const;

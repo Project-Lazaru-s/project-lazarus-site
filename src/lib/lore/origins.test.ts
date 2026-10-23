@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { dossiers } from "@/content/origins";
+import { arrivals, dossiers } from "@/content/origins";
 import {
   available,
   crewVerdict,
+  entryVerdict,
+  retreatAt,
   cuesFor,
   decodeSave,
   encodeSave,
@@ -13,6 +15,7 @@ import {
   ROVERS_MAP,
   scriptFor,
   START,
+  watchVerdict,
   wellVerdict,
 } from "./origins";
 
@@ -37,16 +40,16 @@ describe("Antes das Bandeiras: script", () => {
     expect(havenScript.at(-1)?.kind).toBe("end");
   });
 
-  it("Haven and Rovers are open; the other folders are sealed; the other folders are sealed", () => {
+  it("Haven, Rovers and Wardens are open; Military is still sealed; the other folders are sealed", () => {
     expect(available("haven")).toBe(true);
-    for (const id of ["wardens", "military"] as const) expect(available(id)).toBe(false);
+    for (const id of ["military"] as const) expect(available(id)).toBe(false);
     expect(dossiers.map((d) => d.id)).toEqual(["haven", "rovers", "wardens", "military"]);
   });
 });
 
 describe("Antes das Bandeiras: reducer", () => {
   it("opens a folder, waits at each gate and only the right gate opens it", () => {
-    let s = reduce(START, { type: "open", faction: "wardens" });
+    let s = reduce(START, { type: "open", faction: "military" });
     expect(s).toBe(START); // lacrada
     s = reduce(START, { type: "open", faction: "haven" });
     expect(s.open).toBe("haven");
@@ -87,7 +90,7 @@ describe("Antes das Bandeiras: save", () => {
     expect(decodeSave(encodeSave(s))).toEqual(s);
     expect(decodeSave("")).toBeNull();
     expect(decodeSave("{")).toBeNull();
-    expect(decodeSave(JSON.stringify({ v: 1, open: "wardens", at: {}, done: [] }))).toBeNull();
+    expect(decodeSave(JSON.stringify({ v: 1, open: "military", at: {}, done: [] }))).toBeNull();
     expect(decodeSave(JSON.stringify({ v: 1, open: null, at: { haven: 999 }, done: [] }))).toBeNull();
     expect(decodeSave(JSON.stringify({ v: 1, open: null, at: {}, done: ["x"] }))).toBeNull();
     expect(decodeSave(JSON.stringify({ v: 1, open: "haven", at: {}, done: [] }))).toBeNull();
@@ -140,5 +143,35 @@ describe("Antes das Bandeiras: Rovers gates", () => {
     const back = returnMap(ROVERS_MAP, middle);
     expect(back[5]).toBe("#GXXXXXXXXXXXXXXXXXXXXS#");
     expect(back[1]).toBe(ROVERS_MAP[1]); // a avenida continua aberta para voltar
+  });
+});
+
+describe("Antes das Bandeiras: Wardens gates", () => {
+  it("runs Wardens as 3 parts with the watch, the entry book and the retreat", () => {
+    expect(available("wardens")).toBe(true);
+    const ids = scriptFor("wardens").flatMap((s) => (s.kind === "gate" ? [s.gate] : []));
+    expect(ids).toEqual(["turnos", "entrada", "retirada"]);
+  });
+
+  it("the watch needs every shift covered, no double shift and all three on the roster", () => {
+    expect(watchVerdict(["nogueira", "ivete", null, "caio"])).toEqual({ done: false });
+    expect(watchVerdict(["nogueira", "nogueira", "ivete", "caio"])).toMatchObject({ problem: /Meia-noite/ });
+    expect(watchVerdict(["nogueira", "ivete", "nogueira", "ivete"])).toMatchObject({ problem: /fora da escala/ });
+    expect(watchVerdict(["nogueira", "ivete", "caio", "nogueira"])).toEqual({ done: true, problem: null });
+  });
+
+  it("each mistake at the gate writes a rule; the right call goes through", () => {
+    const [familia, troca, atrasado] = arrivals;
+    expect(entryVerdict(familia, "entra", false)).toEqual({ ok: false, rule: "Ninguém entra sem revista." });
+    expect(entryVerdict(familia, "espera", true)).toMatchObject({ ok: false, rule: /antes do anoitecer/ });
+    expect(entryVerdict(familia, "entra", true)).toEqual({ ok: true });
+    expect(entryVerdict(troca, "entra", true)).toMatchObject({ ok: false, rule: /ferida escondida/i });
+    expect(entryVerdict(atrasado, "espera", false)).toEqual({ ok: true });
+  });
+
+  it("holding the gate lets one survivor in per hold while the horde closes in", () => {
+    expect(retreatAt(0)).toEqual({ outside: 4, distance: 6, overrun: false });
+    expect(retreatAt(4)).toEqual({ outside: 0, distance: 2, overrun: false });
+    expect(retreatAt(5).overrun).toBe(true); // um passo a mais e a horda chega
   });
 });

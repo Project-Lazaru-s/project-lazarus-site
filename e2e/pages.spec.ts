@@ -193,7 +193,7 @@ test("Lore (Arquivo 02): the folders on the desk and Haven from the well to the 
   await page.getByRole("link", { name: "Antes das Bandeiras" }).click();
   await expect(page).toHaveURL("/lore/antes-das-bandeiras");
   await page.getByRole("button", { name: "Abrir o arquivo" }).click();
-  await expect(page.getByRole("button", { name: "Wardens: pasta em recuperação" })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Military: pasta em recuperação" })).toBeDisabled();
   await page.getByRole("button", { name: "Abrir a pasta Haven" }).click();
   await expect(page.getByRole("heading", { name: "O poço" })).toBeVisible();
 
@@ -278,4 +278,47 @@ test("Lore (Arquivo 02): Rovers, from the stranded bus to a guaranteed way back"
   await reach(/o mapa das rotas riscadas/i);
   await page.getByRole("button", { name: /devolver a pasta/i }).click();
   await expect(page.getByRole("button", { name: "Abrir a pasta Rovers" })).toContainText("Lido");
+});
+
+test("Lore (Arquivo 02): Wardens, from the first night watch to the retreat", async ({ page }) => {
+  await page.goto("/lore/antes-das-bandeiras");
+  await page.getByRole("button", { name: "Abrir o arquivo" }).click();
+  await page.getByRole("button", { name: "Abrir a pasta Wardens" }).click();
+  await expect(page.getByRole("heading", { name: "O portão aberto" })).toBeVisible();
+
+  const reach = async (gate: RegExp) => {
+    const group = page.getByRole("group", { name: gate });
+    for (let i = 0; i < 60 && !(await group.isVisible()); i++) await page.keyboard.press("Enter");
+    await expect(group).toBeVisible();
+    return group;
+  };
+
+  const watch = await reach(/escala de vigia/i);
+  for (const [slot, who] of [
+    ["Anoitecer", "Nogueira"],
+    ["Meia-noite", "Ivete"],
+    ["Madrugada", "Caio"],
+    ["Amanhecer", "Nogueira"],
+  ])
+    await watch
+      .getByRole("radiogroup", { name: `Turno: ${slot}` })
+      .getByRole("radio", { name: who })
+      .click();
+  await watch.getByRole("button", { name: /assinar a escala/i }).click();
+
+  const gate = await reach(/livro de entradas/i);
+  for (const answer of ["Abrir o portão", "Área de espera", "Área de espera"]) {
+    await gate.getByRole("button", { name: "Revistar" }).click();
+    await gate.getByRole("button", { name: answer }).click();
+  }
+  await gate.getByRole("button", { name: /passar o turno/i }).click();
+
+  const retreat = await reach(/a retirada/i);
+  for (let i = 0; i < 4; i++) await retreat.getByRole("button", { name: "Segurar o portão" }).click();
+  await retreat.getByRole("button", { name: "Fechar o portão" }).click();
+  await retreat.getByRole("button", { name: /^continuar/i }).click();
+
+  await reach(/o primeiro livro de entradas/i);
+  await page.getByRole("button", { name: /devolver a pasta/i }).click();
+  await expect(page.getByRole("button", { name: "Abrir a pasta Wardens" })).toContainText("Lido");
 });

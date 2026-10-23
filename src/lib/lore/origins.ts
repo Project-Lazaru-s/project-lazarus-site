@@ -1,12 +1,16 @@
 import type { Line } from "@/content/lore";
 import {
+  arrivals,
   candidates,
   crewSkills,
   dossiers,
   type FactionId,
   type OriginGateId,
   BUS_SEATS,
+  RETREAT,
+  UNINSPECTED_RULE,
   WELL_BUCKETS,
+  watchSlots,
 } from "@/content/origins";
 import type { Cell } from "@/lib/games/route";
 import type { Cue } from "./audio";
@@ -170,6 +174,32 @@ export function returnMap(rows: string[], path: Cell[]): string[] {
   const grid = rows.map((row) => [...row]);
   for (const { r, c } of path.slice(1, -1)) grid[r][c] = "X";
   return grid.map((row) => row.map((t) => (t === "S" ? "G" : t === "G" ? "S" : t)).join(""));
+}
+
+/** Parte I dos Wardens: todo turno coberto, ninguém em dois turnos seguidos, ninguém de fora da escala. */
+export function watchVerdict(shifts: (string | null)[]): { done: false } | { done: true; problem: string | null } {
+  if (shifts.length < watchSlots.length || shifts.some((s) => !s)) return { done: false };
+  const tired = shifts.findIndex((s, i) => i > 0 && s === shifts[i - 1]);
+  if (tired > 0)
+    return { done: true, problem: `Quem vigia dois turnos seguidos dorme no segundo (${watchSlots[tired]}).` };
+  if (new Set(shifts).size < 3)
+    return { done: true, problem: "Alguém ficou fora da escala e dois carregam a noite inteira." };
+  return { done: true, problem: null };
+}
+
+type Arrival = (typeof arrivals)[number];
+
+/** Parte II dos Wardens: abrir sem revista ou decidir errado não trava o portão, escreve uma regra no livro. */
+export function entryVerdict(arrival: Arrival, choice: "entra" | "espera", inspected: boolean) {
+  if (choice === "entra" && !inspected) return { ok: false, rule: UNINSPECTED_RULE } as const;
+  return choice === arrival.answer ? ({ ok: true } as const) : ({ ok: false, rule: arrival.rule } as const);
+}
+
+/** Parte III dos Wardens: depois de segurar o portão `holds` vezes, quantos ainda estão fora e onde está a horda. */
+export function retreatAt(holds: number) {
+  const walked = RETREAT.approach.slice(0, holds).reduce((a: number, b) => a + b, 0);
+  const distance = RETREAT.distance - walked;
+  return { outside: Math.max(0, RETREAT.survivors - holds), distance, overrun: distance <= 0 };
 }
 
 // ---------- Sons ----------
