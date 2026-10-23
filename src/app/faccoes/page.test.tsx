@@ -13,13 +13,19 @@ describe("/faccoes", () => {
     }
   });
 
-  it("shows the skin previews with descriptive alt text", () => {
+  it("illustrates every faction with a described scene", () => {
     render(<FactionsPage />);
-    expect(screen.getByRole("img", { name: /the preacher/i })).toBeInTheDocument();
-    for (const name of ["Haven", "Rovers", "Wardens"]) {
-      expect(screen.getByRole("img", { name: new RegExp(`skins dos npcs ${name}`, "i") })).toBeInTheDocument();
+    for (const name of [
+      /refúgio haven/i,
+      /acampamento rovers/i,
+      /forte wardens/i,
+      /quarentena militar/i,
+      /the preacher/i,
+      /desertores/i,
+      /gangues rivais/i,
+    ]) {
+      expect(screen.getByRole("img", { name })).toBeInTheDocument();
     }
-    expect(screen.getByRole("img", { name: /gangues rivais/i })).toBeInTheDocument();
   });
 
   it("explains the wanted system", () => {
