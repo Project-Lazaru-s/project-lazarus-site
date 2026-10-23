@@ -31,8 +31,7 @@ export function ChestGame() {
     if (next.status === "open") {
       play("chestOpen");
       dispatch({ type: "chest", method: "picked", broken: LOCKPICKS - next.picks });
-    }
-    else if (next.lastWrong !== null) {
+    } else if (next.lastWrong !== null) {
       play("lockpickBreak");
       setShake((s) => s + 1);
     } else play("lockPin");
@@ -158,7 +157,9 @@ export function ChestGame() {
                     <img src={highlight.icon} alt="" className="h-12 w-12 object-contain pixelated" />
                   </span>
                   <span>
-                    <span className="block font-stencil text-xl text-lazarus group-hover:text-sunset">{highlight.title}</span>
+                    <span className="block font-stencil text-xl text-lazarus group-hover:text-sunset">
+                      {highlight.title}
+                    </span>
                     <span className="mt-1 block text-sm text-plate/75">{highlight.text}</span>
                   </span>
                 </Link>

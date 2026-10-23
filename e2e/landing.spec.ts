@@ -160,7 +160,9 @@ test("Dia 7: forcing the chest opens it at once, but scares you", async ({ page 
   const force = page.getByRole("button", { name: /Arrombar/ });
   await force.scrollIntoViewIfNeeded();
   await force.click();
-  await expect(page.getByRole("list", { name: "Conteúdo do baú" }).getByRole("link", { name: /Furtividade/ })).toBeVisible();
+  await expect(
+    page.getByRole("list", { name: "Conteúdo do baú" }).getByRole("link", { name: /Furtividade/ }),
+  ).toBeVisible();
   await expect(hud(page)).toContainText("Tense");
 });
 
@@ -248,4 +250,29 @@ test.describe("reduced motion", () => {
     await page.goto("/");
     await expect(page.getByRole("link", { name: "Saiba mais sobre os eventos" })).toBeVisible({ timeout: 1_000 });
   });
+});
+
+test("Dia 25: a route drawn on the Lazarus Maps paper map reaches the military post", async ({ page }) => {
+  await page.goto("/");
+  // Antes de começar o mapa fica inert (fora da árvore de acessibilidade); o botão está na seção.
+  const section = page.locator("#mapa");
+  await section.scrollIntoViewIfNeeded();
+  await section.getByRole("button", { name: "Começar", exact: true }).click();
+  await section.getByRole("application", { name: "Mapa até o posto militar" }).focus();
+  for (const [key, times] of [
+    ["ArrowRight", 6],
+    ["ArrowDown", 1],
+    ["ArrowRight", 8],
+    ["ArrowDown", 1],
+    ["ArrowRight", 7],
+    ["ArrowDown", 5],
+  ] as const)
+    for (let i = 0; i < times; i++) await page.keyboard.press(key);
+  await expect(page.getByRole("heading", { name: /chegou/i })).toBeVisible();
+  await expect(page.getByText(/28 quadrados até o posto/)).toBeVisible();
+});
+
+test("Lazarus Maps page links to its minigame on the landing", async ({ page }) => {
+  await page.goto("/mods/maps");
+  await expect(page.getByRole("link", { name: "Jogue no site" })).toHaveAttribute("href", "/#mapa");
 });

@@ -3,7 +3,9 @@
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { broadcasts, cancela, gangs, inicioDoCaos, roads, threeWays, triageSheet } from "@/content/lore";
+import { LORE_MAP, roadFor, type RouteSummary } from "@/lib/games/route";
 import { hotspots, isTuned, RADIO, sharedFacts, signal, triageOptions } from "@/lib/lore/story";
+import { MapLegend, RouteMapBoard } from "@/components/games/RouteMapBoard";
 import { useLoreSfx } from "./sound";
 
 type GateProps = { onPass: (road?: string) => void };
@@ -405,54 +407,47 @@ export function WallsGate({ onPass }: GateProps) {
   );
 }
 
-/** Ato V: a última folha do caderno. Escolher por onde começar. */
+/** Ato V: a última folha do caderno vira mapa (Lazarus Maps). A estrada é a que o jogador traçar. */
 export function RoadGate({ onPass }: GateProps) {
   const sfx = useLoreSfx();
-  const [chosen, setChosen] = useState<string>();
-  const road = roads.find((r) => r.id === chosen);
+  const [summary, setSummary] = useState<RouteSummary>();
+  const road = summary && roads.find((r) => r.id === roadFor(summary));
 
   return (
     <div
       role="group"
       aria-label="Três caminhos até a cidade"
-      className="lore-paper mx-auto w-full max-w-3xl rounded p-5 text-asphalt-deep shadow-2xl sm:p-6"
+      className="lore-paper mx-auto w-full max-w-3xl rounded p-4 text-asphalt-deep shadow-2xl sm:p-6"
     >
       <p className="font-hand text-3xl text-asphalt-deep/70">três caminhos até a cidade</p>
-      <div className="mt-4 grid gap-3 sm:grid-cols-3">
-        {roads.map((r) => (
-          <label
-            key={r.id}
-            className="cursor-pointer rounded border-2 border-dashed border-asphalt-deep/40 p-4 transition hover:border-lazarus/60 has-[:checked]:border-solid has-[:checked]:border-lazarus has-[:checked]:bg-lazarus/10"
-          >
-            <input
-              type="radio"
-              name="estrada"
-              value={r.id}
-              checked={chosen === r.id}
-              onChange={() => {
-                sfx("lorePencil", 0.4);
-                setChosen(r.id);
-              }}
-              className="sr-only"
-            />
-            <span className="block font-stencil text-2xl">{r.label}</span>
-            <span className="mt-1 block text-sm">{r.detail}</span>
-          </label>
-        ))}
-      </div>
-      <p aria-live="polite" className="mt-4 min-h-8 font-hand text-2xl text-lazarus">
-        {road?.outcome}
+      <p className="mb-3 text-sm">
+        A enfermeira só marcou o destino. O caminho curto passa pela patrulha dos Wardens; o longo, pela rota dos
+        Rovers; o terceiro some na névoa.
       </p>
-      <div className="mt-2 flex justify-center">
-        <button
-          type="button"
-          disabled={!road}
-          onClick={() => onPass(chosen)}
-          className={`${continueButton} disabled:opacity-40`}
-        >
-          Seguir por aqui ▸
-        </button>
-      </div>
+      <RouteMapBoard rows={LORE_MAP} label="Mapa até a cidade" goalLabel="à cidade" onArrive={setSummary} sfx={sfx} />
+      <MapLegend
+        items={[
+          { tile: "P", label: "Patrulha dos Wardens" },
+          { tile: "R", label: "Rota dos Rovers" },
+          { tile: "~", label: "Névoa" },
+          { tile: "W", label: "Água" },
+          { tile: "#", label: "Ruínas" },
+          { tile: "Z", label: "Área infestada" },
+        ]}
+      />
+      {road && summary && (
+        <div aria-live="polite" className="mt-4 rounded border-2 border-lazarus/60 bg-lazarus/10 p-4">
+          <p className="font-stencil text-2xl">
+            {road.label} <span className="font-mono text-sm opacity-70">· {summary.steps} quadrados</span>
+          </p>
+          <p className="font-hand text-2xl text-lazarus">{road.outcome}</p>
+          <div className="mt-3 flex justify-center">
+            <button type="button" autoFocus onClick={() => onPass(road.id)} className={continueButton}>
+              Seguir por aqui ▸
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

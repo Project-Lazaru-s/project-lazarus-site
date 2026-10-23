@@ -6,6 +6,7 @@ import { HordeGame } from "@/components/games/HordeGame";
 import { LootGame } from "@/components/games/LootGame";
 import { StealthGame } from "@/components/games/StealthGame";
 import { TakedownGame } from "@/components/games/TakedownGame";
+import { MapGame } from "@/components/games/MapGame";
 import { TraderGame } from "@/components/games/TraderGame";
 import { VoiceGame } from "@/components/games/VoiceGame";
 import { WaterGame } from "@/components/games/WaterGame";
@@ -216,6 +217,23 @@ export default function HomePage() {
           </Link>
         </Chapter>
         <TraderGame />
+      </DaySection>
+
+      <DaySection
+        day={25}
+        id="mapa"
+        className="mx-auto grid max-w-6xl gap-8 px-4 py-24 lg:grid-cols-[1.4fr_1fr] lg:items-center"
+      >
+        <MapGame />
+        <Chapter day={25} title="Sem placa, sem estrada.">
+          <p>
+            Os postos militares estão caindo e as rotas seguras somem. No Lazarus Maps você rabisca o próprio mapa de
+            papel, anota em oito cores e tem um GPS com coordenadas para não se perder.
+          </p>
+          <Link href="/mods/maps" className="mt-3 inline-block text-sm text-sunset hover:underline">
+            Lazarus Maps →
+          </Link>
+        </Chapter>
       </DaySection>
 
       <DaySection day={60} id="dossie" className="border-y border-rust/40 bg-asphalt">

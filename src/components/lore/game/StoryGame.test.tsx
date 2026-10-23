@@ -78,7 +78,15 @@ describe("StoryGame", () => {
     fireEvent.click(within(walls).getByRole("button", { name: /^continuar/i }));
 
     const roads = advanceUntil(/três caminhos/i);
-    fireEvent.click(within(roads).getByRole("radio", { name: /o mais longo/i }));
+    // Rota dos Rovers, pelo norte: 6 para cima, 21 para a direita, 6 para baixo.
+    const map = within(roads).getByRole("application", { name: /mapa até a cidade/i });
+    const press = (key: string, times: number) => {
+      for (let i = 0; i < times; i++) fireEvent.keyDown(map, { key });
+    };
+    press("ArrowUp", 6);
+    press("ArrowRight", 21);
+    press("ArrowDown", 6);
+    expect(within(roads).getByText(/você vai pela rota longa/i)).toBeInTheDocument();
     fireEvent.click(within(roads).getByRole("button", { name: /seguir por aqui/i }));
 
     const end = advanceUntil(/seu dia 1/i);

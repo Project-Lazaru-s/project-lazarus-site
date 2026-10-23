@@ -162,7 +162,15 @@ test("Lore (game): every act waits for the player, from the archive to Day 1", a
   await walls.getByRole("button", { name: /^continuar/i }).click();
 
   const roads = await reach(/três caminhos/i);
-  await roads.getByText("O mais longo").click();
+  // Traça a rota dos Rovers com o teclado: 6 para cima, 21 para a direita, 6 para baixo.
+  await roads.getByRole("application", { name: /mapa até a cidade/i }).focus();
+  for (const [key, times] of [
+    ["ArrowUp", 6],
+    ["ArrowRight", 21],
+    ["ArrowDown", 6],
+  ] as const)
+    for (let i = 0; i < times; i++) await page.keyboard.press(key);
+  await expect(roads).toContainText("rota longa");
   await roads.getByRole("button", { name: /seguir por aqui/i }).click();
 
   const end = await reach(/seu dia 1/i);

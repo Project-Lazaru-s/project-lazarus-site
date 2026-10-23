@@ -88,6 +88,7 @@ export const lazarusMods: LazarusMod[] = [
     ],
   }),
   mod("maps", {
+    play: "mapa",
     name: "Lazarus Maps",
     version: "0.3.0",
     summary: "Mapas desenhados à mão, anotações, paleta e GPS.",

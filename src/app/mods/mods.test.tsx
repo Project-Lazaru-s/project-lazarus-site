@@ -42,7 +42,7 @@ describe("/mods/[slug]", () => {
   });
 
   it("has no play link for mods without a minigame", async () => {
-    render(await ModPage(params("maps")));
+    render(await ModPage(params("wrecks")));
     expect(screen.queryByRole("link", { name: /jogue no site/i })).not.toBeInTheDocument();
   });
 
