@@ -39,3 +39,11 @@ test("Servidor: the shareable card has a preview image; a forged one is a 404", 
   expect(image.headers()["content-type"]).toBe("image/png");
   expect((await page.goto("/servidor/ficha/forjado"))?.status()).toBe(404);
 });
+
+test("Servidor: the forms area asks for a password", async ({ request }) => {
+  for (const path of ["/servidor/admin", "/servidor/admin/fichas.csv"]) {
+    const response = await request.get(path, { headers: { Authorization: "Basic " + btoa("x:errada") } });
+    expect(response.status()).toBe(401);
+    expect(response.headers()["www-authenticate"]).toContain("Basic");
+  }
+});

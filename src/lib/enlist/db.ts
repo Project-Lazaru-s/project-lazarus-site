@@ -70,6 +70,13 @@ export async function saveRecruit(sql: Sql, r: Recruit, ipHash: string): Promise
   }
 }
 
+/** Todas as fichas, da mais nova para a mais antiga (área restrita). */
+export async function listRecruits(sql: Sql) {
+  await ensureSchema(sql);
+  return sql`select id, nick, email, whatsapp, discord, side, experience, region, playtime, group_size,
+    created_at, updated_at from recruits order by id desc`;
+}
+
 export type Stats = { total: number; bySide: Record<SideId, number> };
 
 /** Contagem pública: só números agregados por lado, nenhum dado pessoal. */
