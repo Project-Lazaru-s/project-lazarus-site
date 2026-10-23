@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { type ReactNode, useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { dayOne, inicioDoCaos, roads } from "@/content/lore";
+import { dayOne, inicioDoCaos, roads, whoIsWho } from "@/content/lore";
 import { site } from "@/content/site";
 import {
   decodeSave,
@@ -123,6 +123,7 @@ export function StoryGame() {
   const saved = decodeSave(useSyncExternalStore(noop, readSave, () => ""));
   const [state, setState] = useState<StoryState | null>(null);
   const [notebook, setNotebook] = useState(false);
+  const [notebookTab, setNotebookTab] = useState<"paginas" | "quem">("paginas");
   const [soundOn, setSoundOn] = useSoundPref();
 
   // Áudio criado só no primeiro uso (depois de um clique), nunca no servidor.
@@ -300,6 +301,18 @@ export function StoryGame() {
           {step?.kind === "line" && (
             <div className="mt-auto">
               {fresh && <PageToast note={fresh.note} />}
+              {step.image && (
+                <figure key={step.image} className="lore-page-toast mx-auto mb-3 w-full max-w-3xl">
+                  <Image
+                    src={step.image}
+                    alt={step.alt ?? ""}
+                    width={1600}
+                    height={900}
+                    sizes="(min-width: 768px) 48rem, 100vw"
+                    className="mx-auto h-auto max-h-[42vh] w-auto max-w-full rounded border-2 border-plate/30 shadow-2xl"
+                  />
+                </figure>
+              )}
               <Dialogue key={state!.at} text={step.text} quote={step.quote} onNext={() => play({ type: "next" })} />
             </div>
           )}
@@ -343,19 +356,69 @@ export function StoryGame() {
                 ×
               </button>
             </div>
-            <ol className="mt-6 space-y-4">
-              {acts.map((a) => {
-                const page = found.find((p) => p.title === a.title);
-                return (
-                  <li key={a.id} className="border-b border-asphalt-deep/20 pb-3">
-                    <p className="font-mono text-[11px] tracking-widest uppercase opacity-60">
-                      Ato {a.numeral} · {a.title}
-                    </p>
-                    <p className="font-hand text-2xl leading-tight">{page ? page.note : "· · ·"}</p>
-                  </li>
-                );
-              })}
-            </ol>
+            <div role="tablist" aria-label="Seções do caderno" className="mt-5 flex gap-1">
+              {(
+                [
+                  ["paginas", "Páginas"],
+                  ["quem", "Quem é quem"],
+                ] as const
+              ).map(([id, label]) => (
+                <button
+                  key={id}
+                  type="button"
+                  role="tab"
+                  aria-selected={notebookTab === id}
+                  onClick={() => setNotebookTab(id)}
+                  className={`flex-1 rounded px-2 py-1.5 text-sm pointer-coarse:min-h-11 ${
+                    notebookTab === id ? "bg-asphalt-deep text-plate" : "border border-asphalt-deep/30"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            {notebookTab === "quem" ? (
+              <ul aria-label="Quem é quem" className="mt-5 space-y-4">
+                {whoIsWho.map((group) => {
+                  // Só aparece depois que a história apresentou o grupo.
+                  const known = state && script[state.at].act >= group.act;
+                  return (
+                    <li key={group.name} className="border-b border-asphalt-deep/20 pb-3">
+                      {known ? (
+                        <>
+                          <Image
+                            src={group.image}
+                            alt=""
+                            width={640}
+                            height={240}
+                            className="h-16 w-full rounded-sm object-cover object-top [image-rendering:pixelated]"
+                          />
+                          <p className="mt-2 font-stencil text-xl text-lazarus">{group.name}</p>
+                          <p className="text-sm">{group.who}</p>
+                          <p className="mt-1 text-xs font-semibold opacity-75">{group.relation}</p>
+                        </>
+                      ) : (
+                        <p className="font-hand text-2xl opacity-50">· · · ainda não apareceu na história</p>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : (
+              <ol className="mt-6 space-y-4">
+                {acts.map((a) => {
+                  const page = found.find((p) => p.title === a.title);
+                  return (
+                    <li key={a.id} className="border-b border-asphalt-deep/20 pb-3">
+                      <p className="font-mono text-[11px] tracking-widest uppercase opacity-60">
+                        Ato {a.numeral} · {a.title}
+                      </p>
+                      <p className="font-hand text-2xl leading-tight">{page ? page.note : "· · ·"}</p>
+                    </li>
+                  );
+                })}
+              </ol>
+            )}
           </aside>
         )}
       </section>

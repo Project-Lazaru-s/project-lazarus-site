@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cancela, gangs, inicioDoCaos } from "@/content/lore";
+import { cancela, gangs, inicioDoCaos, lineText } from "@/content/lore";
 import {
   decodeSave,
   encodeSave,
@@ -44,7 +44,7 @@ describe("script", () => {
   it("tells the whole condensed text of every act", () => {
     const lines = script.flatMap((s) => (s.kind === "line" ? [s.text] : []));
     for (const act of inicioDoCaos.acts) {
-      for (const text of [...act.scenes, act.quote, ...act.after]) expect(lines).toContain(text);
+      for (const text of [...act.scenes, act.quote, ...act.after].map(lineText)) expect(lines).toContain(text);
     }
   });
 

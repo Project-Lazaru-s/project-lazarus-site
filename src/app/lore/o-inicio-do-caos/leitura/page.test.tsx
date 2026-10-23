@@ -34,4 +34,11 @@ describe("/lore/o-inicio-do-caos/leitura", () => {
     expect(within(cta).getByRole("link", { name: /baixar e começar/i })).toHaveAttribute("href", "/baixar");
     expect(within(cta).getByRole("link", { name: /dia 0/i })).toHaveAttribute("href", "/");
   });
+
+  it("explains who is who, with the army and the civilian groups apart", () => {
+    render(<StoryPage />);
+    const section = screen.getByRole("region", { name: "Quem é quem" });
+    expect(within(section).getByText(/o exército de verdade/i)).toBeInTheDocument();
+    expect(within(section).getByText(/civis armados, não militares/i)).toBeInTheDocument();
+  });
 });

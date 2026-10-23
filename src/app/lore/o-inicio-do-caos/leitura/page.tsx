@@ -9,7 +9,7 @@ import { CancelaVersions } from "@/components/lore/CancelaVersions";
 import { EmergencyRadio } from "@/components/lore/EmergencyRadio";
 import { RoadChoice } from "@/components/lore/RoadChoice";
 import { ThreeWays } from "@/components/lore/ThreeWays";
-import { type Act, dayOne, inicioDoCaos } from "@/content/lore";
+import { type Act, dayOne, inicioDoCaos, type Line, lineText, whoIsWho } from "@/content/lore";
 import { site } from "@/content/site";
 
 // Letra da enfermeira: só as anotações do caderno usam.
@@ -34,6 +34,25 @@ const artifacts: Record<string, ReactNode> = {
   "ato-5": <GangTags />,
 };
 const endings: Record<string, ReactNode> = { "ato-5": <RoadChoice /> };
+
+/** Uma cena; com ilustração, a imagem vem logo abaixo do texto. */
+function Scene({ line, className }: { line: Line; className: string }) {
+  return (
+    <div className="reveal space-y-4">
+      <p className={`text-lg leading-relaxed ${className}`}>{lineText(line)}</p>
+      {typeof line !== "string" && (
+        <Image
+          src={line.image}
+          alt={line.alt}
+          width={1600}
+          height={900}
+          sizes="(min-width: 768px) 48rem, 100vw"
+          className="rounded border border-plate/15"
+        />
+      )}
+    </div>
+  );
+}
 
 function ActSection({ act, index }: { act: Act; index: number }) {
   return (
@@ -67,9 +86,7 @@ function ActSection({ act, index }: { act: Act; index: number }) {
       <div className="mx-auto grid max-w-6xl gap-10 overflow-x-clip px-4 py-14 lg:grid-cols-[minmax(0,1fr)_14rem]">
         <div className="max-w-[min(100%,48rem)] space-y-10">
           {act.scenes.map((scene) => (
-            <p key={scene} className="reveal text-lg leading-relaxed text-plate/90 sm:text-xl">
-              {scene}
-            </p>
+            <Scene key={lineText(scene)} line={scene} className="text-plate/90 sm:text-xl" />
           ))}
 
           <div className="reveal">{artifacts[act.id]}</div>
@@ -79,9 +96,7 @@ function ActSection({ act, index }: { act: Act; index: number }) {
           </blockquote>
 
           {act.after.map((scene) => (
-            <p key={scene} className="reveal text-lg leading-relaxed text-plate/80">
-              {scene}
-            </p>
+            <Scene key={lineText(scene)} line={scene} className="text-plate/80" />
           ))}
 
           {endings[act.id] && <div className="reveal">{endings[act.id]}</div>}
@@ -134,6 +149,31 @@ export default function StoryPage() {
       {acts.map((act, i) => (
         <ActSection key={act.id} act={act} index={i} />
       ))}
+
+      <section aria-labelledby="quem-e-quem" className="bg-[#0a0c12] px-4 py-16">
+        <div className="mx-auto max-w-6xl">
+          <h2 id="quem-e-quem" className="font-stencil text-4xl text-plate">
+            Quem é quem
+          </h2>
+          <p className="mt-2 text-plate/70">Os grupos que você vai encontrar, e como se relacionam.</p>
+          <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {whoIsWho.map((group) => (
+              <li key={group.name} className="reveal rounded border border-rust/40 bg-asphalt p-4">
+                <Image
+                  src={group.image}
+                  alt=""
+                  width={640}
+                  height={240}
+                  className="h-20 w-full rounded-sm object-cover object-top [image-rendering:pixelated]"
+                />
+                <p className="mt-3 font-stencil text-2xl text-lazarus">{group.name}</p>
+                <p className="text-sm text-plate/85">{group.who}</p>
+                <p className="mt-1 text-xs font-semibold text-plate/60">{group.relation}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
 
       <section aria-labelledby="seu-dia-1" className="relative overflow-hidden bg-[#05070d] px-4 py-24 text-center">
         <p className="mx-auto max-w-xl font-mono text-sm text-radio">

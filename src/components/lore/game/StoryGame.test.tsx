@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
-import { cancela, gangs, inicioDoCaos } from "@/content/lore";
-import { decodeSave, SAVE_KEY } from "@/lib/lore/story";
+import { cancela, gangs, inicioDoCaos, lineText } from "@/content/lore";
+import { decodeSave, SAVE_KEY, script } from "@/lib/lore/story";
 import { StoryGame } from "./StoryGame";
 
 // A fala inteira fica para leitores de tela; a cópia que vai sendo digitada é aria-hidden.
@@ -101,6 +101,19 @@ describe("StoryGame", () => {
     localStorage.setItem(SAVE_KEY, JSON.stringify({ v: 1, at: 1 }));
     render(<StoryGame />);
     fireEvent.click(screen.getByRole("button", { name: /continuar de onde parou/i }));
-    expect(line(inicioDoCaos.acts[0].scenes[0])).toBeInTheDocument();
+    expect(line(lineText(inicioDoCaos.acts[0].scenes[0]))).toBeInTheDocument();
+  });
+
+  it("reveals who is who in the notebook as the story introduces each group", () => {
+    const act2 = script.findIndex((s) => s.kind === "act" && s.act === 1);
+    localStorage.setItem(SAVE_KEY, JSON.stringify({ v: 1, at: act2 }));
+    render(<StoryGame />);
+    fireEvent.click(screen.getByRole("button", { name: /continuar de onde parou/i }));
+    fireEvent.click(screen.getByRole("button", { name: /caderno/i }));
+    fireEvent.click(screen.getByRole("tab", { name: "Quem é quem" }));
+    const list = screen.getByRole("list", { name: "Quem é quem" });
+    expect(within(list).getByText(/o exército de verdade/i)).toBeInTheDocument();
+    expect(within(list).queryByText(/civis armados, não militares/i)).not.toBeInTheDocument();
+    expect(within(list).getAllByText(/ainda não apareceu na história/i).length).toBe(6);
   });
 });

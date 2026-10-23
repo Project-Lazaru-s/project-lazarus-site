@@ -1,4 +1,4 @@
-import { cancela, dayOne, inicioDoCaos, roads } from "@/content/lore";
+import { cancela, dayOne, inicioDoCaos, type Line, roads } from "@/content/lore";
 
 // "O Início do Caos" como jogo: um roteiro linear de falas, com portões que só o jogador abre.
 
@@ -6,19 +6,23 @@ export type GateId = "triagem" | "radio" | "investigar" | "comparar" | "paredes"
 
 export type Step =
   | { kind: "act"; act: number }
-  | { kind: "line"; act: number; text: string; quote?: boolean }
+  | { kind: "line"; act: number; text: string; quote?: boolean; image?: string; alt?: string }
   | { kind: "gate"; act: number; gate: GateId }
   | { kind: "end"; act: number };
 
 /** Portão de cada ato, entre as cenas e a frase do ato. O Ato V ainda fecha com a estrada. */
 const GATES: GateId[] = ["triagem", "radio", "investigar", "comparar", "paredes"];
 
+/** Uma fala do roteiro; quando a cena tem ilustração, ela vai junto. */
+const line = (act: number, l: Line): Step =>
+  typeof l === "string" ? { kind: "line", act, text: l } : { kind: "line", act, ...l };
+
 export const script: Step[] = inicioDoCaos.acts.flatMap((a, act): Step[] => [
   { kind: "act", act },
-  ...a.scenes.map((text) => ({ kind: "line" as const, act, text })),
+  ...a.scenes.map((l) => line(act, l)),
   { kind: "gate", act, gate: GATES[act] },
   { kind: "line", act, text: a.quote, quote: true },
-  ...a.after.map((text) => ({ kind: "line" as const, act, text })),
+  ...a.after.map((l) => line(act, l)),
   ...(act === 4
     ? [
         { kind: "gate", act, gate: "estrada" } as const,
