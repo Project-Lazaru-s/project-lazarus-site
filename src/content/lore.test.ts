@@ -4,9 +4,10 @@ import { archive, inicioDoCaos, lineText, roads, whoIsWho } from "./lore";
 const words = (text: string) => text.split(/\s+/).filter(Boolean).length;
 
 describe("lore archive", () => {
-  it("opens with O Início do Caos and keeps the other files sealed", () => {
-    const [first, ...rest] = archive;
+  it("opens with O Início do Caos and Antes das Bandeiras and keeps the rest sealed", () => {
+    const [first, second, ...rest] = archive;
     expect(first).toMatchObject({ sealed: false, slug: "o-inicio-do-caos" });
+    expect(second).toMatchObject({ sealed: false, slug: "antes-das-bandeiras" });
     expect(rest.length).toBeGreaterThan(0);
     expect(rest.every((entry) => entry.sealed)).toBe(true);
   });

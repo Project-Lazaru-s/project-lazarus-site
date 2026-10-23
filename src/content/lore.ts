@@ -2,21 +2,42 @@
 // Aqui fica a versão enxuta para o site; os fatos não mudam, só o tamanho.
 
 export type ArchiveEntry =
-  | { sealed: false; slug: string; title: string; summary: string; acts: number; minutes: number; cover: string }
+  | {
+      sealed: false;
+      code: string;
+      /** Tamanho do arquivo como jogo: "5 atos", "4 dossiês"... */
+      meta: string;
+      slug: string;
+      title: string;
+      summary: string;
+      minutes: number;
+      cover: string;
+    }
   | { sealed: true; code: string };
 
 export const archive: ArchiveEntry[] = [
   {
     sealed: false,
+    code: "Arquivo 01",
+    meta: "5 atos · jogável · ~8 min",
     slug: "o-inicio-do-caos",
     title: "O Início do Caos",
     summary:
       "Antes do seu Dia 1: o primeiro caso, o exército e a quarentena, os civis que se organizaram e a noite que separou Rovers e Wardens.",
-    acts: 5,
     minutes: 6,
     cover: "/images/lore/cover.png",
   },
-  { sealed: true, code: "Arquivo 02" },
+  {
+    sealed: false,
+    code: "Arquivo 02",
+    meta: "Dossiês de origem · jogável · Haven aberto",
+    slug: "antes-das-bandeiras",
+    title: "Antes das Bandeiras",
+    summary:
+      "Quatro pastas confidenciais: como Haven, Rovers, Wardens e Military começaram, antes de existir qualquer facção.",
+    minutes: 3,
+    cover: "/images/lore/origens/capa-origens.png",
+  },
   { sealed: true, code: "Arquivo 03" },
 ];
 

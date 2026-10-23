@@ -8,14 +8,14 @@ import { hotspots, isTuned, RADIO, sharedFacts, signal, triageOptions } from "@/
 import { MapLegend, RouteMapBoard } from "@/components/games/RouteMapBoard";
 import { useLoreSfx } from "./sound";
 
-type GateProps = { onPass: (road?: string) => void };
+export type GateProps = { onPass: (road?: string) => void };
 
-const panel =
+export const panel =
   "mx-auto w-full max-w-3xl rounded border border-plate/20 bg-asphalt-deep/95 p-5 shadow-2xl backdrop-blur sm:p-6";
-const continueButton =
+export const continueButton =
   "rounded bg-lazarus px-6 py-3 font-semibold text-plate hover:bg-lazarus/85 focus-visible:outline-2 focus-visible:outline-sunset";
 
-function Hint({ children }: { children: string }) {
+export function Hint({ children }: { children: string }) {
   return <p className="font-mono text-xs tracking-widest text-sunset uppercase">{children}</p>;
 }
 

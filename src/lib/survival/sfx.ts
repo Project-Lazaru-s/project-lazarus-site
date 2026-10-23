@@ -33,6 +33,7 @@ export const SOUNDS = {
   loreMap: "/sounds/lore/map.mp3",
   loreAct: "/sounds/lore/act.mp3",
   loreEnding: "/sounds/lore/ending.mp3",
+  loreFolder: "/sounds/lore/folder.mp3",
 } as const;
 
 export type SoundName = keyof typeof SOUNDS;

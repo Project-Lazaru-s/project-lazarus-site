@@ -86,6 +86,8 @@ test.describe("mobile", () => {
     "/lore",
     "/lore/o-inicio-do-caos",
     "/lore/o-inicio-do-caos/leitura",
+    "/lore/antes-das-bandeiras",
+    "/lore/antes-das-bandeiras/leitura",
     "/servidor",
   ]) {
     test(`${route} has no horizontal scroll`, async ({ page }) => {
@@ -184,4 +186,49 @@ test("Lore (game): every act waits for the player, from the archive to Day 1", a
     .getByRole("link", { name: /baixar e começar/i })
     .click();
   await expect(page).toHaveURL("/baixar");
+});
+
+test("Lore (Arquivo 02): the folders on the desk and Haven from the well to the trading table", async ({ page }) => {
+  await page.goto("/lore");
+  await page.getByRole("link", { name: "Antes das Bandeiras" }).click();
+  await expect(page).toHaveURL("/lore/antes-das-bandeiras");
+  await page.getByRole("button", { name: "Abrir o arquivo" }).click();
+  await expect(page.getByRole("button", { name: "Rovers: pasta em recuperação" })).toBeDisabled();
+  await page.getByRole("button", { name: "Abrir a pasta Haven" }).click();
+  await expect(page.getByRole("heading", { name: "O poço" })).toBeVisible();
+
+  const reach = async (gate: RegExp) => {
+    const group = page.getByRole("group", { name: gate });
+    for (let i = 0; i < 60 && !(await group.isVisible()); i++) await page.keyboard.press("Enter");
+    await expect(group).toBeVisible();
+    return group;
+  };
+
+  const well = await reach(/caderno do poço/i);
+  for (const [who, n] of [
+    ["Idosos", 3],
+    ["Feridos", 3],
+    ["Crianças", 2],
+    ["Quem busca água", 2],
+  ] as const)
+    for (let i = 0; i < n; i++) await well.getByRole("button", { name: `Dar um balde para ${who}` }).click();
+  await well.getByRole("button", { name: /assinar a regra/i }).click();
+  await expect(page.getByText("Página do dossiê recuperada")).toBeVisible();
+
+  const ward = await reach(/triagem da enfermaria/i);
+  for (const to of [/cama da enfermaria/i, /observação/i, /observação/i, /cama da enfermaria/i]) {
+    await ward.getByRole("button", { name: "Examinar" }).click();
+    await ward.getByRole("button", { name: to }).click();
+  }
+  await ward.getByRole("button", { name: /^continuar/i }).click();
+
+  const trade = await reach(/banca de trocas/i);
+  await trade.getByRole("button", { name: "Um filtro" }).click();
+  await trade.getByRole("button", { name: /discutir a entrada/i }).click();
+  await trade.getByRole("button", { name: /abrir a banca/i }).click();
+
+  const trace = await reach(/o caderno do poço/i);
+  await expect(trace).toContainText("Item recuperado");
+  await page.getByRole("button", { name: /devolver a pasta/i }).click();
+  await expect(page.getByRole("button", { name: "Abrir a pasta Haven" })).toContainText("Lido");
 });

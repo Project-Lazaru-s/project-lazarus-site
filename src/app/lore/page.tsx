@@ -57,7 +57,7 @@ export default function LorePage() {
               </div>
               <div className="p-6">
                 <p className="font-mono text-xs tracking-[0.3em] text-sunset uppercase">
-                  Arquivo 01 · {entry.acts} atos · jogável · ~8 min
+                  {entry.code} · {entry.meta}
                 </p>
                 <h2 className="mt-2 font-stencil text-3xl">
                   <Link
