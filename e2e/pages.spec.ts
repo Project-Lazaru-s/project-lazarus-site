@@ -83,10 +83,30 @@ test.describe("mobile", () => {
     "/blog",
     "/blog/1-0-0-chegou",
     "/creditos",
+    "/lore",
+    "/lore/o-inicio-do-caos",
   ]) {
     test(`${route} has no horizontal scroll`, async ({ page }) => {
       await page.goto(route);
       expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBe(0);
     });
   }
+});
+
+test("Lore: from the archive through the night of the gate to the reader's Day 1", async ({ page }) => {
+  await page.goto("/lore");
+  await expect(page.getByRole("article", { name: /lacrado/i }).first()).toBeVisible();
+  await page.getByRole("link", { name: "O Início do Caos" }).click();
+  await expect(page).toHaveURL("/lore/o-inicio-do-caos");
+
+  await page.getByRole("navigation", { name: "Atos" }).getByRole("link", { name: /^IV/ }).click();
+  await page.getByRole("tab", { name: /noite da cancela/i }).click();
+  await expect(page.getByRole("tabpanel")).toContainText("O tiro saiu da guarita.");
+
+  await page.getByRole("radio", { name: /o mais longo/i }).check({ force: true });
+  await expect(page.getByText(/você vai pela rota longa/i)).toBeVisible();
+
+  const cta = page.getByRole("region", { name: /seu dia 1/i });
+  await cta.getByRole("link", { name: /baixar e começar/i }).click();
+  await expect(page).toHaveURL("/baixar");
 });

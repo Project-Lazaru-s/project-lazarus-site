@@ -12,9 +12,7 @@ describe("site", () => {
   });
 
   it("points the download to the latest GitHub release", () => {
-    expect(links.download).toBe(
-      "https://github.com/Project-Lazaru-s/project-lazarus-modpack/releases/latest",
-    );
+    expect(links.download).toBe("https://github.com/Project-Lazaru-s/project-lazarus-modpack/releases/latest");
   });
 
   it("does not invent store or community links", () => {
@@ -30,6 +28,7 @@ describe("site", () => {
       "/modpack",
       "/faccoes",
       "/progressao",
+      "/lore",
       "/mods",
       "/baixar",
       "/changelog",

@@ -42,6 +42,7 @@ export const navItems: NavItem[] = [
   { href: "/modpack", label: "O modpack" },
   { href: "/faccoes", label: "Facções" },
   { href: "/progressao", label: "Progressão" },
+  { href: "/lore", label: "Lore" },
   { href: "/mods", label: "Mods Lazarus" },
   { href: "/baixar", label: "Baixar" },
   { href: "/changelog", label: "Atualizações" },

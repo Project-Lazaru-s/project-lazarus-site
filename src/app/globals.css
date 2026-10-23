@@ -519,3 +519,92 @@ body:has([data-playing]) .day-stamp {
     display: none;
   }
 }
+
+/* ---------- Lore: o caderno de triagem ---------- */
+
+/* "inline": a variável da Caveat só existe dentro da página da história, não no :root. */
+@theme inline {
+  --font-hand: var(--font-caveat), "Segoe Print", cursive;
+}
+
+/* Papel de ficha: creme, manchado, com pauta discreta. */
+.lore-paper {
+  background:
+    radial-gradient(ellipse at 90% 10%, rgb(138 75 42 / 0.18), transparent 40%),
+    radial-gradient(ellipse at 10% 95%, rgb(110 90 60 / 0.2), transparent 45%),
+    repeating-linear-gradient(to bottom, transparent 0 27px, rgb(40 60 90 / 0.08) 27px 28px),
+    #e8e0cc;
+}
+
+/* Aviso de rádio: entra com estática. */
+@keyframes lore-broadcast {
+  0% { opacity: 0; filter: blur(2px); }
+  30% { opacity: 1; filter: none; }
+}
+.lore-broadcast {
+  animation: lore-broadcast 0.6s steps(6) both;
+}
+
+/* Carimbo "lacrado" dos arquivos ainda não recuperados. */
+.lore-sealed {
+  rotate: -6deg;
+  mask-image: radial-gradient(circle at 30% 40%, #000 60%, rgb(0 0 0 / 0.7) 100%);
+}
+
+/* Ficha do Ato I: o "óbito" é riscado, a correção aparece e o carimbo bate, conforme a rolagem.
+   Sem suporte a scroll-driven animations (ou com movimento reduzido), fica no estado final. */
+.lore-strike::after {
+  content: "";
+  position: absolute;
+  left: -2px;
+  right: -2px;
+  top: 55%;
+  height: 3px;
+  background: var(--color-lazarus);
+  transform-origin: left;
+}
+@keyframes lore-strike {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes lore-appear {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes lore-stamp {
+  0% { opacity: 0; transform: scale(1.8); }
+  60% { opacity: 1; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+/* Ato II: as janelas acendem amarelas e apagam uma a uma. */
+.lore-window {
+  background: #e0b04a;
+  box-shadow: 0 0 6px rgb(224 176 74 / 0.6);
+}
+@keyframes lore-lights-out {
+  to { background: #1a1c22; box-shadow: none; }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .lore-strike::after {
+      animation: lore-strike linear both;
+      animation-timeline: view();
+      animation-range: entry 60% cover 45%;
+    }
+    .lore-correction {
+      animation: lore-appear linear both;
+      animation-timeline: view();
+      animation-range: cover 40% cover 50%;
+    }
+    .lore-stamp {
+      animation: lore-stamp linear both;
+      animation-timeline: view();
+      animation-range: entry 80% cover 40%;
+    }
+    .lore-window {
+      animation: lore-lights-out steps(1) both;
+      animation-timeline: view();
+      animation-range: cover var(--at) cover calc(var(--at) + 1%);
+    }
+  }
+}
