@@ -29,6 +29,7 @@ describe("site", () => {
       "/faccoes",
       "/progressao",
       "/lore",
+      "/servidor",
       "/mods",
       "/baixar",
       "/changelog",
@@ -37,8 +38,8 @@ describe("site", () => {
     ]);
   });
 
-  it("keeps the top bar short: logo, the modpack menu, three links and the download button", () => {
-    expect(topNav).toHaveLength(3);
+  it("keeps the top bar short: logo, the modpack menu, four links and the download button", () => {
+    expect(topNav).toHaveLength(4);
     expect(modpackMenu.every((item) => item.description)).toBe(true);
     // O logo cobre "/", o botão cobre "/baixar"; o resto está no menu ou nos links.
     const top = ["/", "/baixar", ...modpackMenu.map((i) => i.href), ...topNav.map((i) => i.href)];

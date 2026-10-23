@@ -466,7 +466,13 @@ function Ending({ state, found, onRestart }: { state: StoryState; found: number;
           Jogar o Dia 0 no site
         </Link>
       </div>
-      <button type="button" onClick={onRestart} className="mt-5 text-sm text-plate/60 underline hover:text-plate">
+      <p className="mt-5 text-plate/75">
+        Prefere sobreviver contra outros jogadores?{" "}
+        <Link href="/servidor" className="text-sunset underline hover:text-plate">
+          Aliste-se no servidor de guerra
+        </Link>
+      </p>
+      <button type="button" onClick={onRestart} className="mt-3 text-sm text-plate/60 underline hover:text-plate">
         Jogar de novo
       </button>
     </div>

@@ -86,6 +86,7 @@ test.describe("mobile", () => {
     "/lore",
     "/lore/o-inicio-do-caos",
     "/lore/o-inicio-do-caos/leitura",
+    "/servidor",
   ]) {
     test(`${route} has no horizontal scroll`, async ({ page }) => {
       await page.goto(route);

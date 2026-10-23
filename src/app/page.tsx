@@ -250,6 +250,12 @@ export default function HomePage() {
             >
               Baixar {site.version} e sobreviver de verdade
             </Link>
+            <p className="mt-4 text-plate/75">
+              Quer guerra contra outros jogadores?{" "}
+              <Link href="/servidor" className="text-sunset underline hover:text-plate">
+                Aliste-se no servidor
+              </Link>
+            </p>
           </div>
           <Dossier />
         </div>

@@ -43,6 +43,7 @@ export const navItems: NavItem[] = [
   { href: "/faccoes", label: "Facções" },
   { href: "/progressao", label: "Progressão" },
   { href: "/lore", label: "Lore" },
+  { href: "/servidor", label: "Servidor" },
   { href: "/mods", label: "Mods Lazarus" },
   { href: "/baixar", label: "Baixar" },
   { href: "/changelog", label: "Atualizações" },
@@ -63,6 +64,7 @@ export const modpackMenu: NavItem[] = [
 export const topNav: NavItem[] = [
   { href: "/faccoes", label: "Facções" },
   { href: "/lore", label: "Lore" },
+  { href: "/servidor", label: "Servidor" },
   { href: "/changelog", label: "Atualizações" },
 ];
 
@@ -79,6 +81,7 @@ export const navGroups: { title: string; items: NavItem[] }[] = [
   {
     title: "Projeto",
     items: [
+      { href: "/servidor", label: "Servidor de guerra" },
       { href: "/changelog", label: "Atualizações" },
       { href: "/blog", label: "Blog" },
       { href: "/creditos", label: "Créditos" },
