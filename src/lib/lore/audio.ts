@@ -7,11 +7,14 @@ import { script, type StoryState } from "./story";
 /** Trilha da história inteira, em loop (composta pelo autor do modpack). */
 export const MUSIC = "/sounds/lore/music.mp3";
 
-/**
- * Ambiente de cada ato, por baixo da música. ponytail: null até o ElevenLabs liberar a geração
- * (lore-amb-hospital, -city, -camp, -checkpoint, -dawn no flow); aí entram /sounds/lore/amb-*.mp3.
- */
-export const AMBIENCE: (string | null)[] = [null, null, null, null, null];
+/** Ambiente de cada ato, por baixo da música (ElevenLabs, loops de 20s). */
+export const AMBIENCE: (string | null)[] = [
+  "/sounds/lore/amb-hospital.mp3",
+  "/sounds/lore/amb-city.mp3",
+  "/sounds/lore/amb-camp.mp3",
+  "/sounds/lore/amb-checkpoint.mp3",
+  "/sounds/lore/amb-dawn.mp3",
+];
 
 const FADE_MS = 1500;
 const TICK_MS = 50;
