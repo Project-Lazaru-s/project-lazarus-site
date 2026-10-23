@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { links, navItems, requirements, site } from "./site";
+import { links, modpackMenu, navGroups, navItems, requirements, site, topNav } from "./site";
 
 describe("site", () => {
   it("publishes the public version only, never an alpha", () => {
@@ -35,5 +35,23 @@ describe("site", () => {
       "/blog",
       "/creditos",
     ]);
+  });
+
+  it("keeps the top bar short: logo, the modpack menu, three links and the download button", () => {
+    expect(topNav).toHaveLength(3);
+    expect(modpackMenu.every((item) => item.description)).toBe(true);
+    // O logo cobre "/", o botão cobre "/baixar"; o resto está no menu ou nos links.
+    const top = ["/", "/baixar", ...modpackMenu.map((i) => i.href), ...topNav.map((i) => i.href)];
+    expect(navItems.filter((i) => !top.includes(i.href)).map((i) => i.href)).toEqual(["/blog", "/creditos"]);
+  });
+
+  it("groups every page (but home and download) for the phone menu and the footer", () => {
+    const grouped = navGroups.flatMap((g) => g.items.map((i) => i.href)).sort();
+    expect(grouped).toEqual(
+      navItems
+        .map((i) => i.href)
+        .filter((href) => href !== "/" && href !== "/baixar")
+        .sort(),
+    );
   });
 });

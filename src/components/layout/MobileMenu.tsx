@@ -1,10 +1,14 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useRef } from "react";
-import { NavLinks } from "./NavLinks";
+import { navGroups, site } from "@/content/site";
+import { isActive } from "./NavLinks";
 
 /** Menu do celular: gaveta em tela cheia num <dialog> nativo (Esc, foco e fundo inerte de graça). */
 export function MobileMenu() {
+  const pathname = usePathname();
   const dialog = useRef<HTMLDialogElement>(null);
   const close = () => dialog.current?.close();
 
@@ -13,7 +17,7 @@ export function MobileMenu() {
       <button
         type="button"
         onClick={() => dialog.current?.showModal()}
-        className="ml-auto rounded border border-plate/30 px-3 py-1 text-sm text-plate pointer-coarse:px-4 pointer-coarse:py-2.5 xl:hidden"
+        className="ml-auto rounded border border-plate/30 px-3 py-1 text-sm text-plate pointer-coarse:px-4 pointer-coarse:py-2.5 lg:hidden"
       >
         Menu
       </button>
@@ -40,11 +44,44 @@ export function MobileMenu() {
               ×
             </button>
           </div>
-          <NavLinks
-            className="mt-6 flex flex-col"
-            linkClassName="block border-b border-rust/30 py-3 font-stencil text-2xl"
-            label="Navegação móvel"
-          />
+          <nav aria-label="Navegação móvel" className="mt-4 flex-1 space-y-6 overflow-y-auto">
+            <Link
+              href="/"
+              aria-current={pathname === "/" ? "page" : undefined}
+              className={`block py-1 font-stencil text-2xl ${pathname === "/" ? "text-sunset" : "text-plate"}`}
+            >
+              Início
+            </Link>
+            {navGroups.map((group, g) => (
+              <div key={group.title}>
+                <p id={`menu-grupo-${g}`} className="font-mono text-[11px] tracking-[0.25em] text-plate/45 uppercase">
+                  {group.title}
+                </p>
+                <ul aria-labelledby={`menu-grupo-${g}`} className="mt-1">
+                  {group.items.map((link) => {
+                    const active = isActive(pathname, link.href);
+                    return (
+                      <li key={link.href}>
+                        <Link
+                          href={link.href}
+                          aria-current={active ? "page" : undefined}
+                          className={`block border-b border-rust/20 py-2.5 font-stencil text-xl ${active ? "text-sunset" : "text-plate"}`}
+                        >
+                          {link.label}
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ))}
+          </nav>
+          <Link
+            href="/baixar"
+            className="mt-4 block rounded bg-lazarus px-4 py-3 text-center font-semibold text-plate hover:bg-lazarus/85"
+          >
+            Baixar {site.version}
+          </Link>
         </div>
       </dialog>
     </>

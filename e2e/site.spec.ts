@@ -1,11 +1,20 @@
 import { expect, test } from "@playwright/test";
 import { links, navItems } from "../src/content/site";
 
-test("every section is reachable from the main nav and never says alpha", async ({ page }) => {
+test("the top bar opens the modpack menu and goes to Progressão", async ({ page }) => {
   await page.goto("/");
   const nav = page.getByRole("navigation", { name: "Navegação principal" });
-  for (const item of navItems) {
-    await nav.getByRole("link", { name: item.label, exact: true }).click();
+  await nav.getByRole("button", { name: /o modpack/i }).click();
+  await nav.getByRole("link", { name: /progressão/i }).click();
+  await expect(page).toHaveURL("/progressao");
+  await expect(nav.getByRole("button", { name: /o modpack/i })).toHaveAttribute("data-active", "true");
+});
+
+test("every section is reachable from the site map and never says alpha", async ({ page }) => {
+  await page.goto("/");
+  const map = page.getByRole("navigation", { name: "Mapa do site" });
+  for (const item of navItems.filter((i) => i.href !== "/")) {
+    await map.locator(`a[href="${item.href}"]`).click();
     await expect(page).toHaveURL(item.href);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     await expect(page.locator("body")).not.toContainText(/alpha/i);

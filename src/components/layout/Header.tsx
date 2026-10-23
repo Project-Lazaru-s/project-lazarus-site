@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { site } from "@/content/site";
 import { MobileMenu } from "./MobileMenu";
-import { NavLinks } from "./NavLinks";
+import { DesktopNav } from "./NavLinks";
 
 export function Header() {
   return (
@@ -11,10 +11,10 @@ export function Header() {
           Project <span className="text-lazarus">Lazarus</span>
         </Link>
         <MobileMenu />
-        <NavLinks className="hidden items-center gap-5 whitespace-nowrap xl:flex" label="Navegação principal" />
+        <DesktopNav className="ml-auto hidden whitespace-nowrap lg:block" />
         <Link
           href="/baixar"
-          className="hidden rounded bg-lazarus px-4 py-2 text-sm font-semibold whitespace-nowrap text-plate transition hover:bg-lazarus/85 sm:inline-block"
+          className="ml-6 hidden rounded bg-lazarus px-4 py-2 text-sm font-semibold whitespace-nowrap text-plate transition hover:bg-lazarus/85 sm:inline-block"
         >
           Baixar {site.version}
         </Link>

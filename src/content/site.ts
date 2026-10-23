@@ -35,7 +35,7 @@ export const requirements = [
   { label: "Voz", value: "Simple Voice Chat" },
 ] as const;
 
-export type NavItem = { href: string; label: string };
+export type NavItem = { href: string; label: string; description?: string };
 
 export const navItems: NavItem[] = [
   { href: "/", label: "Início" },
@@ -48,4 +48,40 @@ export const navItems: NavItem[] = [
   { href: "/changelog", label: "Atualizações" },
   { href: "/blog", label: "Blog" },
   { href: "/creditos", label: "Créditos" },
+];
+
+// A barra do topo fica enxuta: o logo leva ao início e o botão vermelho ao download.
+
+/** Menu "O modpack" da barra do topo: o que aprofunda o modpack, com uma linha sobre cada página. */
+export const modpackMenu: NavItem[] = [
+  { href: "/modpack", label: "Visão geral", description: "Sistemas, requisitos e árvores de habilidade." },
+  { href: "/progressao", label: "Progressão", description: "Como a dificuldade sobe até o dia 60." },
+  { href: "/mods", label: "Mods Lazarus", description: "Os mods escritos para o Project Lazarus." },
+];
+
+/** Links soltos da barra do topo, depois do menu "O modpack". */
+export const topNav: NavItem[] = [
+  { href: "/faccoes", label: "Facções" },
+  { href: "/lore", label: "Lore" },
+  { href: "/changelog", label: "Atualizações" },
+];
+
+/** Gaveta do celular e rodapé: tudo, agrupado. */
+export const navGroups: { title: string; items: NavItem[] }[] = [
+  { title: "O modpack", items: modpackMenu },
+  {
+    title: "O mundo",
+    items: [
+      { href: "/faccoes", label: "Facções" },
+      { href: "/lore", label: "Lore" },
+    ],
+  },
+  {
+    title: "Projeto",
+    items: [
+      { href: "/changelog", label: "Atualizações" },
+      { href: "/blog", label: "Blog" },
+      { href: "/creditos", label: "Créditos" },
+    ],
+  },
 ];
