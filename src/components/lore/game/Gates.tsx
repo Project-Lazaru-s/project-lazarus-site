@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import { broadcasts, cancela, gangs, inicioDoCaos, roads, threeWays, triageSheet } from "@/content/lore";
 import { hotspots, isTuned, RADIO, sharedFacts, signal, triageOptions } from "@/lib/lore/story";
+import { useLoreSfx } from "./sound";
 
 type GateProps = { onPass: (road?: string) => void };
 
@@ -18,15 +19,20 @@ function Hint({ children }: { children: string }) {
 
 /** Ato I: preencher o desfecho com honestidade e carimbar o isolamento. */
 export function TriageGate({ onPass }: GateProps) {
+  const sfx = useLoreSfx();
   const [reply, setReply] = useState("");
   const [honest, setHonest] = useState(false);
   const [stamped, setStamped] = useState(false);
   const [holding, setHolding] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
+  const stamp = () => {
+    sfx("loreStamp", 0.8);
+    setStamped(true);
+  };
   const hold = () => {
     setHolding(true);
-    timer.current = setTimeout(() => setStamped(true), 700);
+    timer.current = setTimeout(stamp, 700);
   };
   const release = () => {
     setHolding(false);
@@ -58,7 +64,15 @@ export function TriageGate({ onPass }: GateProps) {
                     <button
                       key={option.id}
                       type="button"
-                      onClick={() => (option.correct ? setHonest(true) : setReply(option.reply))}
+                      onClick={() => {
+                        if (option.correct) {
+                          sfx("loreCheck", 0.6);
+                          setHonest(true);
+                        } else {
+                          sfx("loreWrong", 0.6);
+                          setReply(option.reply);
+                        }
+                      }}
                       className="rounded border-2 border-dashed border-asphalt-deep/40 px-3 py-2 font-hand text-xl hover:border-lazarus hover:text-lazarus"
                     >
                       {option.label}
@@ -90,7 +104,7 @@ export function TriageGate({ onPass }: GateProps) {
             onPointerUp={release}
             onPointerLeave={release}
             // Teclado (Enter/Espaço) não segura: carimba direto.
-            onClick={(e) => e.detail === 0 && setStamped(true)}
+            onClick={(e) => e.detail === 0 && stamp()}
             className="relative touch-none overflow-hidden rounded border-2 border-lazarus px-6 py-3 font-stencil tracking-widest text-lazarus uppercase select-none"
           >
             <span
@@ -116,6 +130,8 @@ function staticky(text: string, strength: number) {
 
 /** Ato II: achar o aviso no dial e, depois de ouvir a rota, desligar para poupar bateria. */
 export function RadioGate({ onPass }: GateProps) {
+  const sfx = useLoreSfx();
+  const lastStatic = useRef(0);
   const [freq, setFreq] = useState(RADIO.min + 2.3);
   const [heard, setHeard] = useState(false);
   const strength = heard ? 1 : signal(freq);
@@ -153,7 +169,15 @@ export function RadioGate({ onPass }: GateProps) {
             onChange={(e) => {
               const next = Number(e.target.value);
               setFreq(next);
-              if (isTuned(next)) setHeard(true);
+              if (heard) return;
+              if (isTuned(next)) {
+                sfx("loreRadioTuned", 0.7);
+                setHeard(true);
+              } else if (e.timeStamp - lastStatic.current > 450) {
+                // Estática enquanto gira o dial, mais alta longe da frequência.
+                lastStatic.current = e.timeStamp;
+                sfx("radioStatic", 0.15 + (1 - signal(next)) * 0.3);
+              }
             }}
             className="mt-2 block w-full accent-radio pointer-coarse:h-8"
           />
@@ -166,7 +190,15 @@ export function RadioGate({ onPass }: GateProps) {
       </div>
       <div className="mt-5 flex justify-center">
         {tuned ? (
-          <button type="button" autoFocus onClick={() => onPass()} className={continueButton}>
+          <button
+            type="button"
+            autoFocus
+            onClick={() => {
+              sfx("loreRadioOff", 0.7);
+              onPass();
+            }}
+            className={continueButton}
+          >
             Desligar o rádio (poupar bateria)
           </button>
         ) : (
@@ -179,6 +211,7 @@ export function RadioGate({ onPass }: GateProps) {
 
 /** Ato III: examinar o poço, o ônibus e a muralha na ilustração. */
 export function InspectGate({ onPass }: GateProps) {
+  const sfx = useLoreSfx();
   const [found, setFound] = useState<string[]>([]);
   const done = found.length === hotspots.length;
 
@@ -199,7 +232,11 @@ export function InspectGate({ onPass }: GateProps) {
             type="button"
             aria-label={`Examinar: ${spot.label}`}
             aria-pressed={found.includes(spot.id)}
-            onClick={() => !found.includes(spot.id) && setFound([...found, spot.id])}
+            onClick={() => {
+              if (found.includes(spot.id)) return;
+              sfx("loreInspect", 0.6);
+              setFound([...found, spot.id]);
+            }}
             style={{ left: `${spot.x}%`, top: `${spot.y}%` }}
             className={`absolute size-12 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 ${
               found.includes(spot.id) ? "border-radio bg-radio/20" : "lore-hotspot border-sunset bg-sunset/20"
@@ -239,15 +276,20 @@ export function InspectGate({ onPass }: GateProps) {
 
 /** Ato IV: marcar, nos dois documentos, o que as duas versões admitem. */
 export function CompareGate({ onPass }: GateProps) {
+  const sfx = useLoreSfx();
   const [marked, setMarked] = useState<string[]>([]);
   const [warning, setWarning] = useState("");
   const done = sharedFacts.every((f) => marked.includes(f));
 
   const pick = (line: string) => {
     if (sharedFacts.includes(line)) {
+      if (!marked.includes(line)) sfx("loreCheck", 0.6);
       setWarning("");
       if (!marked.includes(line)) setMarked([...marked, line]);
-    } else setWarning("Só um lado diz isso. Procure o que aparece nos dois.");
+    } else {
+      sfx("loreWrong", 0.5);
+      setWarning("Só um lado diz isso. Procure o que aparece nos dois.");
+    }
   };
 
   return (
@@ -319,6 +361,7 @@ const TAG_COLORS = ["text-lazarus", "text-sunset", "text-radio", "text-plate"];
 
 /** Ato V: raspar a sujeira das paredes até ler os nomes das gangues. */
 export function WallsGate({ onPass }: GateProps) {
+  const sfx = useLoreSfx();
   const [seen, setSeen] = useState<number[]>([]);
   const done = seen.length === gangs.length;
 
@@ -339,7 +382,10 @@ export function WallsGate({ onPass }: GateProps) {
               <button
                 type="button"
                 aria-label={`Parede ${i + 1}`}
-                onClick={() => setSeen([...seen, i])}
+                onClick={() => {
+                  sfx("loreSpray", 0.5);
+                  setSeen([...seen, i]);
+                }}
                 className="h-20 w-full rounded bg-[repeating-linear-gradient(45deg,#2b2823_0_6px,#24211d_6px_12px)] font-mono text-xs text-plate/30 hover:text-plate/60"
               >
                 tinta ▒▒▒
@@ -361,6 +407,7 @@ export function WallsGate({ onPass }: GateProps) {
 
 /** Ato V: a última folha do caderno. Escolher por onde começar. */
 export function RoadGate({ onPass }: GateProps) {
+  const sfx = useLoreSfx();
   const [chosen, setChosen] = useState<string>();
   const road = roads.find((r) => r.id === chosen);
 
@@ -382,7 +429,10 @@ export function RoadGate({ onPass }: GateProps) {
               name="estrada"
               value={r.id}
               checked={chosen === r.id}
-              onChange={() => setChosen(r.id)}
+              onChange={() => {
+                sfx("lorePencil", 0.4);
+                setChosen(r.id);
+              }}
               className="sr-only"
             />
             <span className="block font-stencil text-2xl">{r.label}</span>

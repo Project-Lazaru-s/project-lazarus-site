@@ -20,6 +20,21 @@ export const SOUNDS = {
   deathSting: "/sounds/death-sting.mp3",
   huntersArrive: "/sounds/hunters-arrive.mp3",
   achievement: "/sounds/achievement.mp3",
+  // Lore: "O Início do Caos" jogável.
+  lorePencil: "/sounds/lore/pencil.mp3",
+  lorePage: "/sounds/lore/page.mp3",
+  loreStamp: "/sounds/lore/stamp.mp3",
+  // ponytail: o ElevenLabs bloqueou a geração (429) dos sons abaixo; até chegarem, cada um usa o
+  // som já existente mais parecido. Os prompts estão no flow "Project Lazarus lore SFX".
+  loreWrong: "/sounds/lore/pencil.mp3",
+  loreCheck: "/sounds/lore/pencil.mp3",
+  loreRadioOff: "/sounds/radio-static.mp3",
+  loreRadioTuned: "/sounds/radio-static.mp3",
+  loreInspect: "/sounds/cabinet-search.mp3",
+  loreSpray: "/sounds/lore/pencil.mp3",
+  loreMap: "/sounds/lore/page.mp3",
+  loreAct: "/sounds/lore/stamp.mp3",
+  loreEnding: "/sounds/lore/stamp.mp3",
 } as const;
 
 export type SoundName = keyof typeof SOUNDS;
