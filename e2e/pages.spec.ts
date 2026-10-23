@@ -193,7 +193,7 @@ test("Lore (Arquivo 02): the folders on the desk and Haven from the well to the 
   await page.getByRole("link", { name: "Antes das Bandeiras" }).click();
   await expect(page).toHaveURL("/lore/antes-das-bandeiras");
   await page.getByRole("button", { name: "Abrir o arquivo" }).click();
-  await expect(page.getByRole("button", { name: "Rovers: pasta em recuperação" })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Wardens: pasta em recuperação" })).toBeDisabled();
   await page.getByRole("button", { name: "Abrir a pasta Haven" }).click();
   await expect(page.getByRole("heading", { name: "O poço" })).toBeVisible();
 
@@ -231,4 +231,51 @@ test("Lore (Arquivo 02): the folders on the desk and Haven from the well to the 
   await expect(trace).toContainText("Item recuperado");
   await page.getByRole("button", { name: /devolver a pasta/i }).click();
   await expect(page.getByRole("button", { name: "Abrir a pasta Haven" })).toContainText("Lido");
+});
+
+test("Lore (Arquivo 02): Rovers, from the stranded bus to a guaranteed way back", async ({ page }) => {
+  await page.goto("/lore/antes-das-bandeiras");
+  await page.getByRole("button", { name: "Abrir o arquivo" }).click();
+  await page.getByRole("button", { name: "Abrir a pasta Rovers" }).click();
+  await expect(page.getByRole("heading", { name: "O ônibus" })).toBeVisible();
+
+  const reach = async (gate: RegExp) => {
+    const group = page.getByRole("group", { name: gate });
+    for (let i = 0; i < 60 && !(await group.isVisible()); i++) await page.keyboard.press("Enter");
+    await expect(group).toBeVisible();
+    return group;
+  };
+
+  const bus = await reach(/tirar o ônibus/i);
+  for (const [car, parts] of [
+    ["Revistar o sedã", ["Pegar bateria"]],
+    ["Revistar a van", ["Pegar correia"]],
+    ["Revistar o táxi", ["Pegar pneu", "Pegar combustível"]],
+  ] as const) {
+    await bus.getByRole("button", { name: car }).click();
+    for (const part of parts) await bus.getByRole("button", { name: part }).click();
+  }
+  await bus.getByRole("button", { name: /arrancar os bancos/i }).click();
+  await bus.getByRole("button", { name: /dar a partida/i }).click();
+
+  const crew = await reach(/tripulação do ônibus/i);
+  for (const who of ["Josué", "Célia", "Tânia", "Bento"])
+    await crew.getByRole("button", { name: new RegExp(who) }).click();
+  await crew.getByRole("button", { name: /fechar a tripulação/i }).click();
+
+  const route = await reach(/volta garantida/i);
+  await route.getByRole("application", { name: "Mapa da ida" }).focus();
+  for (let i = 0; i < 21; i++) await page.keyboard.press("ArrowRight");
+  await route.getByRole("application", { name: "Mapa da volta" }).focus();
+  for (const [key, n] of [
+    ["ArrowDown", 4],
+    ["ArrowLeft", 21],
+    ["ArrowUp", 4],
+  ] as const)
+    for (let i = 0; i < n; i++) await page.keyboard.press(key);
+  await route.getByRole("button", { name: /registrar a rota/i }).click();
+
+  await reach(/o mapa das rotas riscadas/i);
+  await page.getByRole("button", { name: /devolver a pasta/i }).click();
+  await expect(page.getByRole("button", { name: "Abrir a pasta Rovers" })).toContainText("Lido");
 });

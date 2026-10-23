@@ -1,5 +1,14 @@
 import type { Line } from "@/content/lore";
-import { dossiers, type FactionId, type OriginGateId, WELL_BUCKETS } from "@/content/origins";
+import {
+  candidates,
+  crewSkills,
+  dossiers,
+  type FactionId,
+  type OriginGateId,
+  BUS_SEATS,
+  WELL_BUCKETS,
+} from "@/content/origins";
+import type { Cell } from "@/lib/games/route";
 import type { Cue } from "./audio";
 
 // "Antes das Bandeiras" como jogo: quatro pastas na mesa, cada uma com o seu roteiro de falas e portões.
@@ -129,6 +138,38 @@ export function wellVerdict(shares: number[]): { done: false } | { done: true; o
           ? "As crianças primeiro."
           : "Primeiro quem não consegue buscar.";
   return { done: true, ok: true, rule };
+}
+
+/** Parte II dos Rovers: com os quatro lugares ocupados, diz qual ofício ainda falta a bordo. */
+export function crewVerdict(ids: string[]): { done: false } | { done: true; missing: string[] } {
+  if (ids.length < BUS_SEATS) return { done: false };
+  const aboard = new Set(candidates.filter((c) => ids.includes(c.id)).map((c) => c.skill as string));
+  return { done: true, missing: crewSkills.filter((s) => !aboard.has(s)) };
+}
+
+/**
+ * Parte III dos Rovers: três corredores entre o pátio (S) e o posto (G), só ligados pelas pontas.
+ * = avenida · R rota marcada · ~ névoa. W, # e Z não se atravessam.
+ */
+export const ROVERS_MAP = [
+  "########################",
+  "#======================#",
+  "#=####WWWW####ZZZ#####=#",
+  "#=####################=#",
+  "#=####################=#",
+  "#SRRRRRRRRRRRRRRRRRRRRG#",
+  "#~####################~#",
+  "#~##ZZZZ#######WWWW###~#",
+  "#~####################~#",
+  "#~~~~~~~~~~~~~~~~~~~~~~#",
+  "########################",
+];
+
+/** O mapa da volta: o ônibus parte do posto, e os infectados que o seguiram (X) fecham a rua da ida. */
+export function returnMap(rows: string[], path: Cell[]): string[] {
+  const grid = rows.map((row) => [...row]);
+  for (const { r, c } of path.slice(1, -1)) grid[r][c] = "X";
+  return grid.map((row) => row.map((t) => (t === "S" ? "G" : t === "G" ? "S" : t)).join(""));
 }
 
 // ---------- Sons ----------

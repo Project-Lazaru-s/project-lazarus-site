@@ -23,6 +23,7 @@ import { createSfx, type Sfx, type SoundName } from "@/lib/survival/sfx";
 import { Dialogue } from "@/components/lore/game/Dialogue";
 import { LoreSfx, SoundButton, useSoundPref } from "@/components/lore/game/sound";
 import { InfirmaryGate, TradeGate, WellGate } from "./HavenGates";
+import { BusGate, CrewGate, ReturnGate } from "./RoversGates";
 
 const READING = `/lore/${origins.slug}/leitura`;
 const OPEN_MS = 550;
@@ -48,6 +49,9 @@ const GATES: Record<OriginGateId, (pass: () => void) => ReactNode> = {
   poco: (pass) => <WellGate onPass={pass} />,
   enfermaria: (pass) => <InfirmaryGate onPass={pass} />,
   trocas: (pass) => <TradeGate onPass={pass} />,
+  onibus: (pass) => <BusGate onPass={pass} />,
+  tripulacao: (pass) => <CrewGate onPass={pass} />,
+  volta: (pass) => <ReturnGate onPass={pass} />,
 };
 
 /** "Antes das Bandeiras" jogável: a mesa com as quatro pastas e, dentro de cada uma, a origem da facção. */

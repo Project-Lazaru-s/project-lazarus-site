@@ -1,12 +1,12 @@
 // Lazarus Maps no site: traçar uma rota a lápis num mapa de papel, quadrado a quadrado.
 //
 // Legenda dos mapas: S você · G destino · . campo · = estrada · P área patrulhada (Wardens)
-// R rota Rover · ~ névoa · W água · # ruína · Z área infestada. W, # e Z não se atravessam.
+// R rota Rover · ~ névoa · W água · # ruína · Z área infestada · X rastro de infectados. W, #, Z e X não se atravessam.
 
 export type Cell = { r: number; c: number };
 export type RouteMap = { rows: string[]; width: number; height: number; start: Cell; goal: Cell };
 
-export const BLOCKED = "W#Z";
+export const BLOCKED = "W#ZX";
 
 /** Ato V: a última folha do caderno. Três corredores até a cidade. */
 export const LORE_MAP = [

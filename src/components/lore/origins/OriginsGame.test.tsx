@@ -34,7 +34,7 @@ describe("OriginsGame", () => {
   });
   afterEach(() => vi.useRealTimers());
 
-  it("opens on the desk with four folders; only Haven can be opened for now", () => {
+  it("opens on the desk with four folders; Haven and Rovers can be opened", () => {
     render(<OriginsGame />);
     expect(within(game()).getByRole("link", { name: /ler sem jogar/i })).toHaveAttribute(
       "href",
@@ -43,7 +43,8 @@ describe("OriginsGame", () => {
     fireEvent.click(screen.getByRole("button", { name: /abrir o arquivo/i }));
     expect(screen.getByRole("heading", { name: /escolha uma pasta/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /abrir a pasta haven/i })).toBeEnabled();
-    for (const name of ["Rovers", "Wardens", "Military"])
+    expect(screen.getByRole("button", { name: /abrir a pasta rovers/i })).toBeEnabled();
+    for (const name of ["Wardens", "Military"])
       expect(screen.getByRole("button", { name: `${name}: pasta em recuperação` })).toBeDisabled();
   });
 
@@ -107,5 +108,52 @@ describe("OriginsGame", () => {
     fireEvent.click(screen.getByRole("button", { name: /voltar às pastas/i }));
     expect(screen.getByText(/em andamento/i)).toBeInTheDocument();
     expect(decodeSave(localStorage.getItem(SAVE_KEY)!)).toMatchObject({ open: null, at: { haven: 1 } });
+  });
+
+  it("plays Rovers: the bus parts, the crew and a way back that is not the way in", () => {
+    render(<OriginsGame />);
+    fireEvent.click(screen.getByRole("button", { name: /abrir o arquivo/i }));
+    fireEvent.click(screen.getByRole("button", { name: /abrir a pasta rovers/i }));
+    act(() => vi.runAllTimers());
+
+    const bus = advanceUntil(/tirar o ônibus/i);
+    fireEvent.click(within(bus).getByRole("button", { name: /revistar o sedã/i }));
+    fireEvent.click(within(bus).getByRole("button", { name: "Pegar pneu" }));
+    expect(within(bus).getByText(/furado/i)).toBeInTheDocument();
+    fireEvent.click(within(bus).getByRole("button", { name: "Pegar bateria" }));
+    fireEvent.click(within(bus).getByRole("button", { name: /revistar a van/i }));
+    fireEvent.click(within(bus).getByRole("button", { name: "Pegar correia" }));
+    fireEvent.click(within(bus).getByRole("button", { name: /revistar o táxi/i }));
+    fireEvent.click(within(bus).getByRole("button", { name: "Pegar pneu" }));
+    fireEvent.click(within(bus).getByRole("button", { name: "Pegar combustível" }));
+    fireEvent.click(within(bus).getByRole("button", { name: /arrancar os bancos/i }));
+    fireEvent.click(within(bus).getByRole("button", { name: /dar a partida/i }));
+
+    const crew = advanceUntil(/tripulação do ônibus/i);
+    for (const who of ["Josué", "Célia", "Tânia", "Igor"])
+      fireEvent.click(within(crew).getByRole("button", { name: new RegExp(who) }));
+    expect(within(crew).getByText(/falta a bordo quem saiba escutar/i)).toBeInTheDocument();
+    fireEvent.click(within(crew).getByRole("button", { name: /igor/i }));
+    fireEvent.click(within(crew).getByRole("button", { name: /bento/i }));
+    fireEvent.click(within(crew).getByRole("button", { name: /fechar a tripulação/i }));
+
+    const route = advanceUntil(/volta garantida/i);
+    const press = (name: string, keys: [string, number][]) => {
+      const board = within(route).getByRole("application", { name });
+      for (const [k, n] of keys) for (let i = 0; i < n; i++) fireEvent.keyDown(board, { key: k });
+    };
+    press("Mapa da ida", [["ArrowRight", 21]]); // pela rota marcada
+    press("Mapa da volta", [["ArrowLeft", 1]]); // a rua da ida está tomada
+    expect(within(route).getByText("0 quadrados")).toBeInTheDocument();
+    press("Mapa da volta", [
+      ["ArrowUp", 4],
+      ["ArrowLeft", 21],
+      ["ArrowDown", 4],
+    ]);
+    fireEvent.click(within(route).getByRole("button", { name: /registrar a rota/i }));
+
+    advanceUntil(/o mapa das rotas riscadas/i);
+    fireEvent.click(screen.getByRole("button", { name: /devolver a pasta/i }));
+    expect(within(screen.getByRole("button", { name: /abrir a pasta rovers/i })).getByText("Lido")).toBeInTheDocument();
   });
 });

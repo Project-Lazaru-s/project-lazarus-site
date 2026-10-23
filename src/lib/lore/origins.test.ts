@@ -2,12 +2,15 @@ import { describe, expect, it } from "vitest";
 import { dossiers } from "@/content/origins";
 import {
   available,
+  crewVerdict,
   cuesFor,
   decodeSave,
   encodeSave,
   type OriginsState,
   pagesFor,
   reduce,
+  returnMap,
+  ROVERS_MAP,
   scriptFor,
   START,
   wellVerdict,
@@ -34,16 +37,16 @@ describe("Antes das Bandeiras: script", () => {
     expect(havenScript.at(-1)?.kind).toBe("end");
   });
 
-  it("only Haven is open for now; the other folders are sealed", () => {
+  it("Haven and Rovers are open; the other folders are sealed; the other folders are sealed", () => {
     expect(available("haven")).toBe(true);
-    for (const id of ["rovers", "wardens", "military"] as const) expect(available(id)).toBe(false);
+    for (const id of ["wardens", "military"] as const) expect(available(id)).toBe(false);
     expect(dossiers.map((d) => d.id)).toEqual(["haven", "rovers", "wardens", "military"]);
   });
 });
 
 describe("Antes das Bandeiras: reducer", () => {
   it("opens a folder, waits at each gate and only the right gate opens it", () => {
-    let s = reduce(START, { type: "open", faction: "rovers" });
+    let s = reduce(START, { type: "open", faction: "wardens" });
     expect(s).toBe(START); // lacrada
     s = reduce(START, { type: "open", faction: "haven" });
     expect(s.open).toBe("haven");
@@ -84,7 +87,7 @@ describe("Antes das Bandeiras: save", () => {
     expect(decodeSave(encodeSave(s))).toEqual(s);
     expect(decodeSave("")).toBeNull();
     expect(decodeSave("{")).toBeNull();
-    expect(decodeSave(JSON.stringify({ v: 1, open: "rovers", at: {}, done: [] }))).toBeNull();
+    expect(decodeSave(JSON.stringify({ v: 1, open: "wardens", at: {}, done: [] }))).toBeNull();
     expect(decodeSave(JSON.stringify({ v: 1, open: null, at: { haven: 999 }, done: [] }))).toBeNull();
     expect(decodeSave(JSON.stringify({ v: 1, open: null, at: {}, done: ["x"] }))).toBeNull();
     expect(decodeSave(JSON.stringify({ v: 1, open: "haven", at: {}, done: [] }))).toBeNull();
@@ -116,5 +119,26 @@ describe("Antes das Bandeiras: sound cues", () => {
     expect(cuesFor(end, beforeEnd).map((c) => c.name)).toEqual(["loreEnding"]);
     expect(cuesFor(reduce(end, { type: "finish" }), end).map((c) => c.name)).toEqual(["loreStamp"]);
     expect(cuesFor(open, open)).toEqual([]);
+  });
+});
+
+describe("Antes das Bandeiras: Rovers gates", () => {
+  it("runs Rovers as 3 parts with the bus, the crew and the guaranteed return", () => {
+    expect(available("rovers")).toBe(true);
+    const ids = scriptFor("rovers").flatMap((s) => (s.kind === "gate" ? [s.gate] : []));
+    expect(ids).toEqual(["onibus", "tripulacao", "volta"]);
+  });
+
+  it("the crew needs someone to drive, repair, trade and listen", () => {
+    expect(crewVerdict(["josue", "celia", "tania"])).toEqual({ done: false });
+    expect(crewVerdict(["josue", "celia", "tania", "igor"])).toEqual({ done: true, missing: ["escutar"] });
+    expect(crewVerdict(["josue", "celia", "tania", "bento"])).toEqual({ done: true, missing: [] });
+  });
+
+  it("the return map starts at the fuel station and the infected close the street of the way in", () => {
+    const middle = [{ r: 5, c: 1 }, ...Array.from({ length: 21 }, (_, i) => ({ r: 5, c: i + 2 }))];
+    const back = returnMap(ROVERS_MAP, middle);
+    expect(back[5]).toBe("#GXXXXXXXXXXXXXXXXXXXXS#");
+    expect(back[1]).toBe(ROVERS_MAP[1]); // a avenida continua aberta para voltar
   });
 });

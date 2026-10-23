@@ -16,6 +16,7 @@ const TILE_COLOR: Record<string, string> = {
   W: "#4f74a8",
   "#": "#5e5044",
   Z: "#55632b",
+  X: "#7a2a22",
 };
 
 /** As 8 cores da paleta do Lazarus Maps, para anotar o mapa. */
@@ -33,7 +34,7 @@ type Props = {
   label: string;
   /** Destino com a preposição, para "Você chegou à cidade" ("à cidade", "ao posto"). */
   goalLabel: string;
-  onArrive: (summary: RouteSummary) => void;
+  onArrive: (summary: RouteSummary, path: Cell[]) => void;
   sfx?: (name: SoundName, volume?: number) => void;
 };
 
@@ -60,7 +61,7 @@ export function RouteMapBoard({ rows, label, goalLabel, onArrive, sfx = () => {}
     setPath(next);
     if (reached(map, next) && !reached(map, path)) {
       sfx("loreStamp", 0.6);
-      onArrive(summarize(map, next));
+      onArrive(summarize(map, next), next);
     }
   };
 

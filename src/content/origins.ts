@@ -4,7 +4,7 @@ import type { Line } from "./lore";
 // Fonte: Documents/Project Lazarus/Lore/01. Origens das faccoes. Aqui fica a versão enxuta para o jogo.
 
 export type FactionId = "haven" | "rovers" | "wardens" | "military";
-export type OriginGateId = "poco" | "enfermaria" | "trocas";
+export type OriginGateId = "poco" | "enfermaria" | "trocas" | "onibus" | "tripulacao" | "volta";
 
 export type Part = {
   id: string;
@@ -125,6 +125,91 @@ const haven: Dossier = {
   },
 };
 
+const rovers: Dossier = {
+  id: "rovers",
+  name: "Rovers",
+  title: "A estrada que ainda existe",
+  need: "Manter pessoas e suprimentos em movimento",
+  photo: "/images/factions/cenas/rovers.png",
+  focus: "45% 60%",
+  ambience: "/sounds/lore/amb-rovers.mp3",
+  parts: [
+    {
+      id: "onibus",
+      numeral: "I",
+      title: "O ônibus",
+      when: "Começo do colapso · uma avenida bloqueada",
+      image: "/images/lore/origens/rovers-onibus.png",
+      scenes: [
+        {
+          text: "O primeiro comboio Rover nasceu de uma promessa no meio de uma avenida bloqueada: “Se tirarmos esse ônibus daqui, cabem mais pessoas do que nos carros.”",
+          image: "/images/lore/origens/rovers-onibus.png",
+          alt: "À noite, numa avenida cheia de carros abandonados, uma mecânica trabalha no motor aberto de um ônibus enquanto dois motoristas desenham num mapa molhado.",
+        },
+        "Não havia plano para atravessar a cidade. Havia um ônibus parado, peças em três carros próximos e gente que não conseguiria caminhar até o próximo abrigo.",
+        "Uma mecânica abriu o motor enquanto dois motoristas desenhavam desvios num mapa molhado.",
+      ],
+      gate: "onibus",
+      quote: "Naquela noite, quarenta pessoas dormiram longe da avenida.",
+      note: "Bateria do sedã, correia da van, pneu e meio tanque do táxi. Os bancos do fundo viraram depósito.",
+      after: [
+        "O ônibus saiu depois do anoitecer, lento o bastante para que um infectado o acompanhasse por vários quarteirões. A viagem terminou num pátio de carga, não num lugar seguro.",
+      ],
+    },
+    {
+      id: "tripulacao",
+      numeral: "II",
+      title: "Os que rodam",
+      when: "No dia seguinte · um pátio de carga",
+      image: "/images/lore/origens/rovers-patio.png",
+      scenes: [
+        {
+          text: "No dia seguinte faltava combustível. Trocaram baterias por um barril, um rádio por notícias de uma ponte, uma carona por bandagens.",
+          image: "/images/lore/origens/rovers-patio.png",
+          alt: "Num pátio de contêineres, sobreviventes rolam um barril de combustível até a porta do ônibus em troca de baterias, ao lado dos bancos arrancados.",
+        },
+        "Algumas trocas foram generosas; outras, duras. E o ônibus não levava todo mundo para sempre: precisava de quem soubesse mantê-lo andando.",
+      ],
+      gate: "tripulacao",
+      quote:
+        "Quando perguntavam quem podia marcar uma entrega futura, a resposta era “os que rodam”. O nome Rovers ficou.",
+      note: "Tripulação: quem dirige, quem conserta, quem negocia e quem escuta. Os outros acompanham parte do caminho.",
+      after: [
+        "Um acampamento móvel cresceu ao redor da oficina. Sucata virou estoque catalogado, não lixo. As barracas eram montadas onde o ônibus pudesse sair sem manobra longa.",
+        "O médico do grupo não prometia hospital. O armeiro não prometia munição infinita. Os dois sabiam que cada serviço dependia de outra viagem.",
+      ],
+    },
+    {
+      id: "volta",
+      numeral: "III",
+      title: "Volta garantida",
+      when: "Semanas depois · rotas, não territórios",
+      image: "/images/lore/origens/rovers-mapa.png",
+      scenes: [
+        {
+          text: "Os Rovers começaram a registrar rotas em vez de territórios. Uma ponte praticável, um posto com combustível, um prédio com filtros: tudo isso era informação negociável.",
+          image: "/images/lore/origens/rovers-mapa.png",
+          alt: "Numa bancada de oficina, um mapa de papel com duas rotas a lápis, uma de ida e outra de volta; lá fora, o ônibus e um segundo veículo sendo preparados.",
+        },
+        "Era tentador vender a mesma rota duas vezes, ou guardar o melhor caminho para si. O grupo escolheu uma regra menos nobre e mais útil.",
+        "Quem prometesse uma entrega precisava ter um caminho de ida e outro de volta. O barulho do motor atrai infectados: a rua da ida raramente serve para voltar.",
+      ],
+      gate: "volta",
+      quote:
+        "Nem sempre cumpriram a regra. Mas passaram a cobrar de quem a quebrava, porque o próximo comboio pagaria pela desconfiança.",
+      note: "Toda entrega tem duas linhas no mapa: a da ida e a da volta garantida.",
+      after: [
+        "Antes da rivalidade, a caravana negociava com os Wardens: peças e notícias em troca de um acesso vigiado. Também levava suprimentos a Haven quando podia.",
+        "A Noite da Cancela romperia essa cooperação mais tarde, mas não criaria os Rovers. Eles já existiam porque, num mundo de ruas fechadas, alguém precisava testar qual estrada continuava aberta.",
+      ],
+    },
+  ],
+  trace: {
+    title: "O mapa das rotas riscadas",
+    text: "Rotas riscadas, preço de combustível nas margens e um desvio marcado como “volta garantida”. O mesmo traço aparece no diário de oficina do ônibus.",
+  },
+};
+
 /** Ainda sem roteiro: a pasta aparece na mesa, lacrada. */
 const sealed = (id: FactionId, name: string, title: string, need: string, photo: string, focus: string): Dossier => ({
   id,
@@ -140,14 +225,7 @@ const sealed = (id: FactionId, name: string, title: string, need: string, photo:
 
 export const dossiers: Dossier[] = [
   haven,
-  sealed(
-    "rovers",
-    "Rovers",
-    "A estrada que ainda existe",
-    "Manter pessoas e suprimentos em movimento",
-    "/images/factions/cenas/rovers.png",
-    "45% 60%",
-  ),
+  rovers,
   sealed(
     "wardens",
     "Wardens",
@@ -234,4 +312,49 @@ export const childChoices = [
     label: "Discutir a entrada dela com os moradores",
     reply: "A rua decide em voz alta, com a enfermeira no meio da roda. A criança entra.",
   },
+] as const;
+
+// ---------- Portões dos Rovers ----------
+
+/** Parte I: o que o ônibus precisa e o que cada carro parado tem (nem tudo presta). */
+export const busNeeds = ["bateria", "correia", "pneu", "combustivel"] as const;
+export type BusPart = (typeof busNeeds)[number];
+export const parkedCars = [
+  {
+    id: "seda",
+    label: "O sedã",
+    parts: [
+      { part: "bateria", label: "Bateria", ok: true, note: "Carregada. O sedã mal rodou antes de ser largado." },
+      { part: "pneu", label: "Pneu", ok: false, note: "Furado. Não aguenta o peso de quarenta pessoas." },
+    ],
+  },
+  {
+    id: "van",
+    label: "A van",
+    parts: [
+      { part: "correia", label: "Correia", ok: true, note: "Inteira, do tamanho certo." },
+      { part: "combustivel", label: "Combustível", ok: false, note: "Tanque drenado. Alguém chegou antes." },
+    ],
+  },
+  {
+    id: "taxi",
+    label: "O táxi",
+    parts: [
+      { part: "bateria", label: "Bateria", ok: false, note: "Morta. Nem acende a luz do painel." },
+      { part: "pneu", label: "Pneu", ok: true, note: "Gasto, mas sem furo." },
+      { part: "combustivel", label: "Combustível", ok: true, note: "Meio tanque. Dá para sair da avenida." },
+    ],
+  },
+] as const;
+
+/** Parte II: quatro lugares fixos no ônibus. A tripulação precisa dirigir, consertar, negociar e escutar. */
+export const BUS_SEATS = 4;
+export const crewSkills = ["dirigir", "consertar", "negociar", "escutar"] as const;
+export const candidates = [
+  { id: "celia", who: "Célia", line: "Abriu o motor na avenida com uma chave de roda.", skill: "consertar" },
+  { id: "josue", who: "Josué", line: "Dirigiu ônibus de linha por vinte anos.", skill: "dirigir" },
+  { id: "igor", who: "Igor", line: "Carrega dois galões de uma vez. Nunca dirigiu.", skill: "carregar" },
+  { id: "tania", who: "Tânia", line: "Era feirante. Trocou o rádio pelas notícias da ponte.", skill: "negociar" },
+  { id: "rosa", who: "Rosa", line: "Conhece o bairro inteiro, mas não sai dele.", skill: "conhecer o bairro" },
+  { id: "bento", who: "Bento", line: "Caçador. Ouve um infectado antes de vê-lo.", skill: "escutar" },
 ] as const;
