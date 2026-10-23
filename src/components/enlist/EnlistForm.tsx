@@ -1,22 +1,20 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { enlist, type EnlistResult } from "@/app/servidor/actions";
+import { ART } from "@/lib/enlist/art";
 import { EXPERIENCE, type EnlistInput, type Field, PLAYTIMES, REGIONS, SIDES, validate } from "@/lib/enlist/enlist";
+import { RadioDial } from "./RadioDial";
 
+// Etapa 0 é o rádio; as outras são a ficha de papel.
 const STEPS: { title: string; fields: Field[] }[] = [
-  { title: "Identificação", fields: ["nick", "email", "whatsapp", "discord"] },
-  { title: "Lado da guerra", fields: ["side"] },
-  { title: "Perfil", fields: ["experience", "region", "playtime", "groupSize"] },
-  { title: "Assinatura", fields: ["consent"] },
+  { title: "Sintonia", fields: ["side"] },
+  { title: "Indicativo", fields: ["nick", "email", "whatsapp", "discord"] },
+  { title: "Relatório de campo", fields: ["experience", "region", "playtime"] },
+  { title: "Transmitir", fields: ["consent"] },
 ];
-
-const SIDE_IMAGES: Partial<Record<string, string>> = {
-  haven: "/images/factions/haven-skins.png",
-  rovers: "/images/factions/rovers-skins.png",
-  wardens: "/images/factions/wardens-skins.png",
-};
 
 const empty: EnlistInput = {
   nick: "",
@@ -27,7 +25,6 @@ const empty: EnlistInput = {
   experience: "",
   region: "",
   playtime: "",
-  groupSize: "",
   consent: false,
   website: "",
 };
@@ -47,7 +44,29 @@ function FieldError({ id, text }: { id: string; text?: string }) {
   ) : null;
 }
 
-/** Ficha de alistamento em 4 etapas, no papel das fichas da lore. */
+/** Selo da facção escolhida: emblema (ou a cena, para o lobo solitário) e a frequência. */
+function SideBadge({ side }: { side: (typeof SIDES)[number] }) {
+  const art = ART[side.id];
+  return (
+    <div className="flex items-center gap-3">
+      <Image
+        src={art.emblem ?? art.scene}
+        alt=""
+        width={56}
+        height={56}
+        className={`size-14 shrink-0 ${art.emblem ? "" : "rounded-full object-cover"}`}
+      />
+      <div>
+        <p className="font-stencil text-xl" style={{ color: art.color }}>
+          {side.name}
+        </p>
+        <p className="text-sm text-asphalt-deep/70">{side.line}</p>
+      </div>
+    </div>
+  );
+}
+
+/** Alistamento: achar a facção no rádio e depois preencher a ficha no papel das fichas da lore. */
 export function EnlistForm() {
   const [form, setForm] = useState(empty);
   const [step, setStep] = useState(0);
@@ -55,6 +74,7 @@ export function EnlistForm() {
   const [message, setMessage] = useState("");
   const [done, setDone] = useState<Extract<EnlistResult, { ok: true }> | null>(null);
   const [pending, startTransition] = useTransition();
+  const side = SIDES.find((s) => s.id === form.side);
 
   const set = (field: keyof EnlistInput, value: string | boolean) => {
     setForm((f) => ({ ...f, [field]: value }));
@@ -129,35 +149,61 @@ export function EnlistForm() {
         }
         setMessage(result.message ?? "");
       } catch {
-        setMessage("O rádio caiu no meio do envio. Tente de novo.");
+        setMessage("O rádio caiu no meio da transmissão. Tente de novo.");
       }
     });
   };
 
-  if (done) {
-    const side = SIDES.find((s) => s.id === form.side)!;
+  if (done && side) {
     return (
       <div className="lore-paper relative rounded-sm p-6 text-asphalt-deep shadow-2xl sm:p-10" role="status">
-        <p className={label}>Ficha nº {done.number || "—"}</p>
-        <p className="mt-2 font-stencil text-4xl">{form.nick.trim()}</p>
-        <p className="mt-1 text-asphalt-deep/80">Lado: {side.name}</p>
+        <p className={label}>Carta de convocação · Recruta nº {done.number || "—"}</p>
+        <p className="mt-3 font-stencil text-4xl break-all">{form.nick.trim()}</p>
+        <div className="mt-4">
+          <SideBadge side={side} />
+        </div>
         <p className="lore-stamp-hit absolute top-6 right-6 rotate-[-8deg] rounded-sm border-4 border-lazarus px-3 py-1 font-stencil text-2xl text-lazarus">
           {done.updated ? "ATUALIZADA" : "ALISTADO"}
         </p>
         <p className="mt-6">
           {done.updated
             ? "Sua ficha foi atualizada. Mesmo e-mail, mesma ficha."
-            : "Ficha guardada. Você recebe o aviso quando a fronteira abrir."}
+            : `O nick ${form.nick.trim()} está reservado no servidor. Você recebe a convocação quando a fronteira abrir.`}
         </p>
         {done.code && (
           <Link
             href={`/servidor/ficha/${done.code}`}
             className="mt-6 inline-block rounded bg-lazarus px-5 py-3 font-semibold text-plate hover:bg-lazarus/85"
           >
-            Ver meu cartão de alistamento
+            Ver e compartilhar a carta
           </Link>
         )}
       </div>
+    );
+  }
+
+  const progress = (
+    <ol className="flex flex-wrap gap-x-4 gap-y-1 font-mono text-xs tracking-[0.15em] uppercase">
+      {STEPS.map((s, i) => (
+        <li
+          key={s.title}
+          aria-current={i === step ? "step" : undefined}
+          className={i === step ? "text-rust" : "text-asphalt-deep/45"}
+        >
+          {i + 1}. {s.title}
+        </li>
+      ))}
+    </ol>
+  );
+
+  if (step === 0 || !side) {
+    return (
+      <RadioDial
+        onAnswer={(id) => {
+          set("side", id);
+          setStep(1);
+        }}
+      />
     );
   }
 
@@ -170,18 +216,18 @@ export function EnlistForm() {
       aria-label="Ficha de alistamento"
       className="lore-paper relative rounded-sm p-6 text-asphalt-deep shadow-2xl sm:p-10"
     >
-      <ol className="flex flex-wrap gap-x-4 gap-y-1 font-mono text-xs tracking-[0.15em] uppercase">
-        {STEPS.map((s, i) => (
-          <li
-            key={s.title}
-            aria-current={i === step ? "step" : undefined}
-            className={i === step ? "text-rust" : "text-asphalt-deep/45"}
-          >
-            {i + 1}. {s.title}
-          </li>
-        ))}
-      </ol>
-      <h2 className="mt-4 font-stencil text-3xl">{STEPS[step].title}</h2>
+      {progress}
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-sm border border-asphalt-deep/20 p-3">
+        <SideBadge side={side} />
+        <button
+          type="button"
+          onClick={() => setStep(0)}
+          className="font-mono text-xs tracking-widest text-rust uppercase underline"
+        >
+          Trocar frequência
+        </button>
+      </div>
+      <h2 className="mt-6 font-stencil text-3xl">{STEPS[step].title}</h2>
 
       {/* Só robôs veem e preenchem. */}
       <input
@@ -195,11 +241,11 @@ export function EnlistForm() {
       />
 
       <div className="mt-6 space-y-5">
-        {step === 0 && (
+        {step === 1 && (
           <>
             <div className="flex items-end gap-4">
               <div className="grow">
-                {text("nick", "Nick do Minecraft", { autoComplete: "username", maxLength: 16 })}
+                {text("nick", "Nick do Minecraft (seu indicativo)", { autoComplete: "username", maxLength: 16 })}
               </div>
               {nickOk && (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -212,7 +258,10 @@ export function EnlistForm() {
                 />
               )}
             </div>
-            {text("email", "E-mail", { type: "email", autoComplete: "email" })}
+            <p className="-mt-3 text-sm text-asphalt-deep/70">
+              Quem se alista agora fica com o nick reservado no servidor.
+            </p>
+            {text("email", "E-mail para a convocação", { type: "email", autoComplete: "email" })}
             {text("whatsapp", "WhatsApp (opcional)", {
               type: "tel",
               autoComplete: "tel",
@@ -222,52 +271,11 @@ export function EnlistForm() {
           </>
         )}
 
-        {step === 1 && (
-          <fieldset>
-            <legend className="sr-only">Lado da guerra</legend>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {SIDES.map((s) => (
-                <label
-                  key={s.id}
-                  className="flex cursor-pointer flex-col rounded-sm border-2 border-asphalt-deep/20 bg-asphalt p-4 text-plate transition has-checked:border-lazarus has-checked:shadow-[0_0_0_3px_var(--color-lazarus)] has-focus-visible:outline-2 has-focus-visible:outline-sunset"
-                >
-                  <input
-                    type="radio"
-                    name="side"
-                    value={s.id}
-                    checked={form.side === s.id}
-                    onChange={() => set("side", s.id)}
-                    className="sr-only"
-                  />
-                  <span className="font-stencil text-2xl text-lazarus">{s.name}</span>
-                  {SIDE_IMAGES[s.id] && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={SIDE_IMAGES[s.id]}
-                      alt=""
-                      className="mt-2 h-20 w-full object-contain [image-rendering:pixelated]"
-                    />
-                  )}
-                  <span className="mt-2 text-sm text-plate/80">{s.line}</span>
-                </label>
-              ))}
-            </div>
-            <FieldError id="side-erro" text={errors.side} />
-          </fieldset>
-        )}
-
         {step === 2 && (
           <>
             {choice("experience", "Experiência em PvP", EXPERIENCE)}
             {choice("region", "Região", REGIONS)}
             {choice("playtime", "Quando costuma jogar", PLAYTIMES)}
-            {form.side === "fundar" &&
-              text("groupSize", "Quantas pessoas no seu grupo", {
-                type: "number",
-                min: 2,
-                max: 50,
-                inputMode: "numeric",
-              })}
           </>
         )}
 
@@ -299,23 +307,19 @@ export function EnlistForm() {
       )}
 
       <div className="mt-8 flex flex-wrap justify-between gap-3">
-        {step > 0 ? (
-          <button
-            type="button"
-            onClick={() => setStep(step - 1)}
-            className="rounded border border-asphalt-deep/40 px-5 py-3 hover:bg-asphalt-deep/10"
-          >
-            Voltar
-          </button>
-        ) : (
-          <span />
-        )}
+        <button
+          type="button"
+          onClick={() => setStep(step - 1)}
+          className="rounded border border-asphalt-deep/40 px-5 py-3 hover:bg-asphalt-deep/10"
+        >
+          Voltar
+        </button>
         <button
           type="submit"
           disabled={pending}
           className="rounded bg-lazarus px-6 py-3 font-semibold text-plate hover:bg-lazarus/85 disabled:opacity-60"
         >
-          {step < STEPS.length - 1 ? "Próximo" : pending ? "Carimbando…" : "Assinar e alistar"}
+          {step < STEPS.length - 1 ? "Próximo" : pending ? "Transmitindo…" : "Transmitir e alistar"}
         </button>
       </div>
     </form>

@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ImageResponse } from "next/og";
+import { ART } from "@/lib/enlist/art";
 import { decodeCard, SIDES } from "@/lib/enlist/enlist";
 
 export const alt = "Ficha de alistamento do servidor de guerra do Project Lazarus";
@@ -22,6 +23,11 @@ const colors = {
 export default async function Image({ params }: { params: Promise<{ code: string }> }) {
   const card = decodeCard((await params).code);
   const side = SIDES.find((s) => s.id === card?.side);
+  const art = side && ART[side.id];
+  const file = art && (art.emblem ?? art.scene);
+  const picture = file
+    ? `data:image/png;base64,${(await readFile(join(/* turbopackIgnore: true */ process.cwd(), "public", file))).toString("base64")}`
+    : null;
 
   return new ImageResponse(
     <div
@@ -71,10 +77,23 @@ export default async function Image({ params }: { params: Promise<{ code: string
         >
           ALISTADO
         </div>
+        {picture && (
+          // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
+          <img
+            src={picture}
+            width={200}
+            height={200}
+            style={{
+              position: "absolute",
+              right: 48,
+              bottom: 24,
+              borderRadius: art?.emblem ? 0 : 100,
+              objectFit: "cover",
+            }}
+          />
+        )}
       </div>
-      <div style={{ display: "flex", fontSize: 34, marginTop: 28 }}>
-        Escolha o seu lado antes que a fronteira feche.
-      </div>
+      <div style={{ display: "flex", fontSize: 34, marginTop: 28 }}>Sintonize. Responda. Reserve o seu nick.</div>
     </div>,
     { ...size, fonts: [{ name: "Saira Stencil", data: stencil, style: "normal", weight: 400 }] },
   );

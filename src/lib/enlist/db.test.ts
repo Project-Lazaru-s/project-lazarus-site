@@ -9,11 +9,10 @@ const recruit: Recruit = {
   email: "recruta@example.com",
   whatsapp: "+5511987654321",
   discord: null,
-  side: "rovers",
+  side: "f1041",
   experience: "ja-joguei",
   region: "sudeste",
   playtime: "noite",
-  groupSize: null,
 };
 
 /** Banco falso: responde por palavra-chave da consulta e guarda o que foi enviado. */
@@ -42,11 +41,10 @@ describe("saveRecruit", () => {
       "recruta@example.com",
       "+5511987654321",
       null,
-      "rovers",
+      "f1041",
       "ja-joguei",
       "sudeste",
       "noite",
-      null,
       "hash",
     ]);
     expect(insert.query).toContain("on conflict (email) do update");
@@ -72,14 +70,14 @@ describe("countRecruits", () => {
     const { sql } = fakeSql((q) =>
       q.startsWith("select side")
         ? [
-            { side: "rovers", n: 3 },
-            { side: "fundar", n: 2 },
+            { side: "f1041", n: 3 },
+            { side: "solo", n: 2 },
           ]
         : [],
     );
     expect(await countRecruits(sql)).toEqual({
       total: 5,
-      bySide: { haven: 0, rovers: 3, wardens: 0, fundar: 2, solo: 0 },
+      bySide: { f873: 0, f1041: 3, f1215: 0, solo: 2 },
     });
   });
 });

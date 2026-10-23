@@ -6,11 +6,10 @@ const valid = {
   email: "Recruta@Example.com ",
   whatsapp: "(11) 98765-4321",
   discord: "",
-  side: "rovers",
+  side: "f1041",
   experience: "ja-joguei",
   region: "sudeste",
   playtime: "noite",
-  groupSize: "",
   consent: true,
   website: "",
 };
@@ -25,11 +24,10 @@ describe("validate", () => {
         email: "recruta@example.com",
         whatsapp: "+5511987654321",
         discord: null,
-        side: "rovers",
+        side: "f1041",
         experience: "ja-joguei",
         region: "sudeste",
         playtime: "noite",
-        groupSize: null,
       },
     });
   });
@@ -60,15 +58,6 @@ describe("validate", () => {
     expect(validate({ ...valid, region: "marte" })).toMatchObject({ errors: { region: expect.any(String) } });
   });
 
-  it("asks the group size only from who founds a faction", () => {
-    expect(validate({ ...valid, side: "fundar" })).toMatchObject({ errors: { groupSize: expect.any(String) } });
-    expect(validate({ ...valid, side: "fundar", groupSize: "6" })).toMatchObject({ ok: true, data: { groupSize: 6 } });
-    expect(validate({ ...valid, side: "rovers", groupSize: "6" })).toMatchObject({
-      ok: true,
-      data: { groupSize: null },
-    });
-  });
-
   it("flags bots that fill the hidden field", () => {
     expect(validate({ ...valid, website: "http://spam" })).toEqual({ ok: false, bot: true, errors: {} });
   });
@@ -84,9 +73,9 @@ describe("normalizeWhatsapp", () => {
 
 describe("enlistment card", () => {
   it("round-trips the number, nick and side for sharing, and rejects forged codes", () => {
-    const code = encodeCard({ number: 137, nick: "Kai_D3v", side: "rovers" });
-    expect(decodeCard(code)).toEqual({ number: 137, nick: "Kai_D3v", side: "rovers" });
+    const code = encodeCard({ number: 137, nick: "Kai_D3v", side: "f1041" });
+    expect(decodeCard(code)).toEqual({ number: 137, nick: "Kai_D3v", side: "f1041" });
     expect(decodeCard("lixo")).toBeNull();
-    expect(decodeCard(encodeCard({ number: 1, nick: "x y", side: "rovers" }))).toBeNull();
+    expect(decodeCard(encodeCard({ number: 1, nick: "x y", side: "f1041" }))).toBeNull();
   });
 });

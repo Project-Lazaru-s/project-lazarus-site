@@ -8,7 +8,7 @@ export async function RecruitCount() {
   return (
     <section aria-labelledby="alistados" className="rounded-sm border border-rust/40 bg-asphalt p-6">
       <h2 id="alistados" className="font-mono text-xs tracking-[0.3em] text-sunset uppercase">
-        Alistados até agora
+        Sinais que responderam
       </h2>
       <p className="mt-1 font-stencil text-5xl text-plate">{stats.total}</p>
       <ul className="mt-4 space-y-2">

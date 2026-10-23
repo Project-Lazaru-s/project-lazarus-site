@@ -1,16 +1,36 @@
 // Ficha de alistamento do servidor de guerra (PvP de facções). Validação pura: roda no navegador
 // para responder na hora e de novo na Server Action, que é a que vale.
 
+/** As três facções de jogadores (ainda sem nome, conhecidas pela frequência) e quem joga sozinho. */
 export const SIDES = [
-  { id: "haven", name: "Haven", line: "Defender o refúgio e tratar os feridos. Guerra só quando atacam a sua casa." },
   {
-    id: "rovers",
-    name: "Rovers",
-    line: "Estrada aberta, comércio e emboscadas. Quem controla as rotas controla o mapa.",
+    id: "f873",
+    freq: 87.3,
+    name: "87.3 · Ex-militares",
+    line: "Hierarquia, checkpoints e poder de fogo. Território se toma em formação.",
+    call: "Aqui é o posto 87.3. A farda acabou, a disciplina não. Temos rádio, munição contada e uma linha a segurar. Procuramos quem obedeça ordem e não recue.",
   },
-  { id: "wardens", name: "Wardens", line: "Muralha, patrulha e revista. Ninguém passa sem a sua permissão." },
-  { id: "fundar", name: "Fundar a minha", line: "Você e o seu grupo, com nome, bandeira e território próprios." },
-  { id: "solo", name: "Lobo solitário", line: "Sem bandeira. Troca com quem quiser, atira em quem precisar." },
+  {
+    id: "f1041",
+    freq: 104.1,
+    name: "104.1 · Bando",
+    line: "Saque, emboscada e intimidação. O que é dos outros é de quem pegar primeiro.",
+    call: "Cento e quatro ponto um. Aqui ninguém pede licença. Tem comboio pra emboscar, depósito pra limpar e lugar no bando pra quem não tem medo de sujar a mão.",
+  },
+  {
+    id: "f1215",
+    freq: 121.5,
+    name: "121.5 · Milícia civil",
+    line: "Bairro murado, plantão e mutirão. Ninguém fica para trás.",
+    call: "Cento e vinte e um e meio, falando do bairro. A gente era vizinho, professor, mecânico. Hoje é muro, horta e plantão. Se você quer proteger alguém, vem pra cá.",
+  },
+  {
+    id: "solo",
+    freq: null,
+    name: "Lobo solitário",
+    line: "Sem frequência. Sobrevive por conta própria, troca com quem quiser e atira em quem precisar.",
+    call: "Nenhum chamado. Só a estrada, a mochila e a horda. Você não deve nada a ninguém.",
+  },
 ] as const;
 
 export const EXPERIENCE = [
@@ -46,7 +66,6 @@ export type EnlistInput = {
   experience: string;
   region: string;
   playtime: string;
-  groupSize: string;
   consent: boolean;
   /** Campo escondido: só robôs preenchem. */
   website: string;
@@ -61,7 +80,6 @@ export type Recruit = {
   experience: string;
   region: string;
   playtime: string;
-  groupSize: number | null;
 };
 
 export type Field = keyof Omit<EnlistInput, "website">;
@@ -90,18 +108,15 @@ export function validate(input: EnlistInput): Validation {
   const email = input.email.trim().toLowerCase();
   const discord = input.discord.trim().toLowerCase();
   const whatsapp = input.whatsapp.trim() ? normalizeWhatsapp(input.whatsapp) : null;
-  const groupSize = Number(input.groupSize);
 
   if (!NICK.test(nick)) errors.nick = "Use o nick do Minecraft Java: 3 a 16 letras, números ou _.";
   if (!EMAIL.test(email)) errors.email = "Informe um e-mail válido para o aviso de lançamento.";
   if (input.whatsapp.trim() && !whatsapp) errors.whatsapp = "Número com DDD, por exemplo (11) 98765-4321.";
   if (discord && !DISCORD.test(discord)) errors.discord = "Nome de usuário do Discord, de 2 a 32 caracteres.";
-  if (!has(SIDES, input.side)) errors.side = "Escolha um lado da guerra.";
+  if (!has(SIDES, input.side)) errors.side = "Sintonize uma frequência ou siga como lobo solitário.";
   if (!has(EXPERIENCE, input.experience)) errors.experience = "Escolha a sua experiência.";
   if (!has(REGIONS, input.region)) errors.region = "Escolha a sua região.";
   if (!has(PLAYTIMES, input.playtime)) errors.playtime = "Escolha quando costuma jogar.";
-  if (input.side === "fundar" && !(Number.isInteger(groupSize) && groupSize >= 2 && groupSize <= 50))
-    errors.groupSize = "Quantas pessoas no seu grupo? De 2 a 50.";
   if (!input.consent) errors.consent = "Precisamos do seu aceite para guardar a ficha.";
 
   if (Object.keys(errors).length > 0) return { ok: false, errors };
@@ -116,7 +131,6 @@ export function validate(input: EnlistInput): Validation {
       experience: input.experience,
       region: input.region,
       playtime: input.playtime,
-      groupSize: input.side === "fundar" ? groupSize : null,
     },
   };
 }

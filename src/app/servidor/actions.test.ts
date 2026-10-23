@@ -14,11 +14,10 @@ const input: EnlistInput = {
   email: "recruta@example.com",
   whatsapp: "11987654321",
   discord: "",
-  side: "wardens",
+  side: "f873",
   experience: "veterano",
   region: "sul",
   playtime: "noite",
-  groupSize: "",
   consent: true,
   website: "",
 };
@@ -33,7 +32,7 @@ describe("enlist (server action)", () => {
     db.saveRecruit.mockResolvedValue({ number: 42, updated: false });
     const result = await enlist(input);
     expect(result).toMatchObject({ ok: true, number: 42, updated: false });
-    expect(decodeCard((result as { code: string }).code)).toEqual({ number: 42, nick: "Kai_D3v", side: "wardens" });
+    expect(decodeCard((result as { code: string }).code)).toEqual({ number: 42, nick: "Kai_D3v", side: "f873" });
     expect(cache.updateTag).toHaveBeenCalledWith("recruits");
     const [, data, ipHash] = db.saveRecruit.mock.calls[0];
     expect(data).toMatchObject({ whatsapp: "+5511987654321" });

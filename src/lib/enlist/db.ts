@@ -54,13 +54,13 @@ export async function saveRecruit(sql: Sql, r: Recruit, ipHash: string): Promise
   if ((recent as number) >= MAX_PER_HOUR) return { error: "rate" };
   try {
     const [row] = await sql`insert into recruits
-        (nick, email, whatsapp, discord, side, experience, region, playtime, group_size, ip_hash)
+        (nick, email, whatsapp, discord, side, experience, region, playtime, ip_hash)
       values (${r.nick}, ${r.email}, ${r.whatsapp}, ${r.discord}, ${r.side}, ${r.experience}, ${r.region},
-        ${r.playtime}, ${r.groupSize}, ${ipHash})
+        ${r.playtime}, ${ipHash})
       on conflict (email) do update set
         nick = excluded.nick, whatsapp = excluded.whatsapp, discord = excluded.discord, side = excluded.side,
         experience = excluded.experience, region = excluded.region, playtime = excluded.playtime,
-        group_size = excluded.group_size, updated_at = now()
+        updated_at = now()
       returning id, (xmax <> 0) as updated`;
     return { number: row.id as number, updated: row.updated as boolean };
   } catch (error) {
@@ -73,7 +73,7 @@ export async function saveRecruit(sql: Sql, r: Recruit, ipHash: string): Promise
 /** Todas as fichas, da mais nova para a mais antiga (área restrita). */
 export async function listRecruits(sql: Sql) {
   await ensureSchema(sql);
-  return sql`select id, nick, email, whatsapp, discord, side, experience, region, playtime, group_size,
+  return sql`select id, nick, email, whatsapp, discord, side, experience, region, playtime,
     created_at, updated_at from recruits order by id desc`;
 }
 

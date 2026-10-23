@@ -10,11 +10,11 @@ describe("RecruitCount", () => {
   it("shows the total and the count per side", async () => {
     stats.getRecruitStats.mockResolvedValue({
       total: 5,
-      bySide: { haven: 1, rovers: 3, wardens: 1, fundar: 0, solo: 0 },
+      bySide: { f873: 1, f1041: 3, f1215: 1, solo: 0 },
     });
     render((await RecruitCount())!);
-    expect(screen.getByRole("heading", { name: /alistados/i }).nextElementSibling).toHaveTextContent("5");
-    expect(screen.getByText("Rovers").nextElementSibling).toHaveTextContent("3");
+    expect(screen.getByRole("heading", { name: /sinais que responderam/i }).nextElementSibling).toHaveTextContent("5");
+    expect(screen.getByText("104.1 · Bando").nextElementSibling).toHaveTextContent("3");
   });
 
   it("hides itself without a database or before the first form", async () => {

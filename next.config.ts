@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
   // Arquivos lidos do disco em tempo de requisição (com turbopackIgnore, não são rastreados sozinhos).
   outputFileTracingIncludes: {
     "/dossie/**": ["./assets/og/**/*"],
-    "/servidor/**": ["./assets/og/**/*"],
+    "/servidor/**": ["./assets/og/**/*", "./public/images/servidor/**/*"],
     "/blog/**": ["./content/blog/**/*"],
   },
   turbopack: {

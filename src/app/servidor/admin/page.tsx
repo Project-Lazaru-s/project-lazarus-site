@@ -44,23 +44,13 @@ async function Recruits() {
         <table className="w-full text-left text-sm whitespace-nowrap">
           <thead className="bg-asphalt font-mono text-xs tracking-wider text-sunset uppercase">
             <tr>
-              {[
-                "Nº",
-                "Nick",
-                "E-mail",
-                "WhatsApp",
-                "Discord",
-                "Lado",
-                "Grupo",
-                "Experiência",
-                "Região",
-                "Horário",
-                "Data",
-              ].map((h) => (
-                <th key={h} scope="col" className="px-3 py-2">
-                  {h}
-                </th>
-              ))}
+              {["Nº", "Nick", "E-mail", "WhatsApp", "Discord", "Lado", "Experiência", "Região", "Horário", "Data"].map(
+                (h) => (
+                  <th key={h} scope="col" className="px-3 py-2">
+                    {h}
+                  </th>
+                ),
+              )}
             </tr>
           </thead>
           <tbody className="divide-y divide-plate/10 text-plate/85">
@@ -89,7 +79,6 @@ async function Recruits() {
                 </td>
                 <td className="px-3 py-2">{(r.discord as string) ?? "—"}</td>
                 <td className="px-3 py-2">{label(SIDES, r.side)}</td>
-                <td className="px-3 py-2">{(r.group_size as number) ?? "—"}</td>
                 <td className="px-3 py-2">{label(EXPERIENCE, r.experience)}</td>
                 <td className="px-3 py-2">{label(REGIONS, r.region)}</td>
                 <td className="px-3 py-2">{label(PLAYTIMES, r.playtime)}</td>
