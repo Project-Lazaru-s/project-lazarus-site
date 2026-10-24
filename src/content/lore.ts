@@ -38,7 +38,18 @@ export const archive: ArchiveEntry[] = [
     minutes: 10,
     cover: "/images/lore/origens/capa-origens.png",
   },
-  { sealed: true, code: "Arquivo 03" },
+  {
+    sealed: false,
+    code: "Arquivo 03",
+    meta: "3 alertas · jogável · ~14 min",
+    slug: "os-hostis",
+    title: "Os Hostis",
+    summary:
+      "Um quadro de alertas: como Desertores, The Hollow e as oito gangues começaram ajudando ou sobrevivendo, até cruzar a linha.",
+    minutes: 12,
+    cover: "/images/lore/hostis/quadro-alertas.png",
+  },
+  { sealed: true, code: "Arquivo 04" },
 ];
 
 /** Uma fala da história; com imagem, a ilustração aparece junto dela. */

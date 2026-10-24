@@ -28,4 +28,10 @@ describe("/lore", () => {
     expect(sealed.length).toBeGreaterThan(0);
     for (const card of sealed) expect(card.querySelector("a")).toBeNull();
   });
+
+  it("opens Os Hostis, the alert board", () => {
+    render(<LorePage />);
+    expect(screen.getByRole("link", { name: /os hostis/i })).toHaveAttribute("href", "/lore/os-hostis");
+    expect(screen.getByText(/arquivo 03 · 3 alertas/i)).toBeInTheDocument();
+  });
 });

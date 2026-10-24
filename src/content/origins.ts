@@ -3,7 +3,8 @@ import type { Line } from "./lore";
 // Arquivo 02, "Antes das Bandeiras": como cada facção central começou durante o colapso, antes do Dia 1.
 // Fonte: Documents/Project Lazarus/Lore/01. Origens das faccoes. Aqui fica a versão enxuta para o jogo.
 
-export type FactionId = "haven" | "rovers" | "wardens" | "military";
+/** Facções centrais (Arquivo 02) e grupos hostis (Arquivo 03): os dois arquivos usam o mesmo motor. */
+export type FactionId = "haven" | "rovers" | "wardens" | "military" | "desertores" | "hollow" | "gangues";
 export type OriginGateId =
   | "poco"
   | "enfermaria"
@@ -16,7 +17,21 @@ export type OriginGateId =
   | "retirada"
   | "quarentena"
   | "ordens"
-  | "doses";
+  | "doses"
+  | "radio"
+  | "madrugada"
+  | "patrulha"
+  | "conta"
+  | "versoes"
+  | "luz"
+  | "rust"
+  | "lantern"
+  | "crowbar"
+  | "redtape"
+  | "gutter"
+  | "static"
+  | "tin"
+  | "pine";
 
 export type Part = {
   id: string;
@@ -41,6 +56,8 @@ export type Dossier = {
   photo: string;
   focus: string;
   ambience: string | null;
+  /** Como cada parte é chamada no cartão e no dossiê ("Parte", "Caso"). */
+  partLabel?: string;
   /** Vazio enquanto o dossiê não foi escrito: a pasta aparece lacrada. */
   parts: Part[];
   trace: { title: string; text: string } | null;

@@ -88,6 +88,8 @@ test.describe("mobile", () => {
     "/lore/o-inicio-do-caos/leitura",
     "/lore/antes-das-bandeiras",
     "/lore/antes-das-bandeiras/leitura",
+    "/lore/os-hostis",
+    "/lore/os-hostis/leitura",
     "/servidor",
   ]) {
     test(`${route} has no horizontal scroll`, async ({ page }) => {
@@ -368,4 +370,42 @@ test("Lore (Arquivo 02): Military, from the quarantine marks to the epilogue", a
   await expect(page.getByRole("heading", { name: /arquivo completo/i })).toBeVisible();
   await page.getByRole("link", { name: /arquivo 01/i }).click();
   await expect(page).toHaveURL("/lore/o-inicio-do-caos");
+});
+
+test("Lore (Arquivo 03): the alert board and the Deserters, from the silent radio to the toll", async ({ page }) => {
+  await page.goto("/lore");
+  await page.getByRole("link", { name: "Os Hostis" }).click();
+  await expect(page).toHaveURL("/lore/os-hostis");
+  await page.getByRole("button", { name: "Olhar o quadro" }).click();
+  await expect(page.getByRole("heading", { name: "Quadro de alertas" })).toBeVisible();
+  await page.getByRole("button", { name: "Investigar: Desertores" }).click();
+  await expect(page.getByRole("heading", { name: "A ordem que não chegou" })).toBeVisible();
+
+  const reach = async (gate: RegExp) => {
+    const group = page.getByRole("group", { name: gate });
+    for (let i = 0; i < 60 && !(await group.isVisible()); i++) await page.keyboard.press("Enter");
+    await expect(group).toBeVisible();
+    return group;
+  };
+
+  const radio = await reach(/três dias de rádio/i);
+  for (let day = 1; day <= 3; day++)
+    await radio.getByRole("button", { name: `Chamar a substituição (dia ${day})` }).click();
+  await radio.getByRole("button", { name: /abrir a caixa de remédios/i }).click();
+  await radio.getByRole("button", { name: /^continuar/i }).click();
+
+  const dawn = await reach(/a madrugada no posto/i);
+  for (const who of [/comandante/i, /cabo lima/i, /sargento vaz/i])
+    await dawn.getByRole("button", { name: who }).click();
+  await dawn.getByRole("button", { name: /registrar a saída/i }).click();
+  await dawn.getByRole("button", { name: /^continuar/i }).click();
+
+  const road = await reach(/patrulha ou desertores/i);
+  for (const answer of ["Patrulha Military", "Desertores", "Desertores", "Patrulha Military"])
+    await road.getByRole("button", { name: answer, exact: true }).click();
+  await road.getByRole("button", { name: /^continuar/i }).click();
+
+  await reach(/o livro de serviço/i);
+  await page.getByRole("button", { name: /prender no quadro/i }).click();
+  await expect(page.getByRole("button", { name: "Investigar: Desertores" })).toContainText("Investigado");
 });

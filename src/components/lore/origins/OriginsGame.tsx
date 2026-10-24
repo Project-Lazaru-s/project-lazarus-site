@@ -2,52 +2,19 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { type ReactNode, useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { type Dossier, dossiers, epilogue, type OriginGateId, origins } from "@/content/origins";
-import {
-  available,
-  cuesFor,
-  current,
-  decodeSave,
-  encodeSave,
-  type OriginsAction,
-  type OriginsState,
-  pagesFor,
-  reduce,
-  SAVE_KEY,
-  scriptFor,
-  START,
-} from "@/lib/lore/origins";
-import { type AmbiencePlayer, createAmbience, MUSIC } from "@/lib/lore/audio";
-import { createSfx, type Sfx, type SoundName } from "@/lib/survival/sfx";
-import { Dialogue } from "@/components/lore/game/Dialogue";
-import { LoreSfx, SoundButton, useSoundPref } from "@/components/lore/game/sound";
+import { useEffect, useRef, useState } from "react";
+import { type Dossier, dossiers, epilogue, origins } from "@/content/origins";
+import { archive } from "@/lib/lore/origins";
+import { type ArchiveConfig, ArchiveGame, type HubProps } from "@/components/lore/archive/ArchiveGame";
+import { SoundButton } from "@/components/lore/game/sound";
 import { InfirmaryGate, TradeGate, WellGate } from "./HavenGates";
 import { BusGate, CrewGate, ReturnGate } from "./RoversGates";
 import { EntryGate, RetreatGate, WatchGate } from "./WardensGates";
 import { DosesGate, OrdersGate, QuarantineGate } from "./MilitaryGates";
 
-const READING = `/lore/${origins.slug}/leitura`;
 const OPEN_MS = 550;
 
-function readSave() {
-  try {
-    return localStorage.getItem(SAVE_KEY) ?? "";
-  } catch {
-    return "";
-  }
-}
-const noop = () => () => {};
-
-function write(state: OriginsState) {
-  try {
-    localStorage.setItem(SAVE_KEY, encodeSave(state));
-  } catch {
-    // Sem armazenamento, a partida vale só até fechar a aba.
-  }
-}
-
-const GATES: Record<OriginGateId, (pass: () => void) => ReactNode> = {
+const GATES: ArchiveConfig["gates"] = {
   poco: (pass) => <WellGate onPass={pass} />,
   enfermaria: (pass) => <InfirmaryGate onPass={pass} />,
   trocas: (pass) => <TradeGate onPass={pass} />,
@@ -62,322 +29,10 @@ const GATES: Record<OriginGateId, (pass: () => void) => ReactNode> = {
   doses: (pass) => <DosesGate onPass={pass} />,
 };
 
-/** "Antes das Bandeiras" jogável: a mesa com as quatro pastas e, dentro de cada uma, a origem da facção. */
-export function OriginsGame() {
-  const saved = decodeSave(useSyncExternalStore(noop, readSave, () => ""));
-  const [state, setState] = useState<OriginsState | null>(null);
-  const [notebook, setNotebook] = useState(false);
-  const [ending, setEnding] = useState(false);
-  const [soundOn, setSoundOn] = useSoundPref();
-
-  const sfxRef = useRef<Sfx>(null);
-  const musicRef = useRef<AmbiencePlayer>(null);
-  const ambienceRef = useRef<AmbiencePlayer>(null);
-  const audio = typeof Audio === "undefined" ? undefined : Audio;
-  const sfx = useCallback(
-    (name: SoundName, volume?: number) => {
-      if (soundOn) (sfxRef.current ??= createSfx(audio)).play(name, volume);
-    },
-    [soundOn, audio],
-  );
-
-  const go = (next: OriginsState, prev: OriginsState = next) => {
-    for (const cue of cuesFor(next, prev)) sfx(cue.name, cue.volume);
-    setState(next);
-    write(next);
-  };
-  const play = (action: OriginsAction) => state && go(reduce(state, action), state);
-
-  const open = state?.open ? dossiers.find((d) => d.id === state.open)! : null;
-  const playing = state !== null;
-  useEffect(() => {
-    const music = (musicRef.current ??= createAmbience(audio));
-    if (soundOn && playing) music.play(MUSIC, 0.4);
-    else music.stop();
-  }, [soundOn, playing, audio]);
-  const bedSrc = open?.ambience ?? null;
-  useEffect(() => {
-    const bed = (ambienceRef.current ??= createAmbience(audio));
-    if (soundOn && bedSrc) bed.play(bedSrc, 0.25);
-    else bed.stop();
-  }, [soundOn, bedSrc, audio]);
-  useEffect(
-    () => () => {
-      musicRef.current?.stop();
-      ambienceRef.current?.stop();
-    },
-    [],
-  );
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setNotebook((o) => !o);
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
-
-  const step = state && current(state);
-  const part = open && step ? open.parts[step.part] : null;
-
-  return (
-    <LoreSfx.Provider value={sfx}>
-      <section
-        aria-label={origins.title}
-        className="relative flex h-[calc(100dvh-57px)] min-h-[600px] flex-col overflow-hidden bg-black"
-      >
-        <Image
-          key={part?.image ?? "capa"}
-          src={part?.image ?? origins.cover}
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="lore-kenburns object-cover"
-        />
-        <div
-          className={`absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black/85 ${open ? "" : "bg-black/45"}`}
-        />
-
-        {state && open && part && step && (
-          <header className="relative z-10 flex items-center justify-between gap-3 px-4 py-3 font-mono text-xs text-plate/70">
-            <p>
-              <span className="text-sunset">{open.name}</span>
-              <span className="hidden sm:inline">
-                {" "}
-                · Parte {part.numeral} · {part.title}
-              </span>
-              <span className="text-plate/40">
-                {" "}
-                · {step.part + 1}/{open.parts.length}
-              </span>
-            </p>
-            <div className="flex items-center gap-2">
-              <SoundButton on={soundOn} onChange={setSoundOn} />
-              <button
-                type="button"
-                onClick={() => {
-                  setNotebook(false);
-                  play({ type: "close" });
-                }}
-                className="rounded border border-plate/30 bg-black/50 px-3 py-1.5 hover:border-sunset hover:text-sunset pointer-coarse:min-h-11"
-              >
-                Voltar às pastas
-              </button>
-              <button
-                type="button"
-                aria-expanded={notebook}
-                onClick={() => {
-                  sfx("lorePage", 0.5);
-                  setNotebook((o) => !o);
-                }}
-                className="rounded border border-plate/30 bg-black/50 px-3 py-1.5 hover:border-sunset hover:text-sunset pointer-coarse:min-h-11"
-              >
-                Dossiê {pagesFor(state, open.id).length}/{open.parts.length}
-              </button>
-            </div>
-          </header>
-        )}
-
-        <div className="relative z-10 flex flex-1 flex-col overflow-y-auto px-4 pt-2 pb-6 sm:pb-10">
-          {!state && (
-            <div className="mx-auto my-auto w-full max-w-3xl">
-              <p className="font-mono text-xs tracking-[0.3em] text-sunset uppercase">Arquivo 02 · Dossiês de origem</p>
-              <h1 className="mt-2 font-stencil text-5xl leading-none text-plate sm:text-7xl">{origins.title}</h1>
-              <p className="mt-5 max-w-xl text-lg text-plate/85">{origins.intro}</p>
-              <div className="mt-8 flex flex-wrap items-center gap-3">
-                <button
-                  type="button"
-                  autoFocus
-                  onClick={() => go(saved ? { ...saved, open: null } : START)}
-                  className="rounded bg-lazarus px-8 py-4 text-lg font-semibold text-plate hover:bg-lazarus/85"
-                >
-                  Abrir o arquivo
-                </button>
-                {saved?.open && (
-                  <button
-                    type="button"
-                    onClick={() => go(saved)}
-                    className="rounded border border-plate/40 px-6 py-4 text-plate hover:border-sunset hover:text-sunset"
-                  >
-                    Continuar de onde parou ({dossiers.find((d) => d.id === saved.open)!.name})
-                  </button>
-                )}
-                <Link href={READING} className="px-2 py-4 text-sm text-plate/70 underline hover:text-plate">
-                  Ler sem jogar
-                </Link>
-              </div>
-              <div className="mt-6 flex flex-wrap items-center gap-3">
-                <SoundButton on={soundOn} onChange={setSoundOn} />
-                <p className="font-mono text-xs text-plate/40">
-                  ~3 min por pasta · melhor com fone · Esc abre o dossiê
-                </p>
-              </div>
-            </div>
-          )}
-
-          {state && !open && ending && <Epilogue onBack={() => setEnding(false)} />}
-
-          {state && !open && !ending && (
-            <Desk
-              state={state}
-              onEpilogue={() => {
-                sfx("loreEnding", 0.6);
-                setEnding(true);
-              }}
-              onOpen={(id) => {
-                sfx("loreFolder", 0.9);
-                go(reduce(state, { type: "open", faction: id }), state);
-              }}
-              soundOn={soundOn}
-              onSound={setSoundOn}
-            />
-          )}
-
-          {step?.kind === "part" && part && (
-            <div key={state!.at[open!.id]} className="mx-auto my-auto text-center">
-              <div className="lore-stamp-hit plate inline-block rounded-sm px-10 py-6">
-                <p className="font-stencil text-sm tracking-[0.4em] text-asphalt-deep uppercase">
-                  {open!.name} · Parte {part.numeral}
-                </p>
-                <h2 className="font-stencil text-4xl text-lazarus sm:text-6xl">{part.title}</h2>
-              </div>
-              <p className="mt-5 font-mono text-xs tracking-widest text-plate/70 uppercase">{part.when}</p>
-              <button
-                type="button"
-                autoFocus
-                onClick={() => play({ type: "next" })}
-                className="mt-8 rounded bg-lazarus px-6 py-3 font-semibold text-plate hover:bg-lazarus/85"
-              >
-                Ler a Parte {part.numeral} ▸
-              </button>
-            </div>
-          )}
-
-          {step?.kind === "line" && (
-            <div className="mt-auto">
-              <FreshPage state={state!} dossier={open!} />
-              {step.image && (
-                <figure key={step.image} className="lore-page-toast mx-auto mb-3 w-full max-w-3xl">
-                  <Image
-                    src={step.image}
-                    alt={step.alt ?? ""}
-                    width={1672}
-                    height={941}
-                    sizes="(min-width: 768px) 48rem, 100vw"
-                    className="mx-auto h-auto max-h-[42vh] w-auto max-w-full rounded border-2 border-plate/30 shadow-2xl"
-                  />
-                </figure>
-              )}
-              <Dialogue
-                key={state!.at[open!.id]}
-                text={step.text}
-                quote={step.quote}
-                onNext={() => play({ type: "next" })}
-              />
-            </div>
-          )}
-
-          {step?.kind === "gate" && (
-            <div key={state!.at[open!.id]} className="my-auto">
-              {GATES[step.gate](() => play({ type: "pass", gate: step.gate }))}
-            </div>
-          )}
-
-          {step?.kind === "end" && open?.trace && (
-            <div role="group" aria-labelledby="vestigio" className="mx-auto my-auto w-full max-w-xl text-center">
-              <div className="lore-paper rounded-sm px-6 py-10 text-asphalt-deep shadow-2xl">
-                <p className="font-mono text-xs tracking-[0.25em] uppercase opacity-60">Item recuperado</p>
-                <h2 id="vestigio" className="mt-2 font-stencil text-4xl text-lazarus">
-                  {open.trace.title}
-                </h2>
-                <p className="mt-4 font-hand text-2xl leading-tight">{open.trace.text}</p>
-              </div>
-              <button
-                type="button"
-                autoFocus
-                onClick={() => {
-                  const next = reduce(state!, { type: "finish" });
-                  go(next, state!);
-                  // A última pasta lida abre o epílogo.
-                  if (next.done.length === dossiers.length && state!.done.length < dossiers.length) setEnding(true);
-                }}
-                className="mt-8 rounded bg-lazarus px-8 py-4 text-lg font-semibold text-plate hover:bg-lazarus/85"
-              >
-                Devolver a pasta ao arquivo
-              </button>
-            </div>
-          )}
-        </div>
-
-        {notebook && state && open && (
-          <aside
-            aria-label={`Dossiê ${open.name}`}
-            className="lore-paper absolute inset-y-0 right-0 z-20 w-[min(22rem,90vw)] overflow-y-auto p-6 text-asphalt-deep shadow-2xl"
-          >
-            <div className="flex items-center gap-3">
-              <div>
-                <p className="font-mono text-[11px] tracking-widest uppercase opacity-60">Dossiê · {open.name}</p>
-                <p className="font-stencil text-xl">{open.title}</p>
-              </div>
-              <button
-                type="button"
-                aria-label="Fechar dossiê"
-                onClick={() => setNotebook(false)}
-                className="ml-auto flex size-10 items-center justify-center rounded border border-asphalt-deep/30 text-lg"
-              >
-                ×
-              </button>
-            </div>
-            <p className="mt-4 text-sm">
-              <span className="font-semibold">O que formou o grupo:</span> {open.need}
-            </p>
-            <ol className="mt-6 space-y-4">
-              {open.parts.map((p) => {
-                const page = pagesFor(state, open.id).find((x) => x.title === p.title);
-                return (
-                  <li key={p.id} className="border-b border-asphalt-deep/20 pb-3">
-                    <p className="font-mono text-[11px] tracking-widest uppercase opacity-60">
-                      Parte {p.numeral} · {p.title}
-                    </p>
-                    <p className="font-hand text-2xl leading-tight">{page ? page.note : "· · ·"}</p>
-                  </li>
-                );
-              })}
-            </ol>
-          </aside>
-        )}
-      </section>
-    </LoreSfx.Provider>
-  );
-}
-
-/** A anotação que acabou de entrar no dossiê: só na fala logo depois do portão. */
-function FreshPage({ state, dossier }: { state: OriginsState; dossier: Dossier }) {
-  const steps = scriptFor(dossier.id);
-  const at = state.at[dossier.id]!;
-  const previous = steps[at - 1];
-  if (previous?.kind !== "gate") return null;
-  const note = dossier.parts[previous.part].note;
-  return (
-    <div className="lore-page-toast mx-auto mb-3 w-full max-w-3xl rounded border border-sunset/40 bg-black/70 p-3">
-      <p className="font-mono text-[11px] tracking-widest text-sunset uppercase">Página do dossiê recuperada</p>
-      <p className="font-hand text-2xl leading-tight text-plate">{note}</p>
-    </div>
-  );
-}
-
 /** A mesa: quatro pastas confidenciais. As lidas levam o carimbo; as ainda não escritas ficam lacradas. */
-function Desk({
-  state,
-  onOpen,
-  onEpilogue,
-  soundOn,
-  onSound,
-}: {
-  state: OriginsState;
-  onEpilogue: () => void;
-  onOpen: (id: Dossier["id"]) => void;
-  soundOn: boolean;
-  onSound: (on: boolean) => void;
-}) {
+function Desk({ config, state, onOpen, onEpilogue, soundOn, onSound }: HubProps) {
+  const { dossiers, engine } = config;
+  const { available } = engine;
   const [opening, setOpening] = useState<Dossier["id"] | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
   useEffect(() => () => clearTimeout(timer.current), []);
@@ -396,12 +51,14 @@ function Desk({
     <div className="mx-auto my-auto w-full max-w-5xl">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="font-mono text-xs tracking-[0.3em] text-sunset uppercase">Arquivo 02 · {origins.title}</p>
+          <p className="font-mono text-xs tracking-[0.3em] text-sunset uppercase">
+            {config.code} · {config.title}
+          </p>
           <h1 className="mt-1 font-stencil text-4xl text-plate sm:text-5xl">Escolha uma pasta</h1>
         </div>
         <div className="flex items-center gap-2">
           <SoundButton on={soundOn} onChange={onSound} />
-          <Link href={READING} className="px-2 py-1 font-mono text-xs text-plate/60 hover:text-plate">
+          <Link href={config.reading} className="px-2 py-1 font-mono text-xs text-plate/60 hover:text-plate">
             Ler sem jogar
           </Link>
         </div>
@@ -505,41 +162,27 @@ function Desk({
   );
 }
 
-/** Depois das quatro pastas: o que as origens têm em comum, e a ponte para o Arquivo 01. */
-function Epilogue({ onBack }: { onBack: () => void }) {
-  return (
-    <div role="group" aria-labelledby="epilogo" className="mx-auto my-auto w-full max-w-2xl text-center">
-      <div className="lore-paper rounded-sm px-6 py-10 text-asphalt-deep shadow-2xl sm:px-10">
-        <p className="font-mono text-xs tracking-[0.25em] uppercase opacity-60">Arquivo 02 · epílogo</p>
-        <h2
-          id="epilogo"
-          className="lore-stamp-hit mx-auto mt-3 inline-block -rotate-3 rounded-sm border-[6px] border-lazarus px-5 py-1 font-stencil text-4xl text-lazarus uppercase sm:text-5xl"
-        >
-          Arquivo completo
-        </h2>
-        <div className="mt-6 space-y-3 text-left">
-          {epilogue.map((p) => (
-            <p key={p} className="font-hand text-2xl leading-tight">
-              {p}
-            </p>
-          ))}
-        </div>
-      </div>
-      <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-        <Link
-          href="/lore/o-inicio-do-caos"
-          className="rounded bg-lazarus px-8 py-4 text-lg font-semibold text-plate hover:bg-lazarus/85"
-        >
-          Jogar o Arquivo 01: O Início do Caos
-        </Link>
-        <button
-          type="button"
-          onClick={onBack}
-          className="rounded border border-plate/30 px-6 py-4 text-plate hover:border-sunset hover:text-sunset"
-        >
-          Voltar às pastas
-        </button>
-      </div>
-    </div>
-  );
+const ORIGINS: ArchiveConfig = {
+  code: "Arquivo 02",
+  kicker: "Dossiês de origem",
+  title: origins.title,
+  intro: origins.intro,
+  cover: origins.cover,
+  reading: `/lore/${origins.slug}/leitura`,
+  hint: "~3 min por pasta · melhor com fone · Esc abre o dossiê",
+  startLabel: "Abrir o arquivo",
+  backLabel: "Voltar às pastas",
+  returnLabel: "Devolver a pasta ao arquivo",
+  openSound: "loreFolder",
+  dossiers,
+  engine: archive,
+  gates: GATES,
+  epilogue,
+  next: { href: "/lore/o-inicio-do-caos", label: "Jogar o Arquivo 01: O Início do Caos" },
+  Hub: Desk,
+};
+
+/** "Antes das Bandeiras" jogável: a mesa com as quatro pastas e, dentro de cada uma, a origem da facção. */
+export function OriginsGame() {
+  return <ArchiveGame config={ORIGINS} />;
 }
