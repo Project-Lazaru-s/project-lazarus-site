@@ -31,6 +31,11 @@ export function Footer() {
               </Link>
             </li>
             <li>
+              <a href={links.curseforge} className="text-plate/65 hover:text-plate">
+                CurseForge
+              </a>
+            </li>
+            <li>
               <a href={links.organization} className="text-plate/65 hover:text-plate">
                 GitHub
               </a>

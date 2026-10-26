@@ -4,13 +4,13 @@ import { CopyButton } from "@/components/download/CopyButton";
 import { InstallChecklist } from "@/components/download/InstallChecklist";
 import { PcCheck } from "@/components/download/PcCheck";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { links, requirements, site } from "@/content/site";
+import { curseforgeName, links, requirements, site } from "@/content/site";
 import { formatBytes } from "@/lib/format";
 import { getReleases } from "@/lib/releases/getReleases";
 
 export const metadata: Metadata = {
   title: "Baixar",
-  description: `Baixe o Project Lazarus ${site.version} e importe no CurseForge.`,
+  description: `Instale o Project Lazarus ${site.version} pelo CurseForge, com um clique, ou importe o zip do GitHub.`,
 };
 
 const zip = `Project-Lazarus-${site.version}.zip`;
@@ -43,22 +43,35 @@ export default async function DownloadPage() {
     <>
       <PageHeader title="Baixar">
         <p>
-          O download é o zip de importação da release no GitHub. O CurseForge baixa o resto: mods, resource packs e
-          shaders de terceiros vêm direto dos autores.
+          O Project Lazarus está no CurseForge: um clique em Install e o app baixa tudo, mods, resource packs, shaders e
+          configs. Os mods de terceiros vêm direto dos autores.
         </p>
       </PageHeader>
 
       <div className="mx-auto max-w-6xl space-y-6 px-4 pb-20 *:max-w-[min(100%,56rem)]">
-        <a
-          href={links.download}
-          aria-label={`Baixar ${zip}${size ? ` (${formatBytes(size)})` : ""}`}
-          className="block rounded bg-lazarus px-6 py-4 text-center text-lg font-semibold text-plate hover:bg-lazarus/85"
-        >
-          {/* O nome do zip quebra em duas linhas num celular; lá basta a versão. */}
-          <span className="sm:hidden">Baixar {site.version}</span>
-          <span className="max-sm:hidden">Baixar {zip}</span>
-          {size ? <span className="ml-2 text-sm font-normal text-plate/70">({formatBytes(size)})</span> : null}
-        </a>
+        <div className="space-y-2">
+          <a
+            href={links.curseforge}
+            className="block rounded bg-lazarus px-6 py-4 text-center text-lg font-semibold text-plate hover:bg-lazarus/85"
+          >
+            Instalar pelo CurseForge
+            <span className="ml-2 text-sm font-normal text-plate/70">{site.version}</span>
+          </a>
+          <p className="text-center text-sm text-plate/60">
+            ou{" "}
+            <a
+              href={links.download}
+              aria-label={`Baixar ${zip}${size ? ` (${formatBytes(size)})` : ""}`}
+              className="text-sunset underline hover:text-plate"
+            >
+              {/* O nome do zip quebra em duas linhas num celular; lá basta a versão. */}
+              <span className="sm:hidden">baixe o zip {site.version}</span>
+              <span className="max-sm:hidden">baixe {zip}</span>
+              {size ? ` (${formatBytes(size)})` : null}
+            </a>{" "}
+            do GitHub e importe no app
+          </p>
+        </div>
 
         <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {requirements.slice(0, 4).map(({ label, value }) => (
@@ -74,20 +87,35 @@ export default async function DownloadPage() {
         <Step title="Pelo CurseForge (recomendado)">
           <InstallChecklist
             steps={[
-              <Fragment key="zip">
-                Baixe <Code>{zip}</Code> da{" "}
-                <a href={links.download} className="text-sunset underline">
-                  release mais recente
+              <Fragment key="app">
+                Instale o{" "}
+                <a href="https://www.curseforge.com/download/app" className="text-sunset underline">
+                  app do CurseForge
                 </a>
-                .
+                , se ainda não tiver.
               </Fragment>,
-              <Fragment key="import">
-                No CurseForge: <strong>Create Custom Profile → Import</strong> e escolha o zip. Ele baixa os mods,
-                resource packs e shaders de terceiros e copia as configs, os scripts e os mods Lazarus.
+              <Fragment key="install">
+                Abra a{" "}
+                <a href={links.curseforge} className="text-sunset underline">
+                  página do modpack
+                </a>{" "}
+                e clique em <strong>Install</strong>, ou busque <strong>{curseforgeName}</strong> em Modpacks dentro do
+                app. Ele baixa os mods, resource packs, shaders, configs e os mods Lazarus.
               </Fragment>,
-              "Reserve 8 GB de RAM (6 GB no mínimo).",
+              "Reserve 8 GB de RAM (6 GB no mínimo) nas configurações do perfil.",
             ]}
           />
+        </Step>
+
+        <Step title="Pelo zip do GitHub">
+          <p>
+            Baixe <Code>{zip}</Code> da{" "}
+            <a href={links.download} className="text-sunset underline">
+              release mais recente
+            </a>
+            . No CurseForge: <strong>Create Custom Profile → Import</strong> e escolha o zip. O resultado é o mesmo
+            perfil do botão Install.
+          </p>
         </Step>
 
         <Step title="Instalação manual">

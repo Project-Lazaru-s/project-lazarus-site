@@ -14,7 +14,12 @@ export const authors = [
   { name: "FSantiago75", role: "Co-autor", url: "https://github.com/FSantiago75" },
 ] as const;
 
+/** Nome do modpack no CurseForge, para quem busca dentro do app. */
+export const curseforgeName = "Project Lazarus - The Long Collapse";
+
 export const links = {
+  /** Página do modpack no CurseForge: o botão Install de lá abre o app e instala tudo. Vale para qualquer versão. */
+  curseforge: "https://www.curseforge.com/minecraft/modpacks/project-lazarus-the-long-collapse",
   organization: "https://github.com/Project-Lazaru-s",
   repository: repo,
   release: `${repo}/releases/tag/v${site.version}`,

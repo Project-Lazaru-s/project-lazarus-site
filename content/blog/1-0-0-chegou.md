@@ -18,6 +18,6 @@ summary: "O Project Lazarus está no ar: sobrevivência num apocalipse zumbi par
 
 ## Como jogar
 
-Baixe o `Project-Lazarus-1.0.0.zip` na [página de download](/baixar) e importe no CurseForge. Reserve 8 GB de RAM (6 GB no mínimo).
+Instale pelo [CurseForge](https://www.curseforge.com/minecraft/modpacks/project-lazarus-the-long-collapse) com um clique em Install, ou siga a [página de download](/baixar). Reserve 8 GB de RAM (6 GB no mínimo).
 
 Encontrou um bug? Abra uma [issue no GitHub](https://github.com/Project-Lazaru-s/project-lazarus-modpack/issues).

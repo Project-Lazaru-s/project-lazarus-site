@@ -10,6 +10,11 @@ describe("Footer", () => {
     expect(screen.getByRole("link", { name: /reportar bug/i })).toHaveAttribute("href", links.issues);
   });
 
+  it("links to the modpack on CurseForge", () => {
+    render(<Footer />);
+    expect(screen.getByRole("link", { name: "CurseForge" })).toHaveAttribute("href", links.curseforge);
+  });
+
   it("credits both authors and states the license", () => {
     render(<Footer />);
     expect(screen.getByRole("link", { name: "KaiD3v" })).toHaveAttribute("href", "https://kaidev.com.br");

@@ -22,30 +22,30 @@ describe("/baixar", () => {
     ]);
   });
 
-  it("downloads the import zip from the latest GitHub release", async () => {
+  it("installs from the CurseForge project page first", async () => {
     await renderPage();
-    expect(
-      screen.getByRole("link", {
-        name: /baixar project-lazarus-1\.0\.0\.zip/i,
-      }),
-    ).toHaveAttribute("href", links.download);
+    expect(screen.getByRole("link", { name: /instalar pelo curseforge/i })).toHaveAttribute("href", links.curseforge);
+    expect(links.curseforge).toBe("https://www.curseforge.com/minecraft/modpacks/project-lazarus-the-long-collapse");
   });
 
-  it("shows the real zip size from the release", async () => {
+  it("keeps the GitHub import zip as an alternative, with its real size", async () => {
     await renderPage();
-    expect(screen.getByRole("link", { name: /baixar project-lazarus/i })).toHaveTextContent("13,0 MB");
+    const zip = screen.getByRole("link", { name: /baixar project-lazarus-1\.0\.0\.zip/i });
+    expect(zip).toHaveAttribute("href", links.download);
+    expect(zip).toHaveTextContent("13,0 MB");
   });
 
-  it("still offers the download when GitHub is unreachable", async () => {
+  it("still offers the zip when GitHub is unreachable", async () => {
     getReleases.mockResolvedValue([]);
     await renderPage();
     expect(screen.getByRole("link", { name: /baixar project-lazarus/i })).not.toHaveTextContent("MB");
   });
 
-  it("turns the CurseForge import into a checklist", async () => {
+  it("turns the CurseForge install into a checklist", async () => {
     await renderPage();
-    expect(screen.getByText(/create custom profile → import/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/project lazarus - the long collapse/i).length).toBeGreaterThan(0);
     expect(screen.getAllByRole("checkbox")).toHaveLength(3);
+    expect(screen.getByText(/create custom profile → import/i)).toBeInTheDocument();
   });
 
   it("covers manual install and dedicated servers", async () => {

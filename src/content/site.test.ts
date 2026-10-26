@@ -15,8 +15,10 @@ describe("site", () => {
     expect(links.download).toBe("https://github.com/Project-Lazaru-s/project-lazarus-modpack/releases/latest");
   });
 
-  it("does not invent store or community links", () => {
-    const all = JSON.stringify(links).toLowerCase();
+  it("does not invent store or community links: only the real CurseForge page", () => {
+    const { curseforge, ...rest } = links;
+    expect(curseforge).toBe("https://www.curseforge.com/minecraft/modpacks/project-lazarus-the-long-collapse");
+    const all = JSON.stringify(rest).toLowerCase();
     for (const banned of ["discord", "curseforge.com", "modrinth"]) {
       expect(all).not.toContain(banned);
     }
